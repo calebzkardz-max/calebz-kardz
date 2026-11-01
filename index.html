@@ -7172,54 +7172,94 @@ function downloadCard() {
   link.href = canvas.toDataURL('image/png');
   link.click();
 }
-  // ===== BULK QR/CARD GENERATION =====
+  
+// ===== BULK QR/CARD GENERATION =====
 function generateSingleCardBlob(guest, template, pos) {
   return new Promise((resolve, reject) => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     const bgImg = new Image();
+
     bgImg.crossOrigin = 'anonymous';
+
     bgImg.onload = async () => {
       canvas.width = bgImg.width;
       canvas.height = bgImg.height;
       ctx.drawImage(bgImg, 0, 0);
 
-      try { await document.fonts.load(`bold ${pos.jinaFont}px "${pos.jinaFontFamily || 'Inter'}"`); } catch(e) {}
+      try {
+        await document.fonts.load(
+          `bold ${pos.jinaFont}px "${pos.jinaFontFamily || 'Inter'}"`
+        );
+      } catch(e) {}
+
       ctx.fillStyle = pos.jinaColor || '#000000';
       ctx.font = `bold ${pos.jinaFont}px "${pos.jinaFontFamily || 'Inter'}", sans-serif`;
       ctx.textAlign = 'center';
       ctx.fillText(guest.name, parseInt(pos.jinaX), parseInt(pos.jinaY));
 
       try {
-        const qrDataUrl = await QRCode.toDataURL(guest.card_id, { width: parseInt(pos.qrSize), margin: 1 });
+        const qrDataUrl = await QRCode.toDataURL(guest.card_id, {
+          width: parseInt(pos.qrSize),
+          margin: 1
+        });
+
         const qrImg = new Image();
+
         qrImg.onload = () => {
-  const padding = 16;
-  const boxX = parseInt(pos.qrX) - padding;
-  const boxY = parseInt(pos.qrY) - padding;
-  const boxSize = parseInt(pos.qrSize) + padding * 2;
-  if (pos.qrShow !== false) {
-    ctx.save();
-    ctx.fillStyle = '#FFFFFF';
-    ctx.beginPath();
-    ctx.roundRect(boxX, boxY, boxSize, boxSize, 12);
-    ctx.fill();
-    ctx.restore();
-    ctx.drawImage(qrImg, parseInt(pos.qrX), parseInt(pos.qrY), parseInt(pos.qrSize), parseInt(pos.qrSize));
-  }
+          const padding = 16;
+          const boxX = parseInt(pos.qrX) - padding;
+          const boxY = parseInt(pos.qrY) - padding;
+          const boxSize = parseInt(pos.qrSize) + padding * 2;
 
-  drawGuestLabelWithVip(ctx, guest, pos, boxY);
+          if (pos.qrShow !== false) {
+            ctx.save();
+            ctx.fillStyle = '#FFFFFF';
+            ctx.beginPath();
+            ctx.roundRect(boxX, boxY, boxSize, boxSize, 12);
+            ctx.fill();
+            ctx.restore();
 
-  canvas.toBlob(blob => resolve(blob), 'image/png');
-};
+            ctx.drawImage(
+              qrImg,
+              parseInt(pos.qrX),
+              parseInt(pos.qrY),
+              parseInt(pos.qrSize),
+              parseInt(pos.qrSize)
+            );
+          }
+
+          drawGuestLabelWithVip(ctx, guest, pos, boxY);
+
+          // WebP compression: quality 85%
+          canvas.toBlob(blob => {
+            if (!blob) {
+              reject(new Error('Imeshindikana kutengeneza picha ya kadi'));
+              return;
+            }
+
+            if (blob.type !== 'image/webp') {
+              reject(new Error('Browser haijaweza kutengeneza WebP. Tafadhali tumia Chrome au Edge ya kisasa.'));
+              return;
+            }
+
+            resolve(blob);
+          }, 'image/webp', 0.85);
+        };
+
         qrImg.onerror = reject;
         qrImg.src = qrDataUrl;
-      } catch (e) { reject(e); }
+
+      } catch (e) {
+        reject(e);
+      }
     };
+
     bgImg.onerror = reject;
     bgImg.src = template.url;
   });
 }
+
 
 // Huzalisha kadi ya mgeni na kuipakia kwenye bucket ya 'generated-cards',
 // kisha kuhifadhi link ya kudumu (public URL) kwenye guests.card_image_url.
@@ -7243,10 +7283,10 @@ async function generateAndUploadCard(guestId, forceRegenerate = false) {
   const blob = await generateSingleCardBlob(guest, template, pos);
 
   const safeName = guest.name.replace(/[^a-zA-Z0-9]/g, '_');
-  const path = `${ORG_OWNER_ID}/${guest.event_id}/${safeName}_${guest.card_id}.png`;
+  const path = `${ORG_OWNER_ID}/${guest.event_id}/${safeName}_${guest.card_id}.webp`;
 
   const { error: upErr } = await sb.storage.from(CARDS_BUCKET).upload(path, blob, {
-    contentType: 'image/png',
+    contentType: 'image/webp',
     upsert: true
   });
   if (upErr) throw new Error('Kosa la upload: ' + upErr.message + ' (Hakikisha bucket "generated-cards" ipo na ni public)');
@@ -7325,7 +7365,7 @@ async function generateAllCards() {
     try {
       const blob = await generateSingleCardBlob(g, template, pos);
       const safeName = g.name.replace(/[^a-zA-Z0-9]/g, '_');
-      zip.file(`${safeName}_${g.card_id}.png`, blob);
+      zip.file(`${safeName}_${g.card_id}.webp`, blob);
     } catch (e) {
       console.error('Imeshindwa: ' + g.name, e);
     }
