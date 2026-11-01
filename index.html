@@ -3624,47 +3624,145 @@ async function saveEventLocation() {
   loadEvents();
 }
 
+
 async function deleteEvent(id, skipConfirm) {
-  if (!skipConfirm && !confirm('Una uhakika kutaka kufuta event hii? Data zote za event hii (wageni, templates, kadi zilizotengenezwa) zitafutwa kabisa na haziwezi kurudishwa.')) return;
+  if (
+    !skipConfirm &&
+    !confirm('Una uhakika kutaka kufuta event hii? Data zote za event hii (wageni, templates, kadi zilizotengenezwa) zitafutwa kabisa na haziwezi kurudishwa.')
+  ) return;
 
   showToast('Inafuta event na data zake zote...', 'info');
 
-  // 1. Futa templates zilizounganishwa na event hii (picha kwenye storage + rows)
-  const { data: eventTemplates } = await sb.from('templates').select('id,file_path').eq('user_id', ORG_OWNER_ID).eq('event_id', id);
-  if (eventTemplates && eventTemplates.length > 0) {
-    const tplPaths = eventTemplates.map(t => t.file_path).filter(Boolean);
-    if (tplPaths.length > 0) await sb.storage.from('templates').remove(tplPaths);
-    await sb.from('templates').delete().eq('user_id', ORG_OWNER_ID).eq('event_id', id);
-  }
-
-  // 2. Futa kadi zilizotengenezwa (picha) kwenye storage kwa event hii (folder: userId/eventId/...)
   try {
-    const cardsFolder = `${ORG_OWNER_ID}/${id}`;
-    const { data: cardFiles } = await sb.storage.from(CARDS_BUCKET).list(cardsFolder);
-    if (cardFiles && cardFiles.length > 0) {
-      const cardPaths = cardFiles.map(f => `${cardsFolder}/${f.name}`);
-      await sb.storage.from(CARDS_BUCKET).remove(cardPaths);
+    // Helper: futa mafaili kwa batches zisizozidi 1000
+    async function removeInBatches(bucket, paths) {
+      for (let i = 0; i < paths.length; i += 1000) {
+        const batch = paths.slice(i, i + 1000);
+        const { error } = await sb.storage.from(bucket).remove(batch);
+
+        if (error) throw error;
+      }
     }
-  } catch (e) {
-    console.warn('Imeshindwa kufuta baadhi ya kadi kwenye storage:', e);
+
+    // Helper: tafuta mafaili yote ndani ya folder,
+    // ikiwemo folders zilizopo ndani ya folders nyingine.
+    async function getAllFiles(bucket, folderPath) {
+      const files = [];
+      const foldersToVisit = [folderPath];
+
+      while (foldersToVisit.length > 0) {
+        const currentFolder = foldersToVisit.pop();
+        let offset = 0;
+        const limit = 100;
+
+        while (true) {
+          const { data, error } = await sb.storage
+            .from(bucket)
+            .list(currentFolder, {
+              limit,
+              offset,
+              sortBy: { column: 'name', order: 'asc' }
+            });
+
+          if (error) throw error;
+
+          const items = data || [];
+
+          for (const item of items) {
+            const itemPath = `${currentFolder}/${item.name}`;
+
+            // Folders za ndani zina id === null
+            if (item.id === null) {
+              foldersToVisit.push(itemPath);
+            } else {
+              files.push(itemPath);
+            }
+          }
+
+          if (items.length < limit) break;
+          offset += limit;
+        }
+      }
+
+      return files;
+    }
+
+    // 1. Tafuta na futa kadi zote za event hii,
+    // hata zile zilizopo ndani ya Guest ID folders.
+    const cardsFolder = `${ORG_OWNER_ID}/${id}`;
+
+    const cardPaths = await getAllFiles(
+      CARDS_BUCKET,
+      cardsFolder
+    );
+
+    if (cardPaths.length > 0) {
+      await removeInBatches(CARDS_BUCKET, cardPaths);
+    }
+
+    console.log(`Kadi zilizofutwa: ${cardPaths.length}`);
+
+    // 2. Tafuta templates zilizounganishwa na event hii.
+    const { data: eventTemplates, error: templateError } = await sb
+      .from('templates')
+      .select('id, file_path')
+      .eq('user_id', ORG_OWNER_ID)
+      .eq('event_id', id);
+
+    if (templateError) throw templateError;
+
+    if (eventTemplates && eventTemplates.length > 0) {
+      const tplPaths = eventTemplates
+        .map(t => t.file_path)
+        .filter(Boolean);
+
+      if (tplPaths.length > 0) {
+        await removeInBatches('templates', tplPaths);
+      }
+
+      const { error: deleteTemplatesError } = await sb
+        .from('templates')
+        .delete()
+        .eq('user_id', ORG_OWNER_ID)
+        .eq('event_id', id);
+
+      if (deleteTemplatesError) throw deleteTemplatesError;
+    }
+
+    // 3. Futa wageni wa event hii.
+    const { error: guestsError } = await sb
+      .from('guests')
+      .delete()
+      .eq('event_id', id);
+
+    if (guestsError) throw guestsError;
+
+    // 4. Futa event yenyewe.
+    const { error: eventError } = await sb
+      .from('events')
+      .delete()
+      .eq('id', id);
+
+    if (eventError) throw eventError;
+
+    showToast(
+      `Event imefutwa pamoja na kadi ${cardPaths.length} na data zake.`,
+      'success'
+    );
+
+    loadEvents();
+    loadDashboard();
+    loadEventsDropdown();
+
+  } catch (error) {
+    console.error('Kosa wakati wa kufuta event:', error);
+
+    showToast(
+      'Kuna hatua imeshindwa. Event haijathibitishwa kufutwa kikamilifu: ' +
+      (error.message || 'Unknown error'),
+      'error'
+    );
   }
-
-  // 3. Futa wageni wote wa event hii
-  await sb.from('guests').delete().eq('event_id', id);
-
-  // 4. Hatimaye futa event yenyewe
-  const { error } = await sb.from('events').delete().eq('id', id);
-  if (error) return showToast('Kosa kufuta event: ' + error.message, 'error');
-
-  showToast('Event na data zake zote zimefutwa', 'success');
-  loadEvents();
-  loadDashboard();
-  loadEventsDropdown(); // sasisha dropdown za Template/Bulk/Invitations/Payments ili event iliyofutwa isionekane tena
-}
-
-function openEvent(id) {
-  selectEventForInvitations(id);
-  showPage('invitations');
 }
 
 // ===== GUESTS / INVITATIONS =====
