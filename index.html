@@ -7515,132 +7515,74 @@ async function generateAndUploadAllCards(eventId, onProgress) {
 }
 
 async function cleanupOldGeneratedCardPNGs() {
-  const confirmed = confirm(
-    'Una uhakika? PNG 464 za zamani kwenye generated-cards zitafutwa. WebP hazitaguswa.'
-  );
-
-  if (!confirmed) return;
-
-  const btn = document.getElementById('cleanupOldPNGBtn');
-  if (btn) {
-    btn.disabled = true;
-    btn.textContent = '⏳ Inakagua...';
-  }
-
   const ownerId = ORG_OWNER_ID;
-  const eventIds = [
-    '75b92c44-2bb1-4049-b8c5-a5af2574b94c',
-    '1c72fc79-f38d-4151-b78b-b16090c5f7b4',
-    '96dfba83-2bdc-4655-924d-52cab9012364',
-    '06e09eb4-bad8-4f2d-872a-e6f3d933737c'
-  ];
+  const bucket = sb.storage.from('generated-cards');
+  const pathsToDelete = [];
 
   try {
-    // Hakiki kuwa wageni wote wa events nne wana WebP links
-    const { data: guests, error: guestError } = await sb
-      .from('guests')
-      .select('event_id, card_image_url')
-      .in('event_id', eventIds);
+    showToast('Inakagua PNG za zamani...', 'info');
 
-    if (guestError) throw guestError;
-
-    if (!guests || guests.length !== 456) {
-      throw new Error(
-        'Ukaguzi umesimama: wageni waliopatikana si 456.'
-      );
-    }
-
-    const missingWebP = guests.filter(
-      g => !g.card_image_url ||
-           !g.card_image_url.toLowerCase().includes('.webp')
-    );
-
-    if (missingWebP.length > 0) {
-      throw new Error(
-        `Ukaguzi umesimama: wageni ${missingWebP.length} hawana WebP links.`
-      );
-    }
-
-   
-    // Kusanya PNG pekee kutoka kwenye folda nne zilizohakikiwa
-    const pathsToDelete = [];
-
-    for (const eventId of eventIds) {
+    // Tafuta mafaili ndani ya mafolda yote kwa kurudia
+    async function scanFolder(folderPath) {
       let offset = 0;
-      const limit = 100;
 
       while (true) {
-        const { data: files, error: listError } = await sb.storage
-          .from(CARDS_BUCKET)
-          .list(`${ownerId}/${eventId}/`, {
-            limit,
-            offset,
-            sortBy: { column: 'name', order: 'asc' }
-          });
+        const { data, error } = await bucket.list(folderPath, {
+          limit: 1000,
+          offset
+        });
 
-        if (listError) throw listError;
-        if (!files || files.length === 0) break;
+        if (error) throw error;
+        if (!data || data.length === 0) break;
 
-        for (const file of files) {
-          if (
-            file.name &&
-            file.id &&
-            file.name.toLowerCase().endsWith('.png')
-          ) {
-            pathsToDelete.push(
-              `${ownerId}/${eventId}/${file.name}`
-            );
+        for (const item of data) {
+          const fullPath = folderPath
+            ? `${folderPath}/${item.name}`
+            : item.name;
+
+          // Folder ndani ya folder
+          if (item.id === null) {
+            await scanFolder(fullPath);
+          } else if (item.name.toLowerCase().endsWith('.png')) {
+            pathsToDelete.push(fullPath);
           }
         }
 
-        if (files.length < limit) break;
-        offset += limit;
+        if (data.length < 1000) break;
+        offset += 1000;
       }
     }
 
+    await scanFolder(ownerId);
+
+    // Hakikisha idadi ni ile tuliyotarajia
     if (pathsToDelete.length !== 464) {
       throw new Error(
-        `Ukaguzi umesimama: zimepatikana PNG ${pathsToDelete.length}, badala ya 464. Hakuna PNG zilizofutwa.`
+        `Zimepatikana PNG ${pathsToDelete.length}, badala ya 464. Hakuna kilichofutwa.`
       );
     }
 
-    // JARIBIO TU: usifute picha bado
-showToast(
-  `Ukaguzi umepita! PNG ${pathsToDelete.length} zimepatikana. Hakuna picha iliyofutwa.`,
-  'success'
-);
-return;
-    // Futa PNG kwa batches za 100
-    let deleted = 0;
-
-    for (let i = 0; i < pathsToDelete.length; i += 100) {
-      const batch = pathsToDelete.slice(i, i + 100);
-
-      const { error: deleteError } = await sb.storage
-        .from(CARDS_BUCKET)
-        .remove(batch);
-
-      if (deleteError) throw deleteError;
-
-      deleted += batch.length;
-
-      if (btn) {
-        btn.textContent = `⏳ Imefuta ${deleted}/464`;
-      }
-    }
-
-    showToast(
-      `PNG ${deleted} za zamani zimefutwa kikamilifu! ✅`,
-      'success'
+    const confirmed = confirm(
+      `PNG 464 zimepatikana. Unataka kuzifuta sasa?`
     );
 
-  } catch (e) {
-    showToast('Usafishaji umesimama: ' + e.message, 'error');
-  } finally {
-    if (btn) {
-      btn.disabled = false;
-      btn.textContent = 'Futa PNG za Zamani';
+    if (!confirmed) {
+      showToast('Usafishaji umeghairiwa. Hakuna kilichofutwa.', 'info');
+      return;
     }
+
+    // Futa kwa mafungu ya mafaili 100
+    for (let i = 0; i < pathsToDelete.length; i += 100) {
+      const batch = pathsToDelete.slice(i, i + 100);
+      const { error } = await bucket.remove(batch);
+
+      if (error) throw error;
+    }
+
+    showToast('PNG 464 za zamani zimefutwa kikamilifu! ✅', 'success');
+
+  } catch (error) {
+    showToast('USAFISHAJI UMESHINDWA: ' + error.message, 'error');
   }
 }
 
