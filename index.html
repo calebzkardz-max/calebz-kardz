@@ -285,16 +285,30 @@
   .auth-logo-icon,.sidebar-logo-icon{background-size:contain;background-position:center;background-repeat:no-repeat}
   /* Circular brand logos: preserve the uploaded image's original aspect ratio. */
   .auth-logo-icon{
-    width:132px;height:132px;flex:0 0 132px;
-    border-radius:50%;background-color:#fff;
-    background-size:contain;background-position:center;background-repeat:no-repeat;
+    /* Fixed square geometry: never stretch into an oval. */
+    display:inline-block!important;
+    width:132px!important;height:132px!important;
+    min-width:132px!important;min-height:132px!important;
+    max-width:132px!important;max-height:132px!important;
+    aspect-ratio:1 / 1;
+    flex:0 0 132px!important;align-self:center;
+    box-sizing:border-box;border-radius:50%!important;
+    background-color:#fff;background-size:contain;
+    background-position:center;background-repeat:no-repeat;
     border:1px solid rgba(15,23,42,.08);
     box-shadow:0 5px 18px rgba(15,23,42,.12);overflow:hidden;
   }
   .sidebar-logo-icon{
-    width:44px;height:44px;min-width:44px;flex:0 0 44px;
-    border-radius:50%;background-color:#fff;
-    background-size:contain;background-position:center;background-repeat:no-repeat;
+    /* Keep the navigation logo a true 44 x 44 circle. */
+    display:block!important;
+    width:44px!important;height:44px!important;
+    min-width:44px!important;min-height:44px!important;
+    max-width:44px!important;max-height:44px!important;
+    aspect-ratio:1 / 1;
+    flex:0 0 44px!important;align-self:center;
+    box-sizing:border-box;border-radius:50%!important;
+    background-color:#fff;background-size:contain;
+    background-position:center;background-repeat:no-repeat;
     border:1px solid rgba(255,255,255,.25);
     box-shadow:0 2px 8px rgba(0,0,0,.18);overflow:hidden;
   }
