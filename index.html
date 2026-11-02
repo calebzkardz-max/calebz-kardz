@@ -1002,10 +1002,7 @@ body:not(.dark-mode) .content .card:nth-of-type(4n+1){background:linear-gradient
 body:not(.dark-mode) .content .card:nth-of-type(4n+2){background:linear-gradient(145deg,#fff,#fff1ea);border-color:#f6ded3}
 body:not(.dark-mode) .content .card:nth-of-type(4n+3){background:linear-gradient(145deg,#fff,#eff8f4);border-color:#d9eee4}
 body:not(.dark-mode) .content .card:nth-of-type(4n+4){background:linear-gradient(145deg,#fff,#f6f0fa);border-color:#e8ddf1}
-body:not(.dark-mode) .content .card:nth-of-type(4n+1) .card-title{color:#174a91}
-body:not(.dark-mode) .content .card:nth-of-type(4n+2) .card-title{color:#c94f2c}
-body:not(.dark-mode) .content .card:nth-of-type(4n+3) .card-title{color:#187653}
-body:not(.dark-mode) .content .card:nth-of-type(4n+4) .card-title{color:#75439a}
+/* Card headings retain their original typography and text color. */
 body:not(.dark-mode) .event-card:nth-child(4n+1) .event-card-header{background:linear-gradient(120deg,#0047ab,#1a1a2e)}
 body:not(.dark-mode) .event-card:nth-child(4n+2) .event-card-header{background:linear-gradient(120deg,#ff6b35,#ff1840)}
 body:not(.dark-mode) .event-card:nth-child(4n+3) .event-card-header{background:linear-gradient(120deg,#087f70,#145b75)}
@@ -1058,6 +1055,56 @@ body.dark-mode .modal-close{background:#263a5b!important;color:#f3f6ff!important
 body.dark-mode ::-webkit-scrollbar-track{background:#0d162a!important}
 body.dark-mode ::-webkit-scrollbar-thumb{background:#354b70!important}
 body.dark-mode .stat-card::before{background:linear-gradient(90deg,#ff6b35,#ff1840,#7c5cff)!important}
+
+
+/* ===== REFINED ACCENTS: calmer brand colors, preserve heading text ===== */
+:root{--blue:#315887;--blue-dark:#25283D;--orange:#D96F4B;--orange-light:#F8E9E3;}
+body:not(.dark-mode) .btn-primary{background:linear-gradient(120deg,#315887,#25283D)!important}
+body:not(.dark-mode) .btn-orange,body:not(.dark-mode) .btn-danger{background:linear-gradient(120deg,#D96F4B,#C65360)!important}
+body:not(.dark-mode) .event-card-header,
+body:not(.dark-mode) .event-card-header.seq-blue{background:linear-gradient(120deg,#315887,#25283D)!important}
+body:not(.dark-mode) .event-card-header.seq-orange,
+body:not(.dark-mode) .event-card-header.birthday{background:linear-gradient(120deg,#D96F4B,#C65360)!important}
+body:not(.dark-mode) .event-card-header.sendoff{background:linear-gradient(120deg,#66527E,#51466C)!important}
+body:not(.dark-mode) .nav-item.active{background:rgba(217,111,75,.12)!important;border-left-color:#D96F4B!important}
+body:not(.dark-mode) .content .card:nth-of-type(4n+1){background:linear-gradient(145deg,#fff,#F5F7FA)!important;border-color:#E3E7ED!important}
+body:not(.dark-mode) .content .card:nth-of-type(4n+2){background:linear-gradient(145deg,#fff,#FBF5F1)!important;border-color:#EEE3DD!important}
+body:not(.dark-mode) .content .card:nth-of-type(4n+3){background:linear-gradient(145deg,#fff,#F3F7F5)!important;border-color:#E1EAE5!important}
+body:not(.dark-mode) .content .card:nth-of-type(4n+4){background:linear-gradient(145deg,#fff,#F6F4F8)!important;border-color:#E8E3EC!important}
+body:not(.dark-mode) .content .card .card-title{color:var(--gray-800)!important}
+body:not(.dark-mode) #guestsTable tr:nth-child(odd) td,
+body:not(.dark-mode) #rsvpGuestsTable tr:nth-child(odd) td{background:#F7F8FA!important}
+body:not(.dark-mode) #guestsTable tr:nth-child(even) td,
+body:not(.dark-mode) #rsvpGuestsTable tr:nth-child(even) td{background:#FFFFFF!important}
+body:not(.dark-mode) #guestsTable tr:hover td,
+body:not(.dark-mode) #rsvpGuestsTable tr:hover td{background:#EEF2F7!important}
+body:not(.dark-mode) #templatesList>div:nth-child(odd){background:#F3F6FA!important}
+body:not(.dark-mode) #templatesList>div:nth-child(even){background:#FFFFFF!important}
+body:not(.dark-mode) #templatesList>div{border:1px solid #E5E9EF;margin-bottom:7px;padding:11px!important}
+body:not(.dark-mode) #templatesList>div[style*="background:#FFF0EC"]{background:#EAF0F8!important;border-color:#C9D7E8!important}
+
+/* Dark mode: restrained jewel tones, readable content and subtle row separation */
+body.dark-mode{--blue:#7898C4;--blue-dark:#25283D;--orange:#D98262;--orange-light:#3A2928}
+body.dark-mode .btn-primary{background:linear-gradient(120deg,#345985,#282B43)!important}
+body.dark-mode .btn-orange,body.dark-mode .btn-danger{background:linear-gradient(120deg,#B9684D,#A94D5A)!important}
+body.dark-mode .event-card-header,body.dark-mode .event-card-header.seq-blue{background:linear-gradient(120deg,#345985,#282B43)!important}
+body.dark-mode .event-card-header.seq-orange,body.dark-mode .event-card-header.birthday{background:linear-gradient(120deg,#B9684D,#A94D5A)!important}
+body.dark-mode .event-card-header.sendoff{background:linear-gradient(120deg,#5D4C73,#453D60)!important}
+body.dark-mode .content .card:nth-of-type(4n+1){background:linear-gradient(145deg,#1B2B43,#172338)!important;border-color:#30445F!important}
+body.dark-mode .content .card:nth-of-type(4n+2){background:linear-gradient(145deg,#34282D,#28212C)!important;border-color:#57404A!important}
+body.dark-mode .content .card:nth-of-type(4n+3){background:linear-gradient(145deg,#1B3334,#172A31)!important;border-color:#31504D!important}
+body.dark-mode .content .card:nth-of-type(4n+4){background:linear-gradient(145deg,#2D2940,#222238)!important;border-color:#49415F!important}
+body.dark-mode .content .card .card-title{color:#F3F6FC!important}
+body.dark-mode #guestsTable tr:nth-child(odd) td,
+body.dark-mode #rsvpGuestsTable tr:nth-child(odd) td{background:#19263A!important}
+body.dark-mode #guestsTable tr:nth-child(even) td,
+body.dark-mode #rsvpGuestsTable tr:nth-child(even) td{background:#152136!important}
+body.dark-mode #guestsTable tr:hover td,
+body.dark-mode #rsvpGuestsTable tr:hover td{background:#243650!important}
+body.dark-mode #templatesList>div:nth-child(odd){background:#1D2B40!important}
+body.dark-mode #templatesList>div:nth-child(even){background:#172338!important}
+body.dark-mode #templatesList>div{border:1px solid #30445F;margin-bottom:7px;padding:11px!important}
+body.dark-mode #templatesList>div[style*="background:#FFF0EC"]{background:#263B56!important;border-color:#45617F!important}
 
 </style>
 </head>
