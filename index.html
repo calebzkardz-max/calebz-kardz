@@ -276,6 +276,14 @@
     flex-shrink: 0;
   }
 
+  .system-language-switch{display:flex;padding:4px;gap:4px;border-radius:12px;background:var(--gray-100);max-width:340px}
+  .system-language-switch button{flex:1;border:0;border-radius:9px;padding:11px 14px;font-weight:700;cursor:pointer;background:transparent;color:var(--gray-600);transition:.2s}
+  .system-language-switch button.active[data-lang="sw"],.system-language-switch button#langSwBtn.active{background:linear-gradient(120deg,#F06A3D,#E92F4D);color:#fff;box-shadow:0 4px 12px rgba(233,75,66,.22)}
+  .system-language-switch button.active[data-lang="en"],.system-language-switch button#langEnBtn.active{background:linear-gradient(120deg,#164F9B,#24243A);color:#fff;box-shadow:0 4px 12px rgba(22,79,155,.22)}
+  .brand-logo-preview{min-height:86px;border:1px dashed var(--gray-300);border-radius:10px;display:flex;align-items:center;justify-content:center;padding:10px;color:var(--gray-400);font-size:12px;background:var(--gray-50)}
+  .brand-logo-preview img{max-width:180px;max-height:72px;object-fit:contain}
+  .auth-logo-icon,.sidebar-logo-icon{background-size:contain;background-position:center;background-repeat:no-repeat}
+
   .sidebar-logo-text h2 {
     font-family: 'Playfair Display', serif;
     font-size: 15px;
@@ -2498,6 +2506,20 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
               <input type="text" id="profPhone" placeholder="0713079348">
             </div>
             <button class="btn btn-primary" onclick="updateProfile()"><i data-lucide="save" class="icon-inline" style="color:#FFFFFF;"></i> Hifadhi Profile</button>
+            <div class="card" style="margin-top:16px;">
+              <div class="card-title" style="margin-bottom:16px;"><i data-lucide="palette" class="icon-inline" style="color:#A855F7;"></i> Appearance Mode</div>
+              <div class="theme-toggle-wrap">
+                <button class="theme-toggle-btn" id="themeLightBtn" onclick="setThemeMode('light')">
+                  <span class="icon-big"><i data-lucide="sun" style="color:#F59E0B;"></i></span>
+                  <span>Light Mode</span>
+                  <span style="font-size:11px;font-weight:400;color:var(--gray-400);">(Default)</span>
+                </button>
+                <button class="theme-toggle-btn" id="themeDarkBtn" onclick="setThemeMode('dark')">
+                  <span class="icon-big"><i data-lucide="moon" style="color:#64748B;"></i></span>
+                  <span>Dark Mode</span>
+                </button>
+              </div>
+            </div>
           </div>
 
           <div>
@@ -2514,6 +2536,26 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
               <button class="btn btn-outline" onclick="changePassword()"><i data-lucide="lock" class="icon-inline" style="color:#8B5CF6;"></i> Badilisha</button>
             </div>
 
+            <div class="card" style="margin-bottom:16px;">
+              <div class="card-title" style="margin-bottom:16px;"><i data-lucide="languages" class="icon-inline" style="color:#FF6B35;"></i> Lugha ya Mfumo</div>
+              <div class="system-language-switch" role="group" aria-label="System language">
+                <button type="button" id="langSwBtn" class="active" onclick="setSystemLanguage('sw')">SW · Kiswahili</button>
+                <button type="button" id="langEnBtn" onclick="setSystemLanguage('en')">EN · English</button>
+              </div>
+            </div>
+            <div class="card" style="margin-bottom:16px;">
+              <div class="card-title" style="margin-bottom:16px;"><i data-lucide="type" class="icon-inline" style="color:#D4A72C;"></i> Utambulisho wa Mfumo (System Branding)</div>
+              <div class="form-group"><label>Main Name</label><input id="brandMainName" type="text" value="Meshez Kadi" maxlength="50"></div>
+              <div class="form-group"><label>Theme ya Mfumo</label><input id="brandSystemTheme" type="text" value="Invitation System" maxlength="70"></div>
+              <div class="form-group"><label>Slogan</label><input id="brandSlogan" type="text" value="Invite Them Easy" maxlength="90"></div>
+              <div class="form-group">
+                <label>Logo ya Mfumo</label>
+                <div id="brandLogoPreview" class="brand-logo-preview"><span>Hakuna logo mpya iliyopakiwa</span></div>
+                <input type="file" id="brandLogoFile" accept="image/*" onchange="previewBrandLogo(this)">
+                <small style="display:block;color:var(--gray-400);margin-top:6px;">Picha itabadilishwa kuwa WebP ili kupunguza ukubwa wake.</small>
+              </div>
+              <button class="btn btn-primary" onclick="saveSystemBranding()"><i data-lucide="save" class="icon-inline"></i> Hifadhi Utambulisho</button>
+            </div>
             <div class="card">
               <div class="card-title" style="margin-bottom:16px;"><i data-lucide="globe" class="icon-inline" style="color:#0EA5E9;"></i> Mipangilio ya Mfumo</div>
               <div class="form-group">
@@ -2531,20 +2573,6 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
               <button class="btn btn-primary" onclick="saveSettings()"><i data-lucide="save" class="icon-inline" style="color:#FFFFFF;"></i> Hifadhi Mipangilio</button>
             </div>
 
-            <div class="card" style="margin-top:16px;">
-              <div class="card-title" style="margin-bottom:16px;"><i data-lucide="palette" class="icon-inline" style="color:#A855F7;"></i> Appearance Mode</div>
-              <div class="theme-toggle-wrap">
-                <button class="theme-toggle-btn" id="themeLightBtn" onclick="setThemeMode('light')">
-                  <span class="icon-big"><i data-lucide="sun" style="color:#F59E0B;"></i></span>
-                  <span>Light Mode</span>
-                  <span style="font-size:11px;font-weight:400;color:var(--gray-400);">(Default)</span>
-                </button>
-                <button class="theme-toggle-btn" id="themeDarkBtn" onclick="setThemeMode('dark')">
-                  <span class="icon-big"><i data-lucide="moon" style="color:#64748B;"></i></span>
-                  <span>Dark Mode</span>
-                </button>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -3318,6 +3346,12 @@ function initThemeToggleUI() {
 }
 
 async function loadProfile() {
+  applySystemBranding();
+  const savedLanguage=localStorage.getItem('meshez_language')||'sw';
+  document.documentElement.lang=savedLanguage;
+  const sw=document.getElementById('langSwBtn'),en=document.getElementById('langEnBtn');
+  if(sw&&en){sw.classList.toggle('active',savedLanguage==='sw');en.classList.toggle('active',savedLanguage==='en');sw.dataset.lang='sw';en.dataset.lang='en';}
+
   if (!currentUser) return;
   const { data } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
   if (data) {
@@ -7584,6 +7618,76 @@ async function changePassword() {
   const { error } = await sb.auth.updateUser({ password: np });
   if (error) return showToast('Kosa: ' + error.message, 'error');
   showToast('Nenosiri imebadilishwa!', 'success');
+}
+
+// ===== SYSTEM BRANDING + LANGUAGE =====
+let pendingBrandLogo = null;
+function getBranding(){
+  try{return JSON.parse(localStorage.getItem('meshez_system_branding')||'{}')}catch(e){return {}}
+}
+function applySystemBranding(){
+  const b=getBranding();
+  const name=b.name||'Meshez Kadi', theme=b.theme||'Invitation System', slogan=b.slogan||'Invite Them Easy';
+  document.querySelectorAll('.auth-logo h1').forEach(el=>el.textContent=name);
+  const authSub=document.querySelector('#authScreen .auth-logo p');
+  if(authSub) authSub.textContent=theme+' · '+slogan;
+  document.querySelectorAll('.sidebar-logo-text h2').forEach(el=>el.textContent=name);
+  document.querySelectorAll('.sidebar-logo-text span').forEach(el=>el.textContent=theme+' · '+slogan);
+  const mobile=document.querySelector('.mobile-header > div:last-child');
+  if(mobile) mobile.textContent=name;
+  const logoUrl=b.logo||'';
+  document.querySelectorAll('.auth-logo-icon,.sidebar-logo-icon').forEach(el=>{
+    el.style.backgroundImage=logoUrl?('url("'+logoUrl+'")'):'';
+  });
+  const preview=document.getElementById('brandLogoPreview');
+  if(preview) preview.innerHTML=logoUrl?'<img alt="System logo" src="'+logoUrl+'">':'<span>Hakuna logo mpya iliyopakiwa</span>';
+  const n=document.getElementById('brandMainName'),t=document.getElementById('brandSystemTheme'),sl=document.getElementById('brandSlogan');
+  if(n)n.value=name;if(t)t.value=theme;if(sl)sl.value=slogan;
+}
+async function previewBrandLogo(input){
+  const file=input.files&&input.files[0]; if(!file)return;
+  try{
+    const blob=await convertImageToWebP(file,0.82);
+    if(blob.size>450000) throw new Error('Logo bado ni kubwa. Tumia picha ndogo zaidi.');
+    pendingBrandLogo=blob;
+    const url=URL.createObjectURL(blob);
+    document.getElementById('brandLogoPreview').innerHTML='<img alt="Logo preview" src="'+url+'">';
+    showToast('Logo imebadilishwa kuwa WebP. Bonyeza Hifadhi Utambulisho.', 'success');
+  }catch(e){showToast('Logo: '+e.message,'error');input.value='';}
+}
+async function saveSystemBranding(){
+  const name=document.getElementById('brandMainName').value.trim();
+  const theme=document.getElementById('brandSystemTheme').value.trim();
+  const slogan=document.getElementById('brandSlogan').value.trim();
+  if(!name||!theme||!slogan)return showToast('Jaza Main Name, Theme na Slogan.', 'error');
+  const b=getBranding(); let logo=b.logo||'';
+  if(pendingBrandLogo){
+    logo=await new Promise((resolve,reject)=>{
+      const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=reject;reader.readAsDataURL(pendingBrandLogo);
+    });
+  }
+  try{localStorage.setItem('meshez_system_branding',JSON.stringify({name,theme,slogan,logo}));}
+  catch(e){return showToast('Imeshindikana kuhifadhi. Logo inaweza kuwa kubwa mno kwa hifadhi ya kivinjari.','error');}
+  pendingBrandLogo=null;applySystemBranding();showToast('Utambulisho wa mfumo umehifadhiwa.','success');
+}
+const SYSTEM_TRANSLATIONS={
+  sw:{'Profile & Settings':'Wasifu na Mipangilio','Badilisha Nenosiri':'Badilisha Nenosiri','System Branding':'Utambulisho wa Mfumo','Appearance Mode':'Muonekano wa Mfumo','Light Mode':'Mwanga','Dark Mode':'Giza','Hifadhi Profile':'Hifadhi Wasifu','Hifadhi Mipangilio':'Hifadhi Mipangilio'},
+  en:{'Wasifu na Mipangilio':'Profile & Settings','Badilisha Nenosiri':'Change Password','Utambulisho wa Mfumo':'System Branding','Muonekano wa Mfumo':'Appearance Mode','Mwanga':'Light Mode','Giza':'Dark Mode','Hifadhi Wasifu':'Save Profile','Hifadhi Mipangilio':'Save Settings'}
+};
+function setSystemLanguage(lang){
+  localStorage.setItem('meshez_language',lang);
+  document.documentElement.lang=lang;
+  document.getElementById('langSwBtn')?.classList.toggle('active',lang==='sw');
+  document.getElementById('langEnBtn')?.classList.toggle('active',lang==='en');
+  document.getElementById('langSwBtn')?.setAttribute('data-lang','sw');
+  document.getElementById('langEnBtn')?.setAttribute('data-lang','en');
+  const dict=SYSTEM_TRANSLATIONS[lang]||SYSTEM_TRANSLATIONS.sw;
+  document.querySelectorAll('#page-profile .card-title,#page-profile button,#page-profile h2').forEach(el=>{
+    if(el.dataset.originalText===undefined)el.dataset.originalText=el.textContent.trim();
+    const original=el.dataset.originalText;
+    el.childNodes.forEach(node=>{if(node.nodeType===3&&node.textContent.trim())node.textContent=node.textContent.replace(node.textContent.trim(),dict[original]||dict[node.textContent.trim()]||node.textContent.trim())});
+  });
+  showToast(lang==='sw'?'Lugha ya Kiswahili imechaguliwa':'English language selected','success');
 }
 
 async function saveSettings() {
