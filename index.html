@@ -600,9 +600,35 @@
     margin-bottom: 10px;
   }
 
-  .event-stat-item { text-align: center; }
+  .event-stat-item { text-align: center; flex: 1; min-width: 0; }
   .event-stat-value { font-size: 18px; font-weight: 700; color: var(--gray-800); }
-  .event-stat- { font-size: 11px; color: var(--gray-400); }
+  .event-stat-label { font-size: 10px; line-height: 1.3; color: var(--gray-400); }
+
+  .event-rsvp {
+    margin: 10px 0 12px;
+    padding: 9px 11px;
+    border: 1px solid var(--gray-200, #E5E7EB);
+    border-radius: 10px;
+    background: var(--gray-50, #F9FAFB);
+    font-size: 12px;
+  }
+  .event-rsvp > strong {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 11px;
+    letter-spacing: .04em;
+    color: var(--gray-600, #475569);
+  }
+  .rsvp-stats {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 5px 10px;
+    align-items: center;
+    font-size: 11px;
+    line-height: 1.35;
+  }
+  .rsvp-stats span { color: var(--gray-500, #64748B); }
+  .rsvp-stats strong { font-size: 12px; text-align: right; color: var(--gray-800, #1F2937); }
 
   .event-card-footer {
     padding: 12px 16px;
@@ -3392,39 +3418,50 @@ async function loadEvents() {
   }
 
   const typeIcon = { harusi: 'heart', birthday: 'cake-slice', sendoff: 'gift' };
-    const { data: eventGuests, error: guestsError } = await sb
-    .from('guests')
-    .select('event_id, group_size, used_count, sms_sent, rsvp')
-    .in('event_id', events.map(e => e.id));
+  // Soma wageni wote kwa kurasa ili rekodi zaidi ya 1,000 zisikatike.
+  const eventGuests = [];
+  const eventIds = events.map(e => e.id);
+  const pageSize = 1000;
+  let from = 0;
+  while (true) {
+    const { data: page, error: guestsError } = await sb
+      .from('guests')
+      .select('event_id, group_size, used_count, sms_sent, rsvp')
+      .in('event_id', eventIds)
+      .range(from, from + pageSize - 1);
 
-  if (guestsError) {
-    console.error('Imeshindwa kusoma wageni:', guestsError);
-    showToast('Imeshindwa kusoma takwimu za wageni', 'error');
-    return;
+    if (guestsError) {
+      console.error('Imeshindwa kusoma wageni:', guestsError);
+      showToast('Imeshindwa kusoma takwimu za wageni', 'error');
+      return;
+    }
+    eventGuests.push(...(page || []));
+    if (!page || page.length < pageSize) break;
+    from += pageSize;
   }
 
   const eventStats = new Map();
-
   (eventGuests || []).forEach(g => {
     if (!eventStats.has(g.event_id)) {
       eventStats.set(g.event_id, {
-  guests: 0,
-  attended: 0,
-  sms: 0,
-  confirmed: 0,
-  notConfirmed: 0
-});
+        guests: 0,
+        attended: 0,
+        sms: 0,
+        confirmed: 0,
+        notConfirmed: 0
+      });
     }
 
     const stats = eventStats.get(g.event_id);
-    stats.guests += Number(g.group_size) || 1;
-    stats.attended += Number(g.used_count) || 0;
+    const groupSize = Math.max(1, Number.parseInt(g.group_size, 10) || 1);
+    stats.guests += groupSize;
+    stats.attended += Math.max(0, Number(g.used_count) || 0);
     if (g.sms_sent === 'yes') stats.sms++;
     if (g.rsvp === 'yes') {
-  stats.confirmed += Number(g.group_size) || 1;
-} else {
-  stats.notConfirmed += Number(g.group_size) || 1;
-}
+      stats.confirmed += groupSize;
+    } else {
+      stats.notConfirmed += groupSize;
+    }
   });
   const typeColor = { harusi: '#EC4899', birthday: '#F59E0B', sendoff: '#A855F7' };
   const typeLabel = { harusi: 'Harusi', birthday: 'Birthday', sendoff: 'Sendoff' };
@@ -3470,7 +3507,7 @@ async function loadEvents() {
   </div>
 </div>
         <div class="progress-bar">
-          <div class="progress-fill" style="width:${e.total_guests > 0 ? Math.round((e.attended||0)/e.total_guests*100) : 0}%"></div>
+          <div class="progress-fill" style="width:${(eventStats.get(e.id)?.guests || 0) > 0 ? Math.min(100, Math.round((eventStats.get(e.id)?.attended || 0) / (eventStats.get(e.id)?.guests || 1) * 100)) : 0}%"></div>
         </div>
         ${isAdmin ? `<div style="font-size:11px;color:var(--gray-400);margin-top:10px;padding-top:8px;border-top:1px dashed var(--gray-200,#E5E7EB);"><i data-lucide="users" style="color:#EC4899;width:12px;height:12px;vertical-align:-2px;"></i> <strong>${(staffByEvent.get(e.id) || []).length ? (staffByEvent.get(e.id) || []).join(', ') : 'Hakuna Manager/Scanner aliyepewa ruhusa'}</strong></div>` : ''}
       </div>
