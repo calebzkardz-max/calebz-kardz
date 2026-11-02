@@ -7301,20 +7301,48 @@ async function generateAndUploadCard(guestId, forceRegenerate = false) {
 
 // Huzalisha na kupakia kadi za wageni WOTE wa event fulani kwenda bucket ya generated-cards.
 // Muhimu kabla ya kutuma mialiko ya WhatsApp kwa wingi kupitia Meta API (inahitaji public URL, sio faili).
-async function generateAndUploadAllCards(eventId) {
-  const { data: guests } = await sb.from('guests').select('*').eq('event_id', eventId);
-  if (!guests || guests.length === 0) return { success: 0, failed: 0 };
+async function generateAndUploadAllCards(eventId, onProgress) {
+  const { data: guests, error } = await sb
+    .from('guests')
+    .select('*')
+    .eq('event_id', eventId);
 
-  let success = 0, failed = 0;
-  for (const g of guests) {
-    try {
-      await generateAndUploadCard(g.id);
-      success++;
-    } catch (e) {
-      console.error('Imeshindwa kupakia kadi ya ' + g.name, e);
-      failed++;
+  if (error) throw error;
+  if (!guests || guests.length === 0) {
+    return { success: 0, failed: 0 };
+  }
+
+  const BATCH_SIZE = 500;
+  let success = 0;
+  let failed = 0;
+
+  for (let start = 0; start < guests.length; start += BATCH_SIZE) {
+    const batch = guests.slice(start, start + BATCH_SIZE);
+
+    for (let i = 0; i < batch.length; i++) {
+      const guest = batch[i];
+
+      try {
+        await generateAndUploadCard(guest.id, true);
+        success++;
+      } catch (e) {
+        console.error(
+          'Imeshindwa kubadilisha kadi ya ' + guest.name,
+          e
+        );
+        failed++;
+      }
+// HUONYESHA MAENDELEO YA UPLOAD
+      if (onProgress) {
+        onProgress(success + failed, guests.length);
+      }
+      
+      console.log(
+        `WebP progress: ${success + failed}/${guests.length}`
+      );
     }
   }
+
   return { success, failed };
 }
 
@@ -7324,15 +7352,25 @@ async function handleUploadAllCards() {
 
   const btn = document.getElementById('uploadAllCardsBtn');
   const originalText = btn.textContent;
+
   btn.disabled = true;
-  btn.textContent = '⏳ Inapakia...';
+  btn.textContent = '⏳ Inaanza...';
 
   try {
-    const { success, failed } = await generateAndUploadAllCards(eventId);
+    const { success, failed } = await generateAndUploadAllCards(
+      eventId,
+      (done, total) => {
+        btn.textContent = `⏳ WebP ${done}/${total}`;
+      }
+    );
+
     if (failed === 0) {
-      showToast(`Kadi ${success} zimepakiwa kwenye bucket! ✅`, 'success');
+      showToast(`Kadi ${success} zimebadilishwa kuwa WebP! ✅`, 'success');
     } else {
-      showToast(`Kadi ${success} zimepakiwa, ${failed} zimeshindwa. Angalia console.`, 'error');
+      showToast(
+        `Kadi ${success} zimefanikiwa, ${failed} zimeshindwa.`,
+        'error'
+      );
     }
   } catch (e) {
     showToast('Kosa: ' + e.message, 'error');
