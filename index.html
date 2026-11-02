@@ -1705,7 +1705,6 @@ body.dark-mode ::-webkit-scrollbar-thumb { background: #334155; }
   <button class="btn btn-outline btn-sm" onclick="downloadGuestsListCSV()" title="Pakua orodha ya wageni pamoja na RSVP">📥 Pakua Wageni (CSV)</button>
   <button class="btn btn-orange btn-sm" onclick="generateAllCards()">📦 Pakua Kadi Zote (ZIP)</button>
 <button class="btn btn-outline btn-sm" id="uploadAllCardsBtn" onclick="handleUploadAllCards()">☁️ Pakia Kadi Zote Bucket</button>
-<button class="btn btn-outline btn-sm" id="cleanupOldPNGBtn" onclick="cleanupOldGeneratedCardPNGs()">🗑️ Futa PNG za Zamani</button>
   <button class="btn btn-outline btn-sm" onclick="openBulkImportModal('invitations')">📥 Bulk Import (Excel)</button>
   <button class="btn btn-outline btn-sm" onclick="openAddGuestModal('invitations')">+ Mgeni Mpya</button>
 </div>
@@ -2669,7 +2668,7 @@ body.dark-mode ::-webkit-scrollbar-thumb { background: #334155; }
         <input type="text" id="tplName" placeholder="Template ya Harusi 2026">
       </div>
       <div class="form-group">
-        <label>Chagua Picha (JPG/PNG)</label>
+        <label>Chagua Picha (Itahifadhiwa WebP)</label>
         <input type="file" id="tplFile" accept="image/*">
       </div>
       <div class="form-group">
@@ -7334,8 +7333,8 @@ async function generateCard(guestId) {
 function downloadCard() {
   const canvas = document.getElementById('cardCanvas');
   const link = document.createElement('a');
-  link.download = 'kadi.png';
-  link.href = canvas.toDataURL('image/png');
+  link.download = 'kadi.webp';
+  link.href = canvas.toDataURL('image/webp', 0.85);
   link.click();
 }
   
@@ -7512,78 +7511,6 @@ async function generateAndUploadAllCards(eventId, onProgress) {
   }
 
   return { success, failed };
-}
-
-async function cleanupOldGeneratedCardPNGs() {
-  const ownerId = ORG_OWNER_ID;
-  const bucket = sb.storage.from('generated-cards');
-  const pathsToDelete = [];
-
-  try {
-    showToast('Inakagua PNG za zamani...', 'info');
-
-    // Tafuta mafaili ndani ya mafolda yote kwa kurudia
-    async function scanFolder(folderPath) {
-      let offset = 0;
-
-      while (true) {
-        const { data, error } = await bucket.list(folderPath, {
-          limit: 1000,
-          offset
-        });
-
-        if (error) throw error;
-        if (!data || data.length === 0) break;
-
-        for (const item of data) {
-          const fullPath = folderPath
-            ? `${folderPath}/${item.name}`
-            : item.name;
-
-          // Folder ndani ya folder
-          if (item.id === null) {
-            await scanFolder(fullPath);
-          } else if (item.name.toLowerCase().endsWith('.png')) {
-            pathsToDelete.push(fullPath);
-          }
-        }
-
-        if (data.length < 1000) break;
-        offset += 1000;
-      }
-    }
-
-    await scanFolder(ownerId);
-
-    // Hakikisha idadi ni ile tuliyotarajia
-    if (pathsToDelete.length !== 464) {
-      throw new Error(
-        `Zimepatikana PNG ${pathsToDelete.length}, badala ya 464. Hakuna kilichofutwa.`
-      );
-    }
-
-    const confirmed = confirm(
-      `PNG 464 zimepatikana. Unataka kuzifuta sasa?`
-    );
-
-    if (!confirmed) {
-      showToast('Usafishaji umeghairiwa. Hakuna kilichofutwa.', 'info');
-      return;
-    }
-
-    // Futa kwa mafungu ya mafaili 100
-    for (let i = 0; i < pathsToDelete.length; i += 100) {
-      const batch = pathsToDelete.slice(i, i + 100);
-      const { error } = await bucket.remove(batch);
-
-      if (error) throw error;
-    }
-
-    showToast('PNG 464 za zamani zimefutwa kikamilifu! ✅', 'success');
-
-  } catch (error) {
-    showToast('USAFISHAJI UMESHINDWA: ' + error.message, 'error');
-  }
 }
 
 async function handleUploadAllCards() {
