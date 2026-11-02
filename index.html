@@ -963,7 +963,7 @@ body.dark-mode ::-webkit-scrollbar-thumb { background: #334155; }
 }
 .theme-toggle-btn .icon-big { font-size: 24px; }
 .icon-inline{width:15px;height:15px;vertical-align:-2px;display:inline-block;stroke-width:2;}
-.guest-search-wrap{display:flex;align-items:center;gap:9px;width:100%;padding:0 10px;border:1.5px solid var(--gray-200);border-radius:8px;background:#fff;}.guest-search-wrap input{border:0!important;outline:none;box-shadow:none!important;padding-left:0!important;}
+.guest-search-wrap{display:flex;align-items:center;gap:9px;width:100%;min-height:44px;padding:0 12px;border:1.5px solid var(--gray-200);border-radius:8px;background:#fff;box-sizing:border-box;}.guest-search-wrap input{border:0!important;outline:none;box-shadow:none!important;padding:0!important;height:42px;min-height:42px;font-size:13px;flex:1;box-sizing:border-box;}
 </style>
 </head>
 <body>
@@ -1867,20 +1867,20 @@ body.dark-mode ::-webkit-scrollbar-thumb { background: #334155; }
       <!-- ===== SCANNER PAGE ===== -->
       <div class="page" id="page-scanner">
         <div style="margin-bottom:20px;">
-          <h2 style="font-size:18px;font-weight:700;">🔍 Scanner ya Mlangoni</h2>
+          <h2 style="font-size:18px;font-weight:700;"><i data-lucide="scan-line" class="icon" style="color:#06B6D4;width:20px;height:20px;vertical-align:-3px;"></i> Scanner ya Mlangoni</h2>
           <p style="font-size:13px;color:var(--gray-400);">Scan QR codes za wageni</p>
         </div>
 
         <div id="scannerNoAccessBanner" style="display:none;padding:40px;" class="empty-state">
-          <div class="icon">🚫</div>
+          <div class="icon"><i data-lucide="shield-alert" style="color:#EF4444;"></i></div>
           <h3>Bado hujapewa event yoyote</h3>
-          <p>Muulize Admin akuwekee ruhusa ya event kwenye "Event Management → 👥 Ruhusu Watumiaji"</p>
+          <p>Muulize Admin akuwekee ruhusa ya event kwenye "Event Management → Ruhusu Watumiaji"</p>
         </div>
 
         <div id="scannerMainArea">
         <div id="scannerEventBanner" style="display:none;background:var(--blue-light,#EFF6FF);border-radius:10px;padding:12px 14px;margin-bottom:14px;">
           <label style="font-size:12px;font-weight:600;color:var(--blue,#1A56DB);display:block;margin-bottom:6px;">
-            🎉 Sasa unafanya kazi na event:
+            <i data-lucide="calendar-check" style="color:#3B82F6;width:16px;height:16px;vertical-align:-3px;"></i> Sasa unafanya kazi na event:
           </label>
           <select id="scannerEventSelect" onchange="onScannerEventChange()" style="width:100%;padding:10px;border-radius:8px;border:1.5px solid var(--blue,#1A56DB);font-size:14px;font-weight:600;">
             <!-- imejazwa na JS -->
@@ -1890,7 +1890,7 @@ body.dark-mode ::-webkit-scrollbar-thumb { background: #334155; }
           <div>
             <div class="scanner-box">
               <div id="scannerReader" style="width:100%;max-width:350px;margin:auto;border-radius:8px;overflow:hidden;"></div>
-              <p style="color:var(--gray-400);font-size:13px;margin-top:12px;">📷 Angazia kamera kwenye QR code</p>
+              <p style="color:var(--gray-400);font-size:13px;margin-top:12px;"><i data-lucide="camera" style="color:#06B6D4;width:15px;height:15px;vertical-align:-3px;"></i> Angazia kamera kwenye QR code</p>
             </div>
 
             <div style="margin-top:12px;">
@@ -1907,14 +1907,14 @@ body.dark-mode ::-webkit-scrollbar-thumb { background: #334155; }
           <div>
             <div id="scanResult">
               <div class="empty-state" style="padding:32px;">
-                <div class="icon">🔍</div>
+                <div class="icon"><i data-lucide="scan-search" style="color:#06B6D4;"></i></div>
                 <h3>Subiri Scan</h3>
                 <p>Matokeo yataonekana hapa</p>
               </div>
             </div>
 
             <div class="card" style="margin-top:16px;background:#F0FDF4;border:1.5px solid var(--green,#16A34A);">
-              <div class="card-title" style="margin-bottom:8px;">🔴 LIVE - Jumla ya Event Nzima (vifaa vyote)</div>
+              <div class="card-title" style="margin-bottom:8px;"><i data-lucide="radio" style="color:#16A34A;width:16px;height:16px;vertical-align:-3px;"></i> LIVE - Jumla ya Event Nzima (vifaa vyote)</div>
               <div style="text-align:center;">
                 <div style="font-size:28px;font-weight:800;color:var(--green,#16A34A);" id="liveAttendedCount">0 / 0</div>
                 <div style="font-size:11px;color:var(--gray-400);">Jumla ya idadi ya wageni</div>
@@ -1922,7 +1922,7 @@ body.dark-mode ::-webkit-scrollbar-thumb { background: #334155; }
             </div>
 
             <div class="card" style="margin-top:16px;">
-              <div class="card-title" style="margin-bottom:12px;">📊 Scans za Kifaa Hiki (leo)</div>
+              <div class="card-title" style="margin-bottom:12px;"><i data-lucide="chart-no-axes-column" style="color:#3B82F6;width:16px;height:16px;vertical-align:-3px;"></i> Scans za Kifaa Hiki (leo)</div>
               <div style="display:flex;gap:12px;">
                 <div style="flex:1;text-align:center;padding:12px;background:var(--blue-light);border-radius:8px;">
                   <div style="font-size:22px;font-weight:700;color:var(--blue);" id="scanCountOk">0</div>
@@ -1933,7 +1933,7 @@ body.dark-mode ::-webkit-scrollbar-thumb { background: #334155; }
                   <div style="font-size:11px;color:var(--gray-400);">Zilizokataliwa</div>
                 </div>
               </div>
-              <p style="font-size:10.5px;color:var(--gray-400);margin-top:8px;">ℹ️ Hizi ni idadi ya scans zilizofanyika kwenye KIFAA HIKI pekee. Kila kifaa kina zake. Tumia LIVE COUNT hapo juu kuona jumla halisi.</p>
+              <p style="font-size:10.5px;color:var(--gray-400);margin-top:8px;"><i data-lucide="info" style="color:#0EA5E9;width:13px;height:13px;vertical-align:-2px;"></i> Hizi ni idadi ya scans zilizofanyika kwenye KIFAA HIKI pekee. Kila kifaa kina zake. Tumia LIVE COUNT hapo juu kuona jumla halisi.</p>
             </div>
           </div>
         </div>
@@ -2055,11 +2055,11 @@ body.dark-mode ::-webkit-scrollbar-thumb { background: #334155; }
       <div class="page" id="page-users">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
           <div>
-            <h2 style="font-size:18px;font-weight:700;">👥 User Management</h2>
+            <h2 style="font-size:18px;font-weight:700;"><i data-lucide="users" class="icon" style="color:#EC4899;width:20px;height:20px;vertical-align:-3px;"></i> User Management</h2>
           </div>
           <div style="display:flex;gap:8px;">
             <button class="btn btn-primary" onclick="openAddUserModal()">+ Mtumiaji Mpya</button>
-            <button class="btn btn-outline" onclick="shareScannerLink()">🔗 Shiriki Link ya Scanner</button>
+            <button class="btn btn-outline" onclick="shareScannerLink()"><i data-lucide="share-2" class="icon-inline" style="color:#0EA5E9;"></i> Shiriki Link ya Scanner</button>
           </div>
         </div>
         <div class="card">
@@ -2079,12 +2079,12 @@ body.dark-mode ::-webkit-scrollbar-thumb { background: #334155; }
       <!-- ===== PAYMENTS PAGE ===== -->
       <div class="page" id="page-payments">
         <div style="margin-bottom:20px;">
-          <h2 style="font-size:18px;font-weight:700;">💳 Mfumo wa Malipo</h2>
+          <h2 style="font-size:18px;font-weight:700;"><i data-lucide="wallet" class="icon" style="color:#14B8A6;width:20px;height:20px;vertical-align:-3px;"></i> Mfumo wa Malipo</h2>
         </div>
 
         <div class="card" style="margin-bottom:16px;">
           <div class="card-header">
-            <div class="card-title">✏️ Weka Taarifa za Malipo kwa Event</div>
+            <div class="card-title"><i data-lucide="file-pen-line" class="icon-inline" style="color:#8B5CF6;"></i> Weka Taarifa za Malipo kwa Event</div>
           </div>
           <div class="form-group">
             <label>Chagua Event</label>
@@ -2143,14 +2143,14 @@ body.dark-mode ::-webkit-scrollbar-thumb { background: #334155; }
                 </div>
               </div>
             </div>
-            <button class="btn btn-primary" onclick="savePaymentInfo()">💾 Hifadhi Taarifa za Malipo</button>
+            <button class="btn btn-primary" onclick="savePaymentInfo()"><i data-lucide="save" class="icon-inline" style="color:#FFFFFF;"></i> Hifadhi Taarifa za Malipo</button>
           </div>
         </div>
 
         <div class="card" style="margin-bottom:16px;">
           <div class="card-header">
-            <div class="card-title">📊 Historia ya Malipo </div>
-            <button class="btn btn-outline btn-sm" onclick="exportPaymentsCSV()">📥 Export CSV</button>
+            <div class="card-title"><i data-lucide="history" class="icon-inline" style="color:#3B82F6;"></i> Historia ya Malipo </div>
+            <button class="btn btn-outline btn-sm" onclick="exportPaymentsCSV()"><i data-lucide="download" class="icon-inline" style="color:#16A34A;"></i> Export CSV</button>
           </div>
           <div class="table-wrap">
             <table>
@@ -2166,11 +2166,11 @@ body.dark-mode ::-webkit-scrollbar-thumb { background: #334155; }
 
         <div class="card">
           <div class="card-header">
-            <div class="card-title">📢 Matangazo ya Kadi (Picha za Mvuto)</div>
+            <div class="card-title"><i data-lucide="megaphone" class="icon-inline" style="color:#F97316;"></i> Matangazo ya Kadi (Picha za Mvuto)</div>
           </div>
           <div class="form-group">
             <input type="file" id="promoImageFile" accept="image/*">
-            <button class="btn btn-primary" style="margin-top:8px;" onclick="uploadPromoImage()">📤 Pakia Picha</button>
+            <button class="btn btn-primary" style="margin-top:8px;" onclick="uploadPromoImage()"><i data-lucide="image-up" class="icon-inline" style="color:#FFFFFF;"></i> Pakia Picha</button>
           </div>
           <div id="promoImagesGallery" style="display:flex;flex-direction:column;gap:16px;margin-top:16px;">
             <p style="text-align:center;color:var(--gray-400);font-size:13px;">Hakuna picha bado</p>
@@ -2181,7 +2181,7 @@ body.dark-mode ::-webkit-scrollbar-thumb { background: #334155; }
       <!-- ===== PROFILE PAGE ===== -->
       <div class="page" id="page-profile">
         <div style="margin-bottom:20px;">
-          <h2 style="font-size:18px;font-weight:700;">⚙️ Profile & Settings</h2>
+          <h2 style="font-size:18px;font-weight:700;"><i data-lucide="settings" class="icon" style="color:#64748B;width:20px;height:20px;vertical-align:-3px;"></i> Profile & Settings</h2>
         </div>
 
         <div class="grid-2">
@@ -2205,12 +2205,12 @@ body.dark-mode ::-webkit-scrollbar-thumb { background: #334155; }
               <label>Namba ya Simu</label>
               <input type="text" id="profPhone" placeholder="0713079348">
             </div>
-            <button class="btn btn-primary" onclick="updateProfile()">💾 Hifadhi Profile</button>
+            <button class="btn btn-primary" onclick="updateProfile()"><i data-lucide="save" class="icon-inline" style="color:#FFFFFF;"></i> Hifadhi Profile</button>
           </div>
 
           <div>
             <div class="card" style="margin-bottom:16px;">
-              <div class="card-title" style="margin-bottom:16px;">🔑 Badilisha Nenosiri</div>
+              <div class="card-title" style="margin-bottom:16px;"><i data-lucide="key-round" class="icon-inline" style="color:#F59E0B;"></i> Badilisha Nenosiri</div>
               <div class="form-group">
                 <label>Nenosiri Jipya</label>
                 <input type="password" id="newPassword" placeholder="Herufi 6 au zaidi">
@@ -2219,11 +2219,11 @@ body.dark-mode ::-webkit-scrollbar-thumb { background: #334155; }
                 <label>Thibitisha Nenosiri</label>
                 <input type="password" id="confirmPassword" placeholder="Rudia nenosiri">
               </div>
-              <button class="btn btn-outline" onclick="changePassword()">🔒 Badilisha</button>
+              <button class="btn btn-outline" onclick="changePassword()"><i data-lucide="lock" class="icon-inline" style="color:#8B5CF6;"></i> Badilisha</button>
             </div>
 
             <div class="card">
-              <div class="card-title" style="margin-bottom:16px;">🌐 Mipangilio ya Mfumo</div>
+              <div class="card-title" style="margin-bottom:16px;"><i data-lucide="globe" class="icon-inline" style="color:#0EA5E9;"></i> Mipangilio ya Mfumo</div>
               <div class="form-group">
                 <label>Sender ID (SMS)</label>
                 <input type="text" id="settSenderId" value="MESHEZ_KADI" placeholder="MESHEZ_KADI">
@@ -2236,19 +2236,19 @@ body.dark-mode ::-webkit-scrollbar-thumb { background: #334155; }
                 <label>Africa's Talking Username</label>
                 <input type="text" id="settAtUser" value="sandbox" placeholder="sandbox">
               </div>
-              <button class="btn btn-primary" onclick="saveSettings()">💾 Hifadhi Mipangilio</button>
+              <button class="btn btn-primary" onclick="saveSettings()"><i data-lucide="save" class="icon-inline" style="color:#FFFFFF;"></i> Hifadhi Mipangilio</button>
             </div>
 
             <div class="card" style="margin-top:16px;">
-              <div class="card-title" style="margin-bottom:16px;">🎨 Appearance Mode</div>
+              <div class="card-title" style="margin-bottom:16px;"><i data-lucide="palette" class="icon-inline" style="color:#A855F7;"></i> Appearance Mode</div>
               <div class="theme-toggle-wrap">
                 <button class="theme-toggle-btn" id="themeLightBtn" onclick="setThemeMode('light')">
-                  <span class="icon-big">☀️</span>
+                  <span class="icon-big"><i data-lucide="sun" style="color:#F59E0B;"></i></span>
                   <span>Light Mode</span>
                   <span style="font-size:11px;font-weight:400;color:var(--gray-400);">(Default)</span>
                 </button>
                 <button class="theme-toggle-btn" id="themeDarkBtn" onclick="setThemeMode('dark')">
-                  <span class="icon-big">🌙</span>
+                  <span class="icon-big"><i data-lucide="moon" style="color:#64748B;"></i></span>
                   <span>Dark Mode</span>
                 </button>
               </div>
