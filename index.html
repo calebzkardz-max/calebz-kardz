@@ -6185,22 +6185,99 @@ async function downloadPromoImage(url, filePath) {
   }
 }
 
+
+// MESHEZ KADI: Convert uploaded images to WebP
+async function convertImageToWebP(file, quality = 0.85) {
+  if (!file || !file.type.startsWith('image/')) {
+    throw new Error('Faili hili si picha halali.');
+  }
+
+  // GIF na SVG zinaweza kuwa na animation au vector.
+  // Tusizibadilishe kimyakimya.
+  if (file.type === 'image/gif' || file.type === 'image/svg+xml') {
+    throw new Error('Tumia picha ya JPG, PNG au WebP badala ya GIF/SVG.');
+  }
+
+  const imageUrl = URL.createObjectURL(file);
+
+  try {
+    const img = new Image();
+    img.src = imageUrl;
+    await img.decode();
+
+    const canvas = document.createElement('canvas');
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+
+    const blob = await new Promise((resolve, reject) => {
+      canvas.toBlob(result => {
+        if (!result) {
+          reject(new Error('Imeshindikana kubadilisha picha kuwa WebP.'));
+          return;
+        }
+
+        if (result.type !== 'image/webp') {
+          reject(new Error('Browser haijaweza kutengeneza WebP.'));
+          return;
+        }
+
+        resolve(result);
+      }, 'image/webp', quality);
+    });
+
+    return blob;
+  } finally {
+    URL.revokeObjectURL(imageUrl);
+  }
+}
+
+
 async function uploadPromoImage() {
   const file = document.getElementById('promoImageFile').files[0];
   if (!file) return showToast('Chagua picha kwanza', 'error');
 
-  const path = `${ORG_OWNER_ID}/${Date.now()}_${file.name}`;
-  const { error: upErr } = await sb.storage.from(PROMO_BUCKET).upload(path, file);
-  if (upErr) return showToast('Kosa la upload: ' + upErr.message + ' (Hakikisha bucket "promo-images" ipo na ni public)', 'error');
+  try {
+    showToast('Inabadilisha picha kuwa WebP...', 'info');
 
-  const { data: { publicUrl } } = sb.storage.from(PROMO_BUCKET).getPublicUrl(path);
+    const blob = await convertImageToWebP(file);
 
-  const { error: insErr } = await sb.from('promo_images').insert({ user_id: ORG_OWNER_ID, url: publicUrl, file_path: path });
-  if (insErr) return showToast('Kosa: ' + insErr.message + ' (Angalia kama jedwali la promo_images limeundwa)', 'error');
+    const path = `${ORG_OWNER_ID}/${Date.now()}_promo.webp`;
 
-  showToast('Picha imepakiwa!', 'success');
-  document.getElementById('promoImageFile').value = '';
-  loadPromoImages();
+    const { error: upErr } = await sb.storage
+      .from(PROMO_BUCKET)
+      .upload(path, blob, {
+        contentType: 'image/webp',
+        upsert: false
+      });
+
+    if (upErr) {
+      return showToast('Kosa la upload: ' + upErr.message, 'error');
+    }
+
+    const { data: { publicUrl } } = sb.storage
+      .from(PROMO_BUCKET)
+      .getPublicUrl(path);
+
+    const { error: insErr } = await sb.from('promo_images').insert({
+      user_id: ORG_OWNER_ID,
+      url: publicUrl,
+      file_path: path
+    });
+
+    if (insErr) {
+      return showToast('Kosa: ' + insErr.message, 'error');
+    }
+
+    showToast('Picha imepakiwa kama WebP! ✅', 'success');
+    document.getElementById('promoImageFile').value = '';
+    loadPromoImages();
+
+  } catch (e) {
+    showToast('Kosa: ' + e.message, 'error');
+  }
 }
 
 async function deletePromoImage(id, filePath) {
@@ -6681,17 +6758,41 @@ function addDressColorRow(existing) {
   try { lucide.createIcons(); } catch(e) {}
 }
 
+
 async function uploadCoverPhoto(input) {
   const file = input.files[0];
   if (!file) return;
-  const path = `${ORG_OWNER_ID}/cover_${Date.now()}_${file.name}`;
-  const { error: upErr } = await sb.storage.from(DRESS_PHOTO_BUCKET).upload(path, file);
-  if (upErr) return showToast('Kosa la upload: ' + upErr.message + ' (Hakikisha bucket "dress-photos" ipo kwenye Supabase Storage)', 'error');
-  const { data: { publicUrl } } = sb.storage.from(DRESS_PHOTO_BUCKET).getPublicUrl(path);
-  document.getElementById('invCoverPhotoUrl').value = publicUrl;
-  document.getElementById('coverPhotoPreview').style.backgroundImage = `url('${publicUrl}')`;
-  showToast('Picha ya cover imepakiwa', 'success');
-  renderCoverLivePreview();
+
+  try {
+    showToast('Inabadilisha cover kuwa WebP...', 'info');
+
+    const blob = await convertImageToWebP(file);
+    const path = `${ORG_OWNER_ID}/cover_${Date.now()}.webp`;
+
+    const { error: upErr } = await sb.storage
+      .from(DRESS_PHOTO_BUCKET)
+      .upload(path, blob, {
+        contentType: 'image/webp',
+        upsert: false
+      });
+
+    if (upErr) {
+      return showToast('Kosa la upload: ' + upErr.message, 'error');
+    }
+
+    const { data: { publicUrl } } = sb.storage
+      .from(DRESS_PHOTO_BUCKET)
+      .getPublicUrl(path);
+
+    document.getElementById('invCoverPhotoUrl').value = publicUrl;
+    document.getElementById('coverPhotoPreview').style.backgroundImage = `url('${publicUrl}')`;
+
+    showToast('Cover photo imepakiwa kama WebP! ✅', 'success');
+    renderCoverLivePreview();
+
+  } catch (e) {
+    showToast('Kosa: ' + e.message, 'error');
+  }
 }
 
 function removeCoverPhoto() {
@@ -6702,16 +6803,40 @@ function removeCoverPhoto() {
 }
 
 // ---------- NAFASI (Y) YA MAANDISHI KWENYE COVER + LIVE PREVIEW ----------
+
 async function uploadVenuePhoto(slot, input) {
   const file = input.files[0];
   if (!file) return;
-  const path = `${ORG_OWNER_ID}/venue${slot}_${Date.now()}_${file.name}`;
-  const { error: upErr } = await sb.storage.from(DRESS_PHOTO_BUCKET).upload(path, file);
-  if (upErr) return showToast('Kosa la upload: ' + upErr.message, 'error');
-  const { data: { publicUrl } } = sb.storage.from(DRESS_PHOTO_BUCKET).getPublicUrl(path);
-  document.getElementById(`invVenuePhoto${slot}Url`).value = publicUrl;
-  document.getElementById(`venuePhoto${slot}Preview`).style.backgroundImage = `url('${publicUrl}')`;
-  showToast(`Picha ${slot} ya ukumbi imepakiwa`, 'success');
+
+  try {
+    showToast('Inabadilisha picha ya ukumbi kuwa WebP...', 'info');
+
+    const blob = await convertImageToWebP(file);
+    const path = `${ORG_OWNER_ID}/venue${slot}_${Date.now()}.webp`;
+
+    const { error: upErr } = await sb.storage
+      .from(DRESS_PHOTO_BUCKET)
+      .upload(path, blob, {
+        contentType: 'image/webp',
+        upsert: false
+      });
+
+    if (upErr) {
+      return showToast('Kosa la upload: ' + upErr.message, 'error');
+    }
+
+    const { data: { publicUrl } } = sb.storage
+      .from(DRESS_PHOTO_BUCKET)
+      .getPublicUrl(path);
+
+    document.getElementById(`invVenuePhoto${slot}Url`).value = publicUrl;
+    document.getElementById(`venuePhoto${slot}Preview`).style.backgroundImage = `url('${publicUrl}')`;
+
+    showToast(`Picha ${slot} ya ukumbi imepakiwa kama WebP! ✅`, 'success');
+
+  } catch (e) {
+    showToast('Kosa: ' + e.message, 'error');
+  }
 }
 
 function removeVenuePhoto(slot) {
@@ -6788,17 +6913,41 @@ function renderCoverLivePreview() {
   document.getElementById('cvpTapHint').style.transform = `translateY(${tapY * scale}px)`;
 }
 
+
 async function uploadDressPhoto(rowId, input) {
   const file = input.files[0];
   if (!file) return;
-  const row = document.getElementById(rowId);
-  const path = `${ORG_OWNER_ID}/${Date.now()}_${file.name}`;
-  const { error: upErr } = await sb.storage.from(DRESS_PHOTO_BUCKET).upload(path, file);
-  if (upErr) return showToast('Kosa la upload: ' + upErr.message + ' (Hakikisha bucket "dress-photos" ipo kwenye Supabase Storage)', 'error');
-  const { data: { publicUrl } } = sb.storage.from(DRESS_PHOTO_BUCKET).getPublicUrl(path);
-  row.querySelector('.dc-photo-frame').style.backgroundImage = `url('${publicUrl}')`;
-  row.dataset.photoUrl = publicUrl;
-  showToast('Picha imepakiwa', 'success');
+
+  try {
+    showToast('Inabadilisha picha ya vazi kuwa WebP...', 'info');
+
+    const blob = await convertImageToWebP(file);
+    const path = `${ORG_OWNER_ID}/${Date.now()}_dress.webp`;
+
+    const { error: upErr } = await sb.storage
+      .from(DRESS_PHOTO_BUCKET)
+      .upload(path, blob, {
+        contentType: 'image/webp',
+        upsert: false
+      });
+
+    if (upErr) {
+      return showToast('Kosa la upload: ' + upErr.message, 'error');
+    }
+
+    const { data: { publicUrl } } = sb.storage
+      .from(DRESS_PHOTO_BUCKET)
+      .getPublicUrl(path);
+
+    const row = document.getElementById(rowId);
+    row.querySelector('.dc-photo-frame').style.backgroundImage = `url('${publicUrl}')`;
+    row.dataset.photoUrl = publicUrl;
+
+    showToast('Picha ya vazi imepakiwa kama WebP! ✅', 'success');
+
+  } catch (e) {
+    showToast('Kosa: ' + e.message, 'error');
+  }
 }
 
 function collectDressColors() {
@@ -6903,9 +7052,25 @@ async function uploadTemplate() {
     await sb.from('templates').delete().eq('user_id', ORG_OWNER_ID).eq('event_id', eventId);
   }
 
-  const path = `${ORG_OWNER_ID}/${Date.now()}_${file.name}`;
-  const { error: upErr } = await sb.storage.from('templates').upload(path, file);
-  if (upErr) return showToast('Kosa la upload: ' + upErr.message, 'error');
+  let blob;
+
+try {
+  showToast('Inabadilisha template kuwa WebP...', 'info');
+  blob = await convertImageToWebP(file);
+} catch (e) {
+  return showToast('Kosa: ' + e.message, 'error');
+}
+
+const path = `${ORG_OWNER_ID}/${Date.now()}_template.webp`;
+
+const { error: upErr } = await sb.storage
+  .from('templates')
+  .upload(path, blob, {
+    contentType: 'image/webp',
+    upsert: false
+  });
+
+if (upErr) return showToast('Kosa la upload: ' + upErr.message, 'error');
 
   const { data: { publicUrl } } = sb.storage.from('templates').getPublicUrl(path);
 
