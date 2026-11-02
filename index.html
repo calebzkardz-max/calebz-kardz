@@ -1773,7 +1773,7 @@ body.dark-mode ::-webkit-scrollbar-thumb { background: #334155; }
             <div class="card-title"><i data-lucide="clipboard-list" class="icon-inline" style="color:#3B82F6;" aria-hidden="true"></i> Chagua Event au Folder</div>
             <div style="display:flex;gap:8px;">
               <button class="btn btn-outline btn-sm" style="color:#DC2626;border-color:#FCA5A5;" onclick="openDeleteFolderModal()"><i data-lucide="trash-2" class="icon-inline" style="color:#EF4444;" aria-hidden="true"></i> Futa Folder</button>
-              <button class="btn btn-outline btn-sm" onclick="openNewFolderModal()"><i data-lucide="folder" class="icon-inline" aria-hidden="true"></i> + Folder Mpya</button>
+              <button class="btn btn-outline btn-sm" onclick="openNewFolderModal()"><i data-lucide="folder-plus" class="icon-inline" style="color:#A855F7;" aria-hidden="true"></i> + Folder Mpya</button>
             </div>
           </div>
           <div class="form-group">
@@ -1799,27 +1799,27 @@ body.dark-mode ::-webkit-scrollbar-thumb { background: #334155; }
             </div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;">
               <button class="btn btn-outline btn-sm" onclick="openAddGuestModal('rsvp')">+ Ongeza Mgeni/Mchangiaji Mmoja</button>
-                            <button class="btn btn-outline btn-sm" onclick="openBulkImportModal('rsvp')"><i data-lucide="download" class="icon-inline" style="color:#16A34A;" aria-hidden="true"></i> Pakia Contacts (Excel)</button>
-              <button class="btn btn-outline btn-sm" onclick="downloadRsvpContactsCSV()" title="Pakua contacts za event/folder hii kama CSV"><i data-lucide="upload" class="icon-inline" aria-hidden="true"></i> Pakua Contacts (Excel)</button>
+                            <button class="btn btn-outline btn-sm" onclick="openBulkImportModal('rsvp')"><i data-lucide="file-up" class="icon-inline" style="color:#0EA5E9;" aria-hidden="true"></i> Pakia Contacts (Excel)</button>
+              <button class="btn btn-outline btn-sm" onclick="downloadRsvpContactsCSV()" title="Pakua contacts za event/folder hii kama CSV"><i data-lucide="file-spreadsheet" class="icon-inline" style="color:#16A34A;" aria-hidden="true"></i> Pakua Contacts (Excel)</button>
             </div>
           </div>
         </div>
 
         <div class="card" style="margin-bottom:16px;">
           <div class="card-header">
-            <div class="card-title"><i data-lucide="pen-line" class="icon-inline" aria-hidden="true"></i> Andika Ujumbe wa Shukrani</div>
+            <div class="card-title"><i data-lucide="pen-line" class="icon-inline" style="color:#A855F7;" aria-hidden="true"></i> Andika Ujumbe wa Shukrani</div>
           </div>
           <div class="form-group">
             <textarea id="rsvpMessageText" rows="8" placeholder="Mfano: Habari Rafiki, asante sana kwa kuja/kutuunga mkono kwenye tukio letu. Tunathamini sana uwepo/mchango wako. Karibu tena!" style="width:100%;padding:12px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:13px;font-family:inherit;resize:vertical;"></textarea>
           </div>
           <button class="btn btn-primary" style="width:auto;" onclick="saveRsvpMessage()">
-            <i data-lucide="save" style="width:16px;height:16px;"></i> Hifadhi Ujumbe
+            <i data-lucide="save" style="width:16px;height:16px;color:#FFFFFF;" aria-hidden="true"></i> Hifadhi Ujumbe
           </button>
         </div>
 
         <div class="card">
           <div class="card-header">
-            <div class="card-title"><i data-lucide="rocket" class="icon-inline" style="color:#FFFFFF;" aria-hidden="true"></i> Tuma Ujumbe</div>
+            <div class="card-title"><i data-lucide="rocket" class="icon-inline" style="color:#F97316;" aria-hidden="true"></i> Tuma Ujumbe</div>
           </div>
           <div class="form-group">
             <label>Tuma kwa</label>
@@ -1830,7 +1830,7 @@ body.dark-mode ::-webkit-scrollbar-thumb { background: #334155; }
             </select>
           </div>
           <button class="btn btn-orange" style="width:100%;" onclick="sendRsvpBulkMessage()">
-            <i data-lucide="send" class="icon-inline" style="color:#0EA5E9;" style="color:#0EA5E9;" aria-hidden="true"></i> Tuma SMS za Shukrani
+            <i data-lucide="send" class="icon-inline" style="color:#FFFFFF;" aria-hidden="true"></i> Tuma SMS za Shukrani
           </button>
         </div>
 
@@ -1840,7 +1840,10 @@ body.dark-mode ::-webkit-scrollbar-thumb { background: #334155; }
             <button class="btn btn-outline btn-sm" onclick="onRsvpEventChange()" title="Sasisha - ona mabadiliko ya wenzako"><i data-lucide="refresh-cw" class="icon-inline" style="color:#0EA5E9;" aria-hidden="true"></i> Sasisha</button>
           </div>
           <div style="padding:0 0 12px;">
-            <input type="text" id="rsvpGuestSearchInput" oninput="filterRsvpGuestsTable()" placeholder="<i data-lucide="search" class="icon-inline" aria-hidden="true"></i> Tafuta kwa jina au namba ya simu..." style="width:100%;padding:10px 12px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:13px;">
+            <div class="guest-search-wrap">
+              <i data-lucide="search" class="icon-inline" style="color:#2563EB;" aria-hidden="true"></i>
+              <input type="text" id="rsvpGuestSearchInput" oninput="filterRsvpGuestsTable()" placeholder="Tafuta kwa jina au namba ya simu..." aria-label="Tafuta wageni kwa jina au namba ya simu">
+            </div>
           </div>
           <div class="table-wrap">
             <table>
