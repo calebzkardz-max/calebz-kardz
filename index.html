@@ -7561,6 +7561,7 @@ async function cleanupOldGeneratedCardPNGs() {
       );
     }
 
+   
     // Kusanya PNG pekee kutoka kwenye folda nne zilizohakikiwa
     const pathsToDelete = [];
 
@@ -7571,7 +7572,7 @@ async function cleanupOldGeneratedCardPNGs() {
       while (true) {
         const { data: files, error: listError } = await sb.storage
           .from(CARDS_BUCKET)
-          .list(`${ownerId}/${eventId}`, {
+          .list(`${ownerId}/${eventId}/`, {
             limit,
             offset,
             sortBy: { column: 'name', order: 'asc' }
@@ -7583,6 +7584,7 @@ async function cleanupOldGeneratedCardPNGs() {
         for (const file of files) {
           if (
             file.name &&
+            file.id &&
             file.name.toLowerCase().endsWith('.png')
           ) {
             pathsToDelete.push(
@@ -7598,10 +7600,16 @@ async function cleanupOldGeneratedCardPNGs() {
 
     if (pathsToDelete.length !== 464) {
       throw new Error(
-        `Ukaguzi umesimama: zimepatikana PNG ${pathsToDelete.length}, badala ya 464.`
+        `Ukaguzi umesimama: zimepatikana PNG ${pathsToDelete.length}, badala ya 464. Hakuna PNG zilizofutwa.`
       );
     }
 
+    // JARIBIO TU: usifute picha bado
+showToast(
+  `Ukaguzi umepita! PNG ${pathsToDelete.length} zimepatikana. Hakuna picha iliyofutwa.`,
+  'success'
+);
+return;
     // Futa PNG kwa batches za 100
     let deleted = 0;
 
