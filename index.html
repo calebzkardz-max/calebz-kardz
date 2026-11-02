@@ -7301,6 +7301,7 @@ async function generateAndUploadCard(guestId, forceRegenerate = false) {
 
 // Huzalisha na kupakia kadi za wageni WOTE wa event fulani kwenda bucket ya generated-cards.
 // Muhimu kabla ya kutuma mialiko ya WhatsApp kwa wingi kupitia Meta API (inahitaji public URL, sio faili).
+
 async function generateAndUploadAllCards(eventId, onProgress) {
   const { data: guests, error } = await sb
     .from('guests')
@@ -7308,43 +7309,45 @@ async function generateAndUploadAllCards(eventId, onProgress) {
     .eq('event_id', eventId);
 
   if (error) throw error;
+
   if (!guests || guests.length === 0) {
     return { success: 0, failed: 0 };
   }
 
-  const BATCH_SIZE = 500;
+  const BATCH_SIZE = 5;
   let success = 0;
   let failed = 0;
 
   for (let start = 0; start < guests.length; start += BATCH_SIZE) {
     const batch = guests.slice(start, start + BATCH_SIZE);
 
-    for (let i = 0; i < batch.length; i++) {
-      const guest = batch[i];
+    await Promise.all(
+      batch.map(async (guest) => {
+        try {
+          await generateAndUploadCard(guest.id, true);
+          success++;
+        } catch (e) {
+          console.error(
+            'Imeshindwa kubadilisha kadi ya ' + guest.name,
+            e
+          );
+          failed++;
+        }
 
-      try {
-        await generateAndUploadCard(guest.id, true);
-        success++;
-      } catch (e) {
-        console.error(
-          'Imeshindwa kubadilisha kadi ya ' + guest.name,
-          e
+        if (onProgress) {
+          onProgress(success + failed, guests.length);
+        }
+
+        console.log(
+          `WebP progress: ${success + failed}/${guests.length}`
         );
-        failed++;
-      }
-// HUONYESHA MAENDELEO YA UPLOAD
-      if (onProgress) {
-        onProgress(success + failed, guests.length);
-      }
-      
-      console.log(
-        `WebP progress: ${success + failed}/${guests.length}`
-      );
-    }
+      })
+    );
   }
 
   return { success, failed };
 }
+
 
 async function handleUploadAllCards() {
   const eventId = document.getElementById('invEventSelect').value;
