@@ -282,6 +282,16 @@
   .system-language-switch button.active[data-lang="en"],.system-language-switch button#langEnBtn.active{background:linear-gradient(120deg,#164F9B,#24243A);color:#fff;box-shadow:0 4px 12px rgba(22,79,155,.22)}
   .brand-logo-preview{min-height:86px;border:1px dashed var(--gray-300);border-radius:10px;display:flex;align-items:center;justify-content:center;padding:10px;color:var(--gray-400);font-size:12px;background:var(--gray-50)}
   .brand-logo-preview img{max-width:180px;max-height:72px;object-fit:contain}
+  .brand-logo-editor{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+  .brand-logo-adjust{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:12px;border:1px solid var(--gray-200);border-radius:12px;background:var(--gray-50)}
+  .brand-logo-circle-preview{width:112px;height:112px;flex:0 0 112px;border-radius:50%;border:2px solid #D4A72C;background-color:#fff;background-repeat:no-repeat;background-position:center;background-size:100% auto;box-shadow:0 3px 12px rgba(0,0,0,.12)}
+  .brand-logo-controls{flex:1;min-width:220px}
+  .brand-logo-controls>label{display:block;font-weight:700;margin-bottom:8px}
+  .brand-logo-scale-row{display:flex;align-items:center;gap:8px}
+  .brand-logo-scale-row input[type=range]{flex:1;min-width:80px;accent-color:#D4A72C}
+  .brand-logo-scale-row strong{min-width:42px;text-align:right;font-size:13px}
+  .brand-logo-controls small{display:block;color:var(--gray-500);margin-top:7px;line-height:1.5}
+  @media(min-width:640px){.brand-logo-editor{grid-template-columns:minmax(0,1fr) auto}}
   .auth-logo-icon,.sidebar-logo-icon{background-size:contain;background-position:center;background-repeat:no-repeat}
   /* Circular brand logos: preserve the uploaded image's original aspect ratio. */
   .auth-logo-icon{
@@ -2584,7 +2594,22 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
               <div class="form-group"><label>Slogan</label><input id="brandSlogan" type="text" value="Invite Them Easy" maxlength="90"></div>
               <div class="form-group">
                 <label>Logo ya Mfumo</label>
-                <div id="brandLogoPreview" class="brand-logo-preview"><span>Hakuna logo mpya iliyopakiwa</span></div>
+                <div class="brand-logo-editor">
+                  <div id="brandLogoPreview" class="brand-logo-preview"><span>Hakuna logo mpya iliyopakiwa</span></div>
+                  <div class="brand-logo-adjust">
+                    <div class="brand-logo-circle-preview" id="brandLogoCirclePreview" aria-label="Muonekano wa logo ndani ya duara"></div>
+                    <div class="brand-logo-controls">
+                      <label for="brandLogoScale">Ukubwa wa logo ndani ya duara</label>
+                      <div class="brand-logo-scale-row">
+                        <button type="button" class="btn btn-outline btn-sm" onclick="nudgeBrandLogoScale(-5)" aria-label="Punguza logo">−</button>
+                        <input id="brandLogoScale" type="range" min="50" max="200" step="5" value="100" oninput="setBrandLogoScale(this.value)">
+                        <button type="button" class="btn btn-outline btn-sm" onclick="nudgeBrandLogoScale(5)" aria-label="Ongeza logo">+</button>
+                        <strong id="brandLogoScaleValue">100%</strong>
+                      </div>
+                      <small>Ongeza ili logo isogee karibu na ukingo wa duara; punguza ili ipate nafasi zaidi.</small>
+                    </div>
+                  </div>
+                </div>
                 <input type="file" id="brandLogoFile" accept="image/*" onchange="previewBrandLogo(this)">
                 <small style="display:block;color:var(--gray-400);margin-top:6px;">Picha itabadilishwa kuwa WebP ili kupunguza ukubwa wake.</small>
               </div>
@@ -7654,11 +7679,19 @@ function applySystemBranding(){
   const mobile=document.querySelector('.mobile-header > div:last-child');
   if(mobile) mobile.textContent=name;
   const logoUrl=b.logo||'';
+  const logoScale=Math.max(50,Math.min(200,Number(b.logoScale)||100));
   document.querySelectorAll('.auth-logo-icon,.sidebar-logo-icon').forEach(el=>{
     el.style.backgroundImage=logoUrl?('url("'+logoUrl+'")'):'';
+    el.style.backgroundSize=logoScale+'% auto';
   });
   const preview=document.getElementById('brandLogoPreview');
   if(preview) preview.innerHTML=logoUrl?'<img alt="System logo" src="'+logoUrl+'">':'<span>Hakuna logo mpya iliyopakiwa</span>';
+  const circlePreview=document.getElementById('brandLogoCirclePreview');
+  if(circlePreview){circlePreview.style.backgroundImage=logoUrl?('url("'+logoUrl+'")'):'';circlePreview.style.backgroundSize=logoScale+'% auto';}
+  const scaleInput=document.getElementById('brandLogoScale');
+  if(scaleInput)scaleInput.value=logoScale;
+  const scaleLabel=document.getElementById('brandLogoScaleValue');
+  if(scaleLabel)scaleLabel.textContent=logoScale+'%';
   const n=document.getElementById('brandMainName'),t=document.getElementById('brandSystemTheme'),sl=document.getElementById('brandSlogan');
   if(n)n.value=name;if(t)t.value=theme;if(sl)sl.value=slogan;
 }
@@ -7670,8 +7703,26 @@ async function previewBrandLogo(input){
     pendingBrandLogo=blob;
     const url=URL.createObjectURL(blob);
     document.getElementById('brandLogoPreview').innerHTML='<img alt="Logo preview" src="'+url+'">';
+    const circlePreview=document.getElementById('brandLogoCirclePreview');
+    if(circlePreview)circlePreview.style.backgroundImage='url("'+url+'")';
     showToast('Logo imebadilishwa kuwa WebP. Bonyeza Hifadhi Utambulisho.', 'success');
   }catch(e){showToast('Logo: '+e.message,'error');input.value='';}
+}
+function setBrandLogoScale(value){
+  const scale=Math.max(50,Math.min(200,Number(value)||100));
+  const b=getBranding();b.logoScale=scale;
+  try{localStorage.setItem('meshez_system_branding',JSON.stringify(b));}catch(e){}
+  document.querySelectorAll('.auth-logo-icon,.sidebar-logo-icon').forEach(el=>el.style.backgroundSize=scale+'% auto');
+  const preview=document.getElementById('brandLogoCirclePreview');
+  if(preview)preview.style.backgroundSize=scale+'% auto';
+  const label=document.getElementById('brandLogoScaleValue');
+  if(label)label.textContent=scale+'%';
+}
+function nudgeBrandLogoScale(change){
+  const input=document.getElementById('brandLogoScale');
+  if(!input)return;
+  input.value=Math.max(50,Math.min(200,(Number(input.value)||100)+change));
+  setBrandLogoScale(input.value);
 }
 async function saveSystemBranding(){
   const name=document.getElementById('brandMainName').value.trim();
@@ -7684,7 +7735,8 @@ async function saveSystemBranding(){
       const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=reject;reader.readAsDataURL(pendingBrandLogo);
     });
   }
-  try{localStorage.setItem('meshez_system_branding',JSON.stringify({name,theme,slogan,logo}));}
+  const logoScale=Math.max(50,Math.min(200,Number(document.getElementById('brandLogoScale')?.value)||Number(b.logoScale)||100));
+  try{localStorage.setItem('meshez_system_branding',JSON.stringify({name,theme,slogan,logo,logoScale}));}
   catch(e){return showToast('Imeshindikana kuhifadhi. Logo inaweza kuwa kubwa mno kwa hifadhi ya kivinjari.','error');}
   pendingBrandLogo=null;applySystemBranding();showToast('Utambulisho wa mfumo umehifadhiwa.','success');
 }
