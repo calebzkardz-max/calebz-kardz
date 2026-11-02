@@ -1158,6 +1158,8 @@ body.dark-mode #waTable tr:hover td,body.dark-mode #reportsTable tr:hover td{bac
 
 
 /* ===== EXECUTIVE DASHBOARD DESIGN ===== */
+.dashboard-hero h1{font-size:clamp(30px,3.3vw,40px)!important}.dashboard-hero p{font-size:15px!important;line-height:1.75!important}.dashboard-eyebrow{font-size:12px!important}.dashboard-eyebrow svg{width:17px!important;height:17px!important}.dashboard-hero-actions .btn{font-size:14px!important;font-weight:750!important;min-height:44px!important;padding:0 18px!important}.dashboard-hero-actions svg{width:18px!important;height:18px!important;stroke-width:2.3!important}.dashboard-manage-btn{background:linear-gradient(120deg,#FF6B35,#FF1840)!important;color:#fff!important;border:0!important}.dashboard-report-btn{background:linear-gradient(120deg,#0047AB,#1A1A2E)!important;color:#fff!important;border:1px solid rgba(255,255,255,.2)!important}.dashboard-section-heading span{font-size:11px!important}.dashboard-section-heading h2{font-size:21px!important}.dashboard-section-heading small{font-size:13px!important}.dashboard-kpis .stat-icon{width:44px!important;height:44px!important}.dashboard-kpis .stat-icon svg{width:23px!important;height:23px!important}.dashboard-kpis .stat-value{font-size:30px!important}.dashboard-kpis .stat-label{font-size:13px!important;line-height:1.45!important;color:#596579!important}.dashboard-panel .card-title,.dashboard-attendance-panel .card-title{font-size:16px!important}.dashboard-panel .card-sub,.dashboard-attendance-panel .card-sub{font-size:13px!important}#page-dashboard #dashboardStats span{font-size:14px!important;line-height:1.5}#page-dashboard #dashboardStats .progress-bar{height:10px!important}.dashboard-attendance-panel #attendanceBar{background:linear-gradient(90deg,#16A34A,#22C55E)!important}.dashboard-attendance-panel #smsBar{background:linear-gradient(90deg,#F06A3D,#FF9A56)!important}.dashboard-attendance-panel #waBar{background:linear-gradient(90deg,#128C7E,#25D366)!important}.dashboard-attendance-panel #attendanceText{color:#16834A!important}.dashboard-attendance-panel #smsText{color:#D95B2B!important}.dashboard-attendance-panel #waText{color:#128C7E!important}.dashboard-attendance-panel .progress-bar{background:#E9EDF3!important}body.dark-mode .dashboard-kpis .stat-label{color:#C0CAD8!important}body.dark-mode .dashboard-attendance-panel .progress-bar{background:#29384D!important}@media(max-width:700px){.dashboard-hero{padding:24px 22px!important}.dashboard-hero h1{font-size:29px!important}.dashboard-hero p{font-size:14px!important}.dashboard-section-heading h2{font-size:19px!important}}
+
 #page-dashboard{max-width:1500px;margin:0 auto}
 .dashboard-hero{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;min-height:205px;padding:30px 38px;margin-bottom:26px;border-radius:20px;background:linear-gradient(112deg,#20263D 0%,#243E65 58%,#315B88 100%);box-shadow:0 14px 34px rgba(26,38,62,.18);color:#fff}
 .dashboard-hero:after{content:"";position:absolute;width:420px;height:420px;border-radius:50%;right:5%;top:-280px;background:rgba(255,255,255,.055);pointer-events:none}
@@ -1397,11 +1399,11 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
         <section class="dashboard-hero">
           <div class="dashboard-hero-copy">
             <span class="dashboard-eyebrow"><i data-lucide="sparkles"></i> MESHEZ KADI • OVERVIEW</span>
-            <h1>Dashboard</h1>
-            <p>Muhtasari wa shughuli zako, wageni na matukio yote sehemu moja.</p>
+            <h1 id="dashboardWelcome">Karibu kwenye Dashboard</h1>
+            <p id="dashboardWelcomeSub">Muhtasari wa shughuli zako, wageni na matukio yote sehemu moja.</p>
             <div class="dashboard-hero-actions">
-              <button class="btn btn-primary" onclick="showPage('events')"><i data-lucide="calendar-plus"></i> Simamia Events</button>
-              <button class="btn dashboard-hero-secondary" onclick="showPage('reports')"><i data-lucide="chart-no-axes-combined"></i> Angalia Ripoti</button>
+              <button class="btn dashboard-manage-btn" onclick="showPage('events')"><i data-lucide="calendar-plus"></i> Simamia Events</button>
+              <button class="btn dashboard-report-btn" onclick="showPage('reports')"><i data-lucide="chart-no-axes-combined"></i> Angalia Ripoti</button>
             </div>
           </div>
           <div class="dashboard-hero-art" aria-hidden="true">
@@ -1453,7 +1455,7 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
             </div>
           </div>
 
-          <div class="card">
+          <div class="card dashboard-attendance-panel">
             <div class="card-header">
               <div>
                 <div class="card-title">Ufike wa Jumla</div>
@@ -3298,6 +3300,12 @@ async function loadProfile() {
     currentProfile = data;
     const name = `${data.first_name || ''} ${data.last_name || ''}`.trim() || 'Mtumiaji';
     const initials = (data.first_name || 'M')[0].toUpperCase();
+    const roleTitles = { admin: 'Managing Director', manager: 'Event Manager', scanner: 'Event Scanner' };
+    const roleTitle = roleTitles[data.role] || 'Mtumiaji';
+    const welcome = document.getElementById('dashboardWelcome');
+    const welcomeSub = document.getElementById('dashboardWelcomeSub');
+    if (welcome) welcome.textContent = 'Welcome, ' + name;
+    if (welcomeSub) welcomeSub.textContent = roleTitle + ' • Muhtasari wa shughuli zako, wageni na matukio yote sehemu moja.';
     document.getElementById('sidebarAvatar').textContent = initials;
     document.getElementById('sidebarName').textContent = name;
     document.getElementById('sidebarRole').textContent = data.role || 'Admin';
