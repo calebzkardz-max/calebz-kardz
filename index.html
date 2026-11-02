@@ -3269,7 +3269,7 @@ window.addEventListener('load', async () => {
 function refreshCurrentPage(){
  const active=document.querySelector(".page.active");
  const id=active?.id?.replace("page-","");
- const loaders={dashboard:loadDashboard,events:loadEvents,templates:loadTemplates,invitedesign:loadInvitationDesign,invitations:loadEventGuests,rsvp:onRsvpEventChange,scanner:onScannerEventChange,whatsapp:loadWhatsAppReport,reports:loadReports,users:loadUsers,payments:loadPayments,profile:loadProfile};
+ const loaders={dashboard:loadDashboard,events:loadEvents,templates:loadTemplates,invitedesign:loadInvitationDesign,invitations:loadEventGuests,rsvp:onRsvpEventChange,scanner:onScannerEventChange,whatsapp:loadWhatsappMonitor,reports:loadReports,users:loadUsers,payments:onPaymentEventChange,profile:loadProfile};
  if(loaders[id]) loaders[id](); else loadEventsDropdown();
  showToast("Taarifa zinasasishwa...","info");
 }
