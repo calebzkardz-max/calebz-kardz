@@ -1315,7 +1315,27 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
     line-height:1.45!important;letter-spacing:0!important;
     color:#D5DFED!important;margin:0!important;
   }
-  </style>
+    /* Sign-up / authentication branding only: match the Dashboard Welcome hierarchy. */
+  #authScreen .auth-logo h1{
+    font-family:'Inter',sans-serif!important;
+    font-size:clamp(30px,3.3vw,40px)!important;
+    font-weight:800!important;
+    letter-spacing:-1.1px!important;
+    line-height:1.12!important;
+    margin:0!important;
+  }
+  #authScreen .auth-logo .auth-fixed-theme{
+    display:block!important;
+    font-family:'Inter',sans-serif!important;
+    font-size:18px!important;
+    font-weight:750!important;
+    line-height:1.35!important;
+    letter-spacing:.1px!important;
+    color:#FFD0BE!important;
+    margin:8px 0 0!important;
+  }
+  #authScreen .auth-logo .auth-fixed-theme::after{content:none!important}
+</style>
 </head>
 <body>
 <script>
@@ -1340,7 +1360,7 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
     <div class="auth-logo">
       <div class="auth-logo-icon" role="img" aria-label="Meshez Brands Logo"></div>
       <h1>Meshez Kadi</h1>
-      <p>Invitation Management System</p>
+      <p class="auth-fixed-theme">Invitation Management System</p>
     </div>
 
     <div class="auth-tabs">
@@ -7695,7 +7715,7 @@ function applySystemBranding(){
   const name=b.name||'Meshez Kadi', theme=b.theme||'Invitation System', slogan=b.slogan||'Invite Them Easy';
   document.querySelectorAll('.auth-logo h1').forEach(el=>el.textContent=name);
   const authSub=document.querySelector('#authScreen .auth-logo p');
-  if(authSub) authSub.textContent=theme+' · '+slogan;
+  if(authSub) authSub.textContent='Invitation Management System';
   document.querySelectorAll('.sidebar-logo-text h2').forEach(el=>el.textContent=name);
   document.querySelectorAll('.sidebar-logo-theme').forEach(el=>el.textContent=theme);
   document.querySelectorAll('.sidebar-logo-slogan').forEach(el=>el.textContent=slogan);
