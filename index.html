@@ -962,6 +962,7 @@ body.dark-mode ::-webkit-scrollbar-thumb { background: #334155; }
   color: var(--blue);
 }
 .theme-toggle-btn .icon-big { font-size: 24px; }
+.icon-inline{width:15px;height:15px;vertical-align:-2px;display:inline-block;stroke-width:2;}
 </style>
 </head>
 <body>
@@ -1668,7 +1669,7 @@ body.dark-mode ::-webkit-scrollbar-thumb { background: #334155; }
         <div class="grid-2" style="margin-bottom:16px;">
           <div class="card">
             <div class="card-header">
-              <div class="card-title">📋 Chagua Event</div>
+              <div class="card-title"><i data-lucide="clipboard-list" class="icon-inline" aria-hidden="true"></i> Chagua Event</div>
             </div>
             <div class="form-group">
               <label>Event</label>
@@ -1695,12 +1696,12 @@ body.dark-mode ::-webkit-scrollbar-thumb { background: #334155; }
           </div>
 
           <div class="card">
-            <div class="card-title" style="margin-bottom:12px;">⚙️ Chagua Aina ya Kutuma</div>
+            <div class="card-title" style="margin-bottom:12px;"><i data-lucide="settings" class="icon-inline" aria-hidden="true"></i> Chagua Aina ya Kutuma</div>
             <div style="display:flex;flex-direction:column;gap:10px;">
               <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:12px;border:1.5px solid var(--gray-200);border-radius:8px;">
                 <input type="checkbox" id="sendSMS" checked style="width:16px;height:16px;">
                 <div style="flex:1;">
-                  <div style="font-size:13px;font-weight:600;">📨 SMS (Maandishi)</div>
+                  <div style="font-size:13px;font-weight:600;"><i data-lucide="send" class="icon-inline" aria-hidden="true"></i> SMS (Maandishi)</div>
                   <div style="font-size:11px;color:var(--gray-400);">Kwa wote - inaenda simu zote</div>
                   <select id="smsTarget" onclick="event.stopPropagation()" style="margin-top:8px;width:100%;padding:6px 8px;border:1px solid var(--gray-200);border-radius:6px;font-size:12px;">
                     <option value="all">Wote (wenye WhatsApp na wasio na WhatsApp)</option>
@@ -1712,31 +1713,31 @@ body.dark-mode ::-webkit-scrollbar-thumb { background: #334155; }
               <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:12px;border:1.5px solid var(--gray-200);border-radius:8px;">
                 <input type="checkbox" id="sendWA" checked style="width:16px;height:16px;">
                 <div>
-                  <div style="font-size:13px;font-weight:600;">💬 WhatsApp (Picha + Ujumbe)</div>
+                  <div style="font-size:13px;font-weight:600;"><i data-lucide="message-circle" class="icon-inline" aria-hidden="true"></i> WhatsApp (Picha + Ujumbe)</div>
                   <div style="font-size:11px;color:var(--gray-400);">Kwa wenye smartphone tu</div>
                 </div>
               </label>
             </div>
             <button class="btn btn-orange" style="width:100%;margin-top:16px;" onclick="sendInvitations()">
-              🚀 Tuma Mialiko Yote
+              <i data-lucide="rocket" class="icon-inline" aria-hidden="true"></i> Tuma Mialiko Yote
             </button>
           </div>
         </div>
 
         <div class="card">
           <div class="card-header">
-           <div class="card-title">👥 Orodha ya Wageni</div>
+           <div class="card-title"><i data-lucide="users" class="icon-inline" aria-hidden="true"></i> Orodha ya Wageni</div>
 <div style="display:flex;gap:8px;flex-wrap:wrap;">
-  <button class="btn btn-outline btn-sm" onclick="loadEventGuests()" title="Sasisha - ona mabadiliko ya wenzako">🔄 Refresh</button>
-  <button class="btn btn-outline btn-sm" onclick="downloadGuestsListCSV()" title="Pakua orodha ya wageni pamoja na RSVP">📥 Pakua Wageni (CSV)</button>
-  <button class="btn btn-orange btn-sm" onclick="generateAllCards()">📦 Pakua Kadi Zote (ZIP)</button>
-<button class="btn btn-outline btn-sm" id="uploadAllCardsBtn" onclick="handleUploadAllCards()">☁️ Pakia Kadi Zote Bucket</button>
-  <button class="btn btn-outline btn-sm" onclick="openBulkImportModal('invitations')">📥 Bulk Import (Excel)</button>
+  <button class="btn btn-outline btn-sm" onclick="loadEventGuests()" title="Sasisha - ona mabadiliko ya wenzako"><i data-lucide="refresh-cw" class="icon-inline" aria-hidden="true"></i> Refresh</button>
+  <button class="btn btn-outline btn-sm" onclick="downloadGuestsListCSV()" title="Pakua orodha ya wageni pamoja na RSVP"><i data-lucide="download" class="icon-inline" aria-hidden="true"></i> Pakua Wageni (CSV)</button>
+  <button class="btn btn-orange btn-sm" onclick="generateAllCards()"><i data-lucide="package" class="icon-inline" aria-hidden="true"></i> Pakua Kadi Zote (ZIP)</button>
+<button class="btn btn-outline btn-sm" id="uploadAllCardsBtn" onclick="handleUploadAllCards()"><i data-lucide="cloud-upload" class="icon-inline" aria-hidden="true"></i> Pakia Kadi Zote Bucket</button>
+  <button class="btn btn-outline btn-sm" onclick="openBulkImportModal('invitations')"><i data-lucide="download" class="icon-inline" aria-hidden="true"></i> Bulk Import (Excel)</button>
   <button class="btn btn-outline btn-sm" onclick="openAddGuestModal('invitations')">+ Mgeni Mpya</button>
 </div>
           </div>
           <div style="padding:0 0 12px;">
-            <input type="text" id="guestSearchInput" oninput="filterGuestsTable()" placeholder="🔍 Tafuta kwa jina, namba ya kadi, namba ya simu au aina (single/double/group)..." style="width:100%;padding:10px 12px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:13px;">
+            <input type="text" id="guestSearchInput" oninput="filterGuestsTable()" placeholder="<i data-lucide="search" class="icon-inline" aria-hidden="true"></i> Tafuta kwa jina, namba ya kadi, namba ya simu au aina (single/double/group)..." style="width:100%;padding:10px 12px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:13px;">
           </div>
           <div class="table-wrap">
             <table>
@@ -1768,10 +1769,10 @@ body.dark-mode ::-webkit-scrollbar-thumb { background: #334155; }
 
         <div class="card" style="margin-bottom:16px;">
           <div class="card-header">
-            <div class="card-title">📋 Chagua Event au Folder</div>
+            <div class="card-title"><i data-lucide="clipboard-list" class="icon-inline" aria-hidden="true"></i> Chagua Event au Folder</div>
             <div style="display:flex;gap:8px;">
-              <button class="btn btn-outline btn-sm" style="color:#DC2626;border-color:#FCA5A5;" onclick="openDeleteFolderModal()">🗑️ Futa Folder</button>
-              <button class="btn btn-outline btn-sm" onclick="openNewFolderModal()">📁 + Folder Mpya</button>
+              <button class="btn btn-outline btn-sm" style="color:#DC2626;border-color:#FCA5A5;" onclick="openDeleteFolderModal()"><i data-lucide="trash-2" class="icon-inline" aria-hidden="true"></i> Futa Folder</button>
+              <button class="btn btn-outline btn-sm" onclick="openNewFolderModal()"><i data-lucide="folder" class="icon-inline" aria-hidden="true"></i> + Folder Mpya</button>
             </div>
           </div>
           <div class="form-group">
@@ -1797,15 +1798,15 @@ body.dark-mode ::-webkit-scrollbar-thumb { background: #334155; }
             </div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;">
               <button class="btn btn-outline btn-sm" onclick="openAddGuestModal('rsvp')">+ Ongeza Mgeni/Mchangiaji Mmoja</button>
-                            <button class="btn btn-outline btn-sm" onclick="openBulkImportModal('rsvp')">📥 Pakia Contacts (Excel)</button>
-              <button class="btn btn-outline btn-sm" onclick="downloadRsvpContactsCSV()" title="Pakua contacts za event/folder hii kama CSV">📤 Pakua Contacts (Excel)</button>
+                            <button class="btn btn-outline btn-sm" onclick="openBulkImportModal('rsvp')"><i data-lucide="download" class="icon-inline" aria-hidden="true"></i> Pakia Contacts (Excel)</button>
+              <button class="btn btn-outline btn-sm" onclick="downloadRsvpContactsCSV()" title="Pakua contacts za event/folder hii kama CSV"><i data-lucide="upload" class="icon-inline" aria-hidden="true"></i> Pakua Contacts (Excel)</button>
             </div>
           </div>
         </div>
 
         <div class="card" style="margin-bottom:16px;">
           <div class="card-header">
-            <div class="card-title">✍️ Andika Ujumbe wa Shukrani</div>
+            <div class="card-title"><i data-lucide="pen-line" class="icon-inline" aria-hidden="true"></i> Andika Ujumbe wa Shukrani</div>
           </div>
           <div class="form-group">
             <textarea id="rsvpMessageText" rows="8" placeholder="Mfano: Habari Rafiki, asante sana kwa kuja/kutuunga mkono kwenye tukio letu. Tunathamini sana uwepo/mchango wako. Karibu tena!" style="width:100%;padding:12px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:13px;font-family:inherit;resize:vertical;"></textarea>
@@ -1817,7 +1818,7 @@ body.dark-mode ::-webkit-scrollbar-thumb { background: #334155; }
 
         <div class="card">
           <div class="card-header">
-            <div class="card-title">🚀 Tuma Ujumbe</div>
+            <div class="card-title"><i data-lucide="rocket" class="icon-inline" aria-hidden="true"></i> Tuma Ujumbe</div>
           </div>
           <div class="form-group">
             <label>Tuma kwa</label>
@@ -1828,17 +1829,17 @@ body.dark-mode ::-webkit-scrollbar-thumb { background: #334155; }
             </select>
           </div>
           <button class="btn btn-orange" style="width:100%;" onclick="sendRsvpBulkMessage()">
-            📨 Tuma SMS za Shukrani
+            <i data-lucide="send" class="icon-inline" aria-hidden="true"></i> Tuma SMS za Shukrani
           </button>
         </div>
 
         <div class="card" style="margin-top:16px;">
           <div class="card-header">
-            <div class="card-title">👥 Orodha ya Wageni/Wachangiaji (SMS)</div>
-            <button class="btn btn-outline btn-sm" onclick="onRsvpEventChange()" title="Sasisha - ona mabadiliko ya wenzako">🔄 Sasisha</button>
+            <div class="card-title"><i data-lucide="users" class="icon-inline" aria-hidden="true"></i> Orodha ya Wageni/Wachangiaji (SMS)</div>
+            <button class="btn btn-outline btn-sm" onclick="onRsvpEventChange()" title="Sasisha - ona mabadiliko ya wenzako"><i data-lucide="refresh-cw" class="icon-inline" aria-hidden="true"></i> Sasisha</button>
           </div>
           <div style="padding:0 0 12px;">
-            <input type="text" id="rsvpGuestSearchInput" oninput="filterRsvpGuestsTable()" placeholder="🔍 Tafuta kwa jina au namba ya simu..." style="width:100%;padding:10px 12px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:13px;">
+            <input type="text" id="rsvpGuestSearchInput" oninput="filterRsvpGuestsTable()" placeholder="<i data-lucide="search" class="icon-inline" aria-hidden="true"></i> Tafuta kwa jina au namba ya simu..." style="width:100%;padding:10px 12px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:13px;">
           </div>
           <div class="table-wrap">
             <table>
@@ -3477,7 +3478,7 @@ async function loadEvents() {
   <i data-lucide="calendar-days" style="width:12px;height:12px;vertical-align:-1px;"></i>
   ${e.event_date || 'Tarehe haijawekwa'}
 </div>
-<div class="event-countdown" style="font-size:12px;font-weight:600;margin-top:6px;color:${seqIdx % 2 === 0 ? '#F59E0B' : '#3B82F6'};">
+<div class="event-countdown" style="font-size:12px;font-weight:600;margin-top:6px;color:#FFFFFF;">
   ${!e.event_date ? 'Countdown haipatikani' : Math.ceil((new Date(e.event_date + 'T00:00:00') - new Date(new Date().toDateString())) / 86400000) > 0 ? `⏳ Zimebaki siku ${Math.ceil((new Date(e.event_date + 'T00:00:00') - new Date(new Date().toDateString())) / 86400000)}` : Math.ceil((new Date(e.event_date + 'T00:00:00') - new Date(new Date().toDateString())) / 86400000) === 0 ? '🎉 Event ni leo!' : '✓ Event imepita'}
 </div>
       </div>
@@ -3900,13 +3901,13 @@ async function loadRsvpEventsAndFolders() {
   const currentVal = rsvpSel.value;
   let html = '<option value="">-- Chagua Event au Folder --</option>';
   if (events.length) {
-    html += '<optgroup label="🎉 Matukio (Events)">';
+    html += '<optgroup label="<i data-lucide="party-popper" class="icon-inline" aria-hidden="true"></i> Matukio (Events)">';
     events.forEach(e => { html += `<option value="${e.id}" data-folder="false">${e.name}</option>`; });
     html += '</optgroup>';
   }
   if (folders.length) {
-    html += '<optgroup label="📁 Folders (SMS pekee)">';
-    folders.forEach(f => { html += `<option value="${f.id}" data-folder="true">📁 ${f.name}</option>`; });
+    html += '<optgroup label="<i data-lucide="folder" class="icon-inline" aria-hidden="true"></i> Folders (SMS pekee)">';
+    folders.forEach(f => { html += `<option value="${f.id}" data-folder="true"><i data-lucide="folder" class="icon-inline" aria-hidden="true"></i> ${f.name}</option>`; });
     html += '</optgroup>';
   }
   rsvpSel.innerHTML = html;
@@ -4050,43 +4051,44 @@ function renderGuestsTable(guests) {
     const hasRank = rank && rankLower !== 'none';
     const vipBadge = !hasRank ? ''
       : rankLower === 'vvip'
-        ? '<span class="badge" style="background:#FEF3C7;color:#92400E;margin-left:6px;">👑 VVIP</span>'
+        ? '<span class="badge" style="background:#FEF3C7;color:#92400E;margin-left:6px;"><i data-lucide="crown" class="icon-inline" aria-hidden="true"></i> VVIP</span>'
       : rankLower === 'vip'
         ? '<span class="badge badge-blue" style="margin-left:6px;">⭐ VIP</span>'
         : `<span class="badge" style="background:#E5E7EB;color:#374151;margin-left:6px;">${rank}</span>`;
     
     const label = guestCardTypeLabel(g);
     const rsvpBadge = g.rsvp === 'yes'
-      ? '<span class="badge badge-green">🙋 Atahudhuria</span>'
+      ? '<span class="badge badge-green"><i data-lucide="user-check" class="icon-inline" aria-hidden="true"></i> Atahudhuria</span>'
       : g.rsvp === 'no'
-        ? '<span class="badge" style="background:#FEE2E2;color:#991B1B;">🙅 Hatohudhuria</span>'
-        : '<span class="badge badge-gray">❔ Bado</span>';
+        ? '<span class="badge" style="background:#FEE2E2;color:#991B1B;"><i data-lucide="user-x" class="icon-inline" aria-hidden="true"></i> Hatohudhuria</span>'
+        : '<span class="badge badge-gray"><i data-lucide="circle-help" class="icon-inline" aria-hidden="true"></i> Bado</span>';
     return `
     
     <tr>
       <td><strong>${g.name}</strong>${vipBadge}</td>
       <td>
         <span style="font-family:monospace;font-size:12px;background:var(--gray-50);padding:3px 6px;border-radius:4px;">${g.card_id}</span>
-        <button class="btn btn-outline btn-sm" style="padding:2px 6px;margin-left:4px;" onclick="copyGuestId('${g.card_id}')" title="Nakili Guest ID">📋</button>
+        <button class="btn btn-outline btn-sm" style="padding:2px 6px;margin-left:4px;" onclick="copyGuestId('${g.card_id}')" title="Nakili Guest ID"><i data-lucide="clipboard-list" class="icon-inline" aria-hidden="true"></i></button>
       </td>
-      <td>${g.phone ? (g.country_code === '254' ? '🇰🇪 ' : '🇹🇿 ') + g.phone : '-'}</td>
+      <td>${g.phone ? (g.country_code === '254' ? '<i data-lucide="flag" class="icon-inline" aria-hidden="true"></i> ' : '<i data-lucide="flag" class="icon-inline" aria-hidden="true"></i> ') + g.phone : '-'}</td>
       <td><span class="badge badge-gray">${label}</span></td>
-      <td>${g.whatsapp === 'yes' ? '<span class="badge badge-green">✅ Ndiyo</span>' : '<span class="badge badge-gray">❌ Hapana</span>'}</td>
-      <td>${g.sms_sent === 'yes' ? `<span class="badge badge-green">${g.country_code === '254' ? '🇰🇪' : '🇹🇿'} Imetumwa</span>` : `<span class="badge badge-yellow">${g.country_code === '254' ? '🇰🇪' : '🇹🇿'} Haijatumwa</span>`}</td>
+      <td>${g.whatsapp === 'yes' ? '<span class="badge badge-green"><i data-lucide="check-circle" class="icon-inline" aria-hidden="true"></i> Ndiyo</span>' : '<span class="badge badge-gray"><i data-lucide="x-circle" class="icon-inline" aria-hidden="true"></i> Hapana</span>'}</td>
+      <td>${g.sms_sent === 'yes' ? `<span class="badge badge-green">${g.country_code === '254' ? '<i data-lucide="flag" class="icon-inline" aria-hidden="true"></i>' : '<i data-lucide="flag" class="icon-inline" aria-hidden="true"></i>'} Imetumwa</span>` : `<span class="badge badge-yellow">${g.country_code === '254' ? '<i data-lucide="flag" class="icon-inline" aria-hidden="true"></i>' : '<i data-lucide="flag" class="icon-inline" aria-hidden="true"></i>'} Haijatumwa</span>`}</td>
       <td>${g.wa_sent === 'yes' ? '<span class="badge badge-green">Imetumwa</span>' : '<span class="badge badge-yellow">Haijatumwa</span>'}</td>
       <td>${rsvpBadge}</td>
       <td>
-  <button class="btn btn-outline btn-sm" onclick="generateCard('${g.id}')" title="Zalisha Kadi">🎫</button>
-  <button class="btn btn-outline btn-sm" onclick="copyInvitationLink('${g.card_id}')" title="Nakili Link ya Mualiko">🔗</button>
-  ${g.whatsapp === 'yes' ? `<button class="btn btn-outline btn-sm" onclick="sendWhatsAppInvite('${g.id}')" title="Tuma WhatsApp">💬</button>` : ''}
+  <button class="btn btn-outline btn-sm" onclick="generateCard('${g.id}')" title="Zalisha Kadi"><i data-lucide="ticket" class="icon-inline" aria-hidden="true"></i></button>
+  <button class="btn btn-outline btn-sm" onclick="copyInvitationLink('${g.card_id}')" title="Nakili Link ya Mualiko"><i data-lucide="link" class="icon-inline" aria-hidden="true"></i></button>
+  ${g.whatsapp === 'yes' ? `<button class="btn btn-outline btn-sm" onclick="sendWhatsAppInvite('${g.id}')" title="Tuma WhatsApp"><i data-lucide="message-circle" class="icon-inline" aria-hidden="true"></i></button>` : ''}
   ${g.phone ? (g.country_code === '254'
-    ? `<button class="btn btn-outline btn-sm" onclick="sendSmsInviteKenya('${g.id}')" title="Tuma SMS Kenya" style="color:#DC2626;">📨🇰🇪</button>`
-    : `<button class="btn btn-outline btn-sm" onclick="sendSmsInvite('${g.id}')" title="Tuma SMS">📨🇹🇿</button>`) : ''}
-  <button class="btn btn-outline btn-sm" onclick="openEditGuestModal('${g.id}')">✏️</button>
-  <button class="btn btn-outline btn-sm" onclick="deleteGuest('${g.id}')">🗑️</button>
+    ? `<button class="btn btn-outline btn-sm" onclick="sendSmsInviteKenya('${g.id}')" title="Tuma SMS Kenya" style="color:#DC2626;"><i data-lucide="send" class="icon-inline" aria-hidden="true"></i><i data-lucide="flag" class="icon-inline" aria-hidden="true"></i></button>`
+    : `<button class="btn btn-outline btn-sm" onclick="sendSmsInvite('${g.id}')" title="Tuma SMS"><i data-lucide="send" class="icon-inline" aria-hidden="true"></i><i data-lucide="flag" class="icon-inline" aria-hidden="true"></i></button>`) : ''}
+  <button class="btn btn-outline btn-sm" onclick="openEditGuestModal('${g.id}')"><i data-lucide="pencil" class="icon-inline" aria-hidden="true"></i></button>
+  <button class="btn btn-outline btn-sm" onclick="deleteGuest('${g.id}')"><i data-lucide="trash-2" class="icon-inline" aria-hidden="true"></i></button>
 </td>
     </tr>`;
   }).join('');
+  try { lucide.createIcons(); } catch(e) {}
 }
 
 // Inapakua orodha ya wageni (ya event iliyochaguliwa sasa) kama faili la CSV,
@@ -5146,18 +5148,19 @@ function renderRsvpGuestsTable(guests) {
     return `
     <tr>
       <td><strong>${g.name}</strong></td>
-      <td>${g.phone ? (g.country_code === '254' ? '🇰🇪 ' : '🇹🇿 ') + g.phone : '-'}</td>
+      <td>${g.phone ? (g.country_code === '254' ? '<i data-lucide="flag" class="icon-inline" aria-hidden="true"></i> ' : '<i data-lucide="flag" class="icon-inline" aria-hidden="true"></i> ') + g.phone : '-'}</td>
       <td><span class="badge badge-gray">${label}</span></td>
-      <td>${g.sms_sent === 'yes' ? `<span class="badge badge-green">${g.country_code === '254' ? '🇰🇪' : '🇹🇿'} Imetumwa</span>` : `<span class="badge badge-yellow">${g.country_code === '254' ? '🇰🇪' : '🇹🇿'} Haijatumwa</span>`}</td>
+      <td>${g.sms_sent === 'yes' ? `<span class="badge badge-green">${g.country_code === '254' ? '<i data-lucide="flag" class="icon-inline" aria-hidden="true"></i>' : '<i data-lucide="flag" class="icon-inline" aria-hidden="true"></i>'} Imetumwa</span>` : `<span class="badge badge-yellow">${g.country_code === '254' ? '<i data-lucide="flag" class="icon-inline" aria-hidden="true"></i>' : '<i data-lucide="flag" class="icon-inline" aria-hidden="true"></i>'} Haijatumwa</span>`}</td>
       <td>
         ${g.phone ? (g.country_code === '254'
-          ? `<button class="btn btn-outline btn-sm" onclick="sendRsvpSingleSmsKenya('${g.id}')" title="Tuma SMS Kenya kwa huyu pekee" style="color:#DC2626;">📨🇰🇪</button>`
-          : `<button class="btn btn-outline btn-sm" onclick="sendRsvpSingleSms('${g.id}')" title="Tuma SMS kwa huyu pekee">📨🇹🇿</button>`) : ''}
-        <button class="btn btn-outline btn-sm" onclick="openEditGuestModal('${g.id}','rsvp')" title="Hariri">✏️</button>
-        <button class="btn btn-outline btn-sm" onclick="deleteGuest('${g.id}','rsvp')" title="Futa">🗑️</button>
+          ? `<button class="btn btn-outline btn-sm" onclick="sendRsvpSingleSmsKenya('${g.id}')" title="Tuma SMS Kenya kwa huyu pekee" style="color:#DC2626;"><i data-lucide="send" class="icon-inline" aria-hidden="true"></i><i data-lucide="flag" class="icon-inline" aria-hidden="true"></i></button>`
+          : `<button class="btn btn-outline btn-sm" onclick="sendRsvpSingleSms('${g.id}')" title="Tuma SMS kwa huyu pekee"><i data-lucide="send" class="icon-inline" aria-hidden="true"></i><i data-lucide="flag" class="icon-inline" aria-hidden="true"></i></button>`) : ''}
+        <button class="btn btn-outline btn-sm" onclick="openEditGuestModal('${g.id}','rsvp')" title="Hariri"><i data-lucide="pencil" class="icon-inline" aria-hidden="true"></i></button>
+        <button class="btn btn-outline btn-sm" onclick="deleteGuest('${g.id}','rsvp')" title="Futa"><i data-lucide="trash-2" class="icon-inline" aria-hidden="true"></i></button>
       </td>
     </tr>`;
   }).join('');
+  try { lucide.createIcons(); } catch(e) {}
 }
 
 // Tuma SMS ya shukrani/michango kwa MGENI MMOJA pekee (si wote) - inatumia
