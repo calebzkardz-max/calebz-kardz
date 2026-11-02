@@ -1227,7 +1227,7 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
 .topbar-title{font-size:17px!important;font-weight:750!important;display:flex;align-items:center;gap:10px}
 .topbar-title svg{width:21px;height:21px;stroke:#fff!important;color:#fff!important;stroke-width:2.2;flex-shrink:0}
 .topbar-sub{font-size:12px!important;font-weight:600;color:rgba(255,255,255,.88)!important}
-.topbar-refresh-btn{background:rgba(255,255,255,.12)!important;color:#fff!important;border:1px solid rgba(255,255,255,.3)!important;justify-content:center;min-height:36px;font-weight:700}
+.topbar-refresh-btn{background:linear-gradient(110deg,#FF6B35 0%,#FF1840 100%)!important;color:#fff!important;border:1px solid rgba(255,255,255,.22)!important;justify-content:center;min-height:36px;font-weight:700;box-shadow:0 3px 10px rgba(255,24,64,.22)!important}
 .topbar-refresh-btn,.topbar-refresh-btn *{color:#fff!important}
 .topbar-refresh-btn svg{width:16px;height:16px;stroke:#fff!important}
 #page-dashboard.active~.topbar{display:none!important}
@@ -1400,7 +1400,6 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
     <div class="topbar">
       <div>
         <div class="topbar-title" id="topbarTitle">Dashboard</div>
-        <div class="topbar-sub" id="topbarSub">Karibu kwenye Meshez Kadi</div>
       </div>
       <div class="topbar-actions">
         <button class="btn btn-sm topbar-refresh-btn" onclick="refreshCurrentPage()" title="Sasisha ukurasa"><i data-lucide="refresh-cw" class="icon"></i> Sasisha</button>
@@ -3394,27 +3393,27 @@ function showPage(page) {
   });
 
   const titles = {
-    dashboard: ['Dashboard', 'Muhtasari wa mfumo wako'],
-    events: ['Event Management', 'Simamia matukio yako'],
-    templates: ['Template Management', 'Simamia templates za kadi'],
-    invitedesign: ['Digital Invitation', 'Mualiko wa kidijitali (scroll)'],
-    invitations: ['Send Invitations', 'Tuma mialiko kwa wageni'],
-    rsvp: ['RSVP - Ujumbe wa Shukrani', 'Andika na tuma SMS kwa wageni wa event husika, au kwa "Folder" (mfano: SMS za Michango/RSVP)'],
-    scanner: ['Scanner', 'Kagua kadi za wageni mlangoni'],
-    whatsapp: ['WhatsApp Monitor', 'Fuatilia WhatsApp za wageni'],
-    reports: ['Ripoti za Mfumo', 'Takwimu kamili'],
-    users: ['User Management', 'Simamia wafanyakazi'],
-    payments: ['Malipo', 'Mfumo wa malipo'],
-    profile: ['Profile & Settings', 'Mipangilio ya akaunti yako']
+    dashboard: 'Dashboard',
+    events: 'Event Management',
+    templates: 'Template Management',
+    invitedesign: 'Digital Invitation',
+    invitations: 'Send Invitations',
+    rsvp: 'RSVP - Ujumbe wa Shukrani',
+    scanner: 'Scanner',
+    whatsapp: 'WhatsApp Monitor',
+    reports: 'Ripoti za Mfumo',
+    users: 'User Management',
+    payments: 'Malipo',
+    profile: 'Profile & Settings'
   };
 
   const pageIcons = { dashboard:'layout-dashboard', events:'calendar-days', templates:'layers', invitedesign:'palette', invitations:'send', rsvp:'message-circle', scanner:'scan-qr-code', whatsapp:'message-square', reports:'chart-no-axes-combined', users:'users', payments:'wallet', profile:'user-round-cog' };
   const topbar = document.querySelector('.topbar');
   if (topbar) topbar.style.display = page === 'dashboard' ? 'none' : 'flex';
   const titleEl = document.getElementById('topbarTitle');
-  titleEl.innerHTML = '<i data-lucide="' + (pageIcons[page] || 'file-text') + '"></i><span>' + (titles[page]?.[0] || page) + '</span>';
+  titleEl.innerHTML = '<i data-lucide="' + (pageIcons[page] || 'file-text') + '"></i><span>' + (titles[page] || page) + '</span>';
   try { lucide.createIcons(); } catch(e) {}
-  document.getElementById('topbarSub').textContent   = titles[page]?.[1] || '';
+  
 
   closeSidebar();
 
