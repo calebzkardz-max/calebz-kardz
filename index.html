@@ -3572,39 +3572,70 @@ function showToast(msg, type = 'info') {
 
 // ===== DASHBOARD =====
 async function loadDashboard() {
-  if (!currentUser) return;
+  if (!currentUser || !ORG_OWNER_ID) return;
 
-  const { data: rawEvents } = await sb.from('events').select('*').eq('user_id', ORG_OWNER_ID);
-  const { data: allGuests } = await sb.from('guests').select('*').eq('user_id', ORG_OWNER_ID);
+  // Soma rekodi zote kwa kurasa; Supabase inaweza kurudisha rekodi 1,000 tu kwa ombi.
+  async function fetchAllRows(table, columns, ownerFilter = true) {
+    const rows = [];
+    const pageSize = 1000;
+    let from = 0;
+    while (true) {
+      let query = sb.from(table).select(columns);
+      if (ownerFilter) query = query.eq('user_id', ORG_OWNER_ID);
+      const { data, error } = await query.range(from, from + pageSize - 1);
+      if (error) throw error;
+      rows.push(...(data || []));
+      if (!data || data.length < pageSize) break;
+      from += pageSize;
+    }
+    return rows;
+  }
 
-  // Folders (SMS pekee, mfano michango) hazihesabiwi kwenye takwimu za "Events" za dashboard
-  const events = (rawEvents || []).filter(e => !e.is_folder);
+  let rawEvents, allGuests;
+  try {
+    [rawEvents, allGuests] = await Promise.all([
+      fetchAllRows('events', 'id,name,type,event_date,venue,is_folder,created_at'),
+      fetchAllRows('guests', 'id,event_id,group_size,used_count,sms_sent,wa_sent')
+    ]);
+  } catch (error) {
+    console.error('Imeshindwa kusoma taarifa za Dashboard:', error);
+    showToast('Imeshindwa kusasisha Dashboard. Tafadhali jaribu tena.', 'error');
+    return; // Usibadilishe takwimu sahihi zilizokuwa zinaonekana kwa sifuri.
+  }
+
+  // Ondoa folders za SMS pekee; Dashboard inaonyesha events halisi na wageni wake.
+  const events = (rawEvents || [])
+    .filter(e => !e.is_folder)
+    .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
   const folderIds = new Set((rawEvents || []).filter(e => e.is_folder).map(e => e.id));
-  const guests = (allGuests || []).filter(g => !folderIds.has(g.event_id));
+  const eventIds = new Set(events.map(e => e.id));
+  const guests = (allGuests || []).filter(g => eventIds.has(g.event_id) && !folderIds.has(g.event_id));
 
-  const evCount = events?.length || 0;
-  const kadiCount = guests?.length || 0;
-  const wageniCount = guests?.reduce((s, g) => s + (g.group_size || 1), 0) || 0;
-  const waliofika = guests?.reduce((s, g) => s + (g.used_count || 0), 0) || 0;
-  const smsSent = guests?.filter(g => g.sms_sent === 'yes').length || 0;
-  const waSent = guests?.filter(g => g.wa_sent === 'yes').length || 0;
+  const evCount = events.length;
+  const kadiCount = guests.length;
+  // Tumia kanuni ile ile ya ukurasa wa Events: kila rekodi ina angalau nafasi ya mtu mmoja.
+  const wageniCount = guests.reduce((sum, g) => sum + Math.max(1, Number.parseInt(g.group_size, 10) || 1), 0);
+  const waliofika = guests.reduce((sum, g) => sum + Math.max(0, Number(g.used_count) || 0), 0);
+  // Hizi ni kadi/rekodi zilizowekwa alama ya kutumwa kwa mafanikio, si idadi ya SMS units.
+  const smsSent = guests.filter(g => g.sms_sent === 'yes').length;
+  const waSent = guests.filter(g => g.wa_sent === 'yes').length;
 
-  document.getElementById('statEvents').textContent   = evCount;
-  document.getElementById('statKadi').textContent     = kadiCount;
-  document.getElementById('statWageni').textContent   = wageniCount;
+  document.getElementById('statEvents').textContent = evCount;
+  document.getElementById('statKadi').textContent = kadiCount;
+  document.getElementById('statWageni').textContent = wageniCount;
   document.getElementById('statWaliofika').textContent = waliofika;
 
-  const asilimia = wageniCount > 0 ? Math.round(waliofika / wageniCount * 100) : 0;
+  const asilimia = wageniCount > 0 ? Math.min(100, Math.round(waliofika / wageniCount * 100)) : 0;
   document.getElementById('attendanceText').textContent = `${waliofika} / ${wageniCount} (${asilimia}%)`;
-  document.getElementById('attendanceBar').style.width  = asilimia + '%';
+  document.getElementById('attendanceBar').style.width = asilimia + '%';
   document.getElementById('smsText').textContent = `${smsSent} / ${kadiCount}`;
-  document.getElementById('smsBar').style.width  = (kadiCount > 0 ? Math.round(smsSent/kadiCount*100) : 0) + '%';
+  document.getElementById('smsBar').style.width = (kadiCount > 0 ? Math.min(100, Math.round(smsSent / kadiCount * 100)) : 0) + '%';
   document.getElementById('waText').textContent = `${waSent} / ${kadiCount}`;
-  document.getElementById('waBar').style.width  = (kadiCount > 0 ? Math.round(waSent/kadiCount*100) : 0) + '%';
+  document.getElementById('waBar').style.width = (kadiCount > 0 ? Math.min(100, Math.round(waSent / kadiCount * 100)) : 0) + '%';
 
-  // Events list
+  // Events tatu za mwisho kwa mpangilio wa muda wa kutengenezwa.
   const evDiv = document.getElementById('dashboardEvents');
-  if (!events || events.length === 0) {
+  if (events.length === 0) {
     evDiv.innerHTML = `<div class="empty-state"><div class="icon">🎉</div><h3>Hakuna events bado</h3></div>`;
   } else {
     evDiv.innerHTML = events.slice(0, 3).map(e => `
@@ -3614,10 +3645,10 @@ async function loadDashboard() {
           ${e.type==='harusi'?'💍':e.type==='birthday'?'🎂':'🎊'}
         </div>
         <div style="flex:1;min-width:0;">
-          <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${e.name}</div>
+          <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${e.name || 'Event bila jina'}</div>
           <div style="font-size:11px;color:var(--gray-400);">${e.event_date || ''} · ${e.venue || ''}</div>
         </div>
-        <span class="badge ${e.type==='harusi'?'badge-blue':e.type==='birthday'?'badge-orange':'badge-gray'}" style="font-size:10px;">${e.type}</span>
+        <span class="badge ${e.type==='harusi'?'badge-blue':e.type==='birthday'?'badge-orange':'badge-gray'}" style="font-size:10px;">${e.type || 'Event'}</span>
       </div>
     `).join('');
   }
