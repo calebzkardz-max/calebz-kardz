@@ -1106,6 +1106,41 @@ body.dark-mode #templatesList>div:nth-child(even){background:#172338!important}
 body.dark-mode #templatesList>div{border:1px solid #30445F;margin-bottom:7px;padding:11px!important}
 body.dark-mode #templatesList>div[style*="background:#FFF0EC"]{background:#263B56!important;border-color:#45617F!important}
 
+
+/* ===== COLOR BALANCE CORRECTION: vivid, not washed out ===== */
+:root{--blue:#164F9B;--blue-dark:#24243A;--orange:#F06A3D;--orange-light:#FFF0E9;}
+/* Keep all headings and body text on their existing colors. */
+body:not(.dark-mode) .btn-primary{background:linear-gradient(120deg,#164F9B 0%,#24243A 100%)!important;box-shadow:0 4px 12px rgba(22,79,155,.24)!important}
+body:not(.dark-mode) .btn-primary:hover{background:linear-gradient(120deg,#24243A 0%,#164F9B 100%)!important}
+body:not(.dark-mode) .btn-orange,body:not(.dark-mode) .btn-danger{background:linear-gradient(120deg,#F06A3D 0%,#E92F4D 100%)!important;box-shadow:0 4px 12px rgba(233,75,66,.20)!important}
+/* Login has its own intentional Signal Red button; do not let global rules recolor it. */
+#authScreen .btn-primary{background:linear-gradient(120deg,#F06A3D 0%,#E92F4D 100%)!important;box-shadow:0 8px 24px rgba(233,75,66,.24)!important}
+#authScreen .btn-primary:hover{background:linear-gradient(120deg,#E92F4D 0%,#F06A3D 100%)!important}
+#authScreen.auth-screen{background:linear-gradient(155deg,#24243A 0%,#164F9B 58%,#24243A 100%)!important}
+/* Restore confident color in section/event headers without changing their text. */
+body:not(.dark-mode) .event-card-header,body:not(.dark-mode) .event-card-header.seq-blue{background:linear-gradient(120deg,#164F9B,#24243A)!important}
+body:not(.dark-mode) .event-card-header.seq-orange,body:not(.dark-mode) .event-card-header.birthday{background:linear-gradient(120deg,#F06A3D,#E92F4D)!important}
+body:not(.dark-mode) .event-card-header.sendoff{background:linear-gradient(120deg,#66527E,#51466C)!important}
+body.dark-mode .btn-primary{background:linear-gradient(120deg,#315B91,#28283F)!important;box-shadow:0 4px 14px rgba(0,0,0,.22)!important}
+body.dark-mode .btn-orange,body.dark-mode .btn-danger{background:linear-gradient(120deg,#D96B49,#C9475B)!important;box-shadow:0 4px 14px rgba(0,0,0,.20)!important}
+body.dark-mode #authScreen .btn-primary{background:linear-gradient(120deg,#E8784D,#D94B5D)!important}
+body.dark-mode .event-card-header,body.dark-mode .event-card-header.seq-blue{background:linear-gradient(120deg,#315B91,#28283F)!important}
+body.dark-mode .event-card-header.seq-orange,body.dark-mode .event-card-header.birthday{background:linear-gradient(120deg,#D96B49,#C9475B)!important}
+/* Card surfaces retain subtle distinction, not colored haze. */
+body:not(.dark-mode) .content .card:nth-of-type(4n+1){background:linear-gradient(145deg,#FFFFFF,#F2F5F9)!important;border-color:#DDE4ED!important}
+body:not(.dark-mode) .content .card:nth-of-type(4n+2){background:linear-gradient(145deg,#FFFFFF,#FBF1EC)!important;border-color:#EFDED6!important}
+body:not(.dark-mode) .content .card:nth-of-type(4n+3){background:linear-gradient(145deg,#FFFFFF,#F0F5F2)!important;border-color:#DCE8E1!important}
+body:not(.dark-mode) .content .card:nth-of-type(4n+4){background:linear-gradient(145deg,#FFFFFF,#F4F1F7)!important;border-color:#E5DDEA!important}
+body:not(.dark-mode) #guestsTable tr:nth-child(odd) td,body:not(.dark-mode) #rsvpGuestsTable tr:nth-child(odd) td{background:#F3F4F6!important}
+body:not(.dark-mode) #guestsTable tr:nth-child(even) td,body:not(.dark-mode) #rsvpGuestsTable tr:nth-child(even) td{background:#FFFFFF!important}
+body:not(.dark-mode) #guestsTable tr:hover td,body:not(.dark-mode) #rsvpGuestsTable tr:hover td{background:#E9EEF5!important}
+body:not(.dark-mode) #templatesList>div:nth-child(odd){background:#EAF0F8!important}
+body:not(.dark-mode) #templatesList>div:nth-child(even){background:#FFF0E9!important}
+body.dark-mode #guestsTable tr:nth-child(odd) td,body.dark-mode #rsvpGuestsTable tr:nth-child(odd) td{background:#1B2A40!important}
+body.dark-mode #guestsTable tr:nth-child(even) td,body.dark-mode #rsvpGuestsTable tr:nth-child(even) td{background:#152238!important}
+body.dark-mode #templatesList>div:nth-child(odd){background:#20324D!important}
+body.dark-mode #templatesList>div:nth-child(even){background:#382A31!important}
+
 </style>
 </head>
 <body>
