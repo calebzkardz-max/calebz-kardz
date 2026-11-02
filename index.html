@@ -4069,9 +4069,9 @@ function renderGuestsTable(guests) {
       <td><strong>${g.name}</strong>${vipBadge}</td>
       <td>
         <span style="font-family:monospace;font-size:12px;background:var(--gray-50);padding:3px 6px;border-radius:4px;">${g.card_id}</span>
-        <button class="btn btn-outline btn-sm" style="padding:2px 6px;margin-left:4px;" onclick="copyGuestId('${g.card_id}')" title="Nakili Guest ID"><i data-lucide="clipboard-list" class="icon-inline" aria-hidden="true"></i></button>
+        <button class="btn btn-outline btn-sm" style="padding:2px 6px;margin-left:4px;" onclick="copyGuestId('${g.card_id}')" title="Nakili Guest ID"><i data-lucide="clipboard-list" class="icon-inline" style="color:#0EA5E9;" aria-hidden="true"></i></button>
       </td>
-      <td>${g.phone ? (g.country_code === '254' ? '🇹🇿 ' : '🇹🇿 ') + g.phone : '-'}</td>
+      <td>${g.phone ? (g.country_code === '254' ? '🇰🇪 ' : '🇹🇿 ') + g.phone : '-'}</td>
       <td><span class="badge badge-gray">${label}</span></td>
       <td>${g.whatsapp === 'yes' ? '<span class="badge badge-green"><i data-lucide="check-circle" class="icon-inline" style="color:#16A34A;" aria-hidden="true"></i> Ndiyo</span>' : '<span class="badge badge-gray"><i data-lucide="x-circle" class="icon-inline" style="color:#EF4444;" aria-hidden="true"></i> Hapana</span>'}</td>
       <td>${g.sms_sent === 'yes' ? `<span class="badge badge-green">${g.country_code === '254' ? '🇰🇪' : '🇹🇿'} Imetumwa</span>` : `<span class="badge badge-yellow">${g.country_code === '254' ? '🇰🇪' : '🇹🇿'} Haijatumwa</span>`}</td>
@@ -4082,8 +4082,8 @@ function renderGuestsTable(guests) {
   <button class="btn btn-outline btn-sm" onclick="copyInvitationLink('${g.card_id}')" title="Nakili Link ya Mualiko"><i data-lucide="link" class="icon-inline" style="color:#3B82F6;" aria-hidden="true"></i></button>
   ${g.whatsapp === 'yes' ? `<button class="btn btn-outline btn-sm" onclick="sendWhatsAppInvite('${g.id}')" title="Tuma WhatsApp"><i data-lucide="message-circle" class="icon-inline" style="color:#22C55E;" aria-hidden="true"></i></button>` : ''}
   ${g.phone ? (g.country_code === '254'
-    ? `<button class="btn btn-outline btn-sm" onclick="sendSmsInviteKenya('${g.id}')" title="Tuma SMS Kenya" style="color:#DC2626;"><i data-lucide="send" class="icon-inline" style="color:#0EA5E9;" aria-hidden="true"></i>🏳️</button>`
-    : `<button class="btn btn-outline btn-sm" onclick="sendSmsInvite('${g.id}')" title="Tuma SMS"><i data-lucide="send" class="icon-inline" style="color:#0EA5E9;" aria-hidden="true"></i>🏳️</button>`) : ''}
+    ? `<button class="btn btn-outline btn-sm" onclick="sendSmsInviteKenya('${g.id}')" title="Tuma SMS Kenya" style="color:#DC2626;"><i data-lucide="send" class="icon-inline" style="color:#0EA5E9;" aria-hidden="true"></i>🇹🇿</button>`
+    : `<button class="btn btn-outline btn-sm" onclick="sendSmsInvite('${g.id}')" title="Tuma SMS"><i data-lucide="send" class="icon-inline" style="color:#0EA5E9;" aria-hidden="true"></i>🇹🇿</button>`) : ''}
   <button class="btn btn-outline btn-sm" onclick="openEditGuestModal('${g.id}')"><i data-lucide="pencil" class="icon-inline" style="color:#8B5CF6;" aria-hidden="true"></i></button>
   <button class="btn btn-outline btn-sm" onclick="deleteGuest('${g.id}')"><i data-lucide="trash-2" class="icon-inline" style="color:#EF4444;" aria-hidden="true"></i></button>
 </td>
@@ -5149,13 +5149,13 @@ function renderRsvpGuestsTable(guests) {
     return `
     <tr>
       <td><strong>${g.name}</strong></td>
-      <td>${g.phone ? (g.country_code === '254' ? '🇹🇿 ' : '🇹🇿 ') + g.phone : '-'}</td>
+      <td>${g.phone ? (g.country_code === '254' ? '🇰🇪 ' : '🇹🇿 ') + g.phone : '-'}</td>
       <td><span class="badge badge-gray">${label}</span></td>
       <td>${g.sms_sent === 'yes' ? `<span class="badge badge-green">${g.country_code === '254' ? '🇰🇪' : '🇹🇿'} Imetumwa</span>` : `<span class="badge badge-yellow">${g.country_code === '254' ? '🇰🇪' : '🇹🇿'} Haijatumwa</span>`}</td>
       <td>
         ${g.phone ? (g.country_code === '254'
-          ? `<button class="btn btn-outline btn-sm" onclick="sendRsvpSingleSmsKenya('${g.id}')" title="Tuma SMS Kenya kwa huyu pekee" style="color:#DC2626;"><i data-lucide="send" class="icon-inline" style="color:#0EA5E9;" aria-hidden="true"></i>🏳️</button>`
-          : `<button class="btn btn-outline btn-sm" onclick="sendRsvpSingleSms('${g.id}')" title="Tuma SMS kwa huyu pekee"><i data-lucide="send" class="icon-inline" style="color:#0EA5E9;" aria-hidden="true"></i>🏳️</button>`) : ''}
+          ? `<button class="btn btn-outline btn-sm" onclick="sendRsvpSingleSmsKenya('${g.id}')" title="Tuma SMS Kenya kwa huyu pekee" style="color:#DC2626;"><i data-lucide="send" class="icon-inline" style="color:#0EA5E9;" aria-hidden="true"></i>🇹🇿</button>`
+          : `<button class="btn btn-outline btn-sm" onclick="sendRsvpSingleSms('${g.id}')" title="Tuma SMS kwa huyu pekee"><i data-lucide="send" class="icon-inline" style="color:#0EA5E9;" aria-hidden="true"></i>🇹🇿</button>`) : ''}
         <button class="btn btn-outline btn-sm" onclick="openEditGuestModal('${g.id}','rsvp')" title="Hariri"><i data-lucide="pencil" class="icon-inline" style="color:#8B5CF6;" aria-hidden="true"></i></button>
         <button class="btn btn-outline btn-sm" onclick="deleteGuest('${g.id}','rsvp')" title="Futa"><i data-lucide="trash-2" class="icon-inline" style="color:#EF4444;" aria-hidden="true"></i></button>
       </td>
