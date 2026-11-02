@@ -1221,13 +1221,15 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
 @media(max-width:760px){.dashboard-hero{padding:24px 21px;min-height:190px}.dashboard-hero-art{width:100px;height:110px;margin-right:0;opacity:.75}.hero-orbit-one{width:110px;height:75px}.hero-orbit-two{width:85px;height:105px;left:10px}.hero-art-icon{left:25px;top:25px;width:58px;height:58px;border-radius:18px}.hero-art-icon svg{width:27px;height:27px}.dashboard-section-heading small{display:none}.dashboard-kpis{gap:10px}.dashboard-kpis .stat-card{padding:13px;min-height:102px}.dashboard-kpis .stat-value{font-size:23px}}
 
 
-/* Signal Red page heading bar; refresh action lives below the account card */
-.topbar{background:linear-gradient(110deg,#FF6B35 0%,#FF1840 100%)!important;border-bottom:0!important;box-shadow:0 4px 16px rgba(255,24,64,.18)!important;color:#fff!important}
-.topbar-title{color:#fff!important;font-size:17px!important;font-weight:750!important;display:flex;align-items:center;gap:10px}
-.topbar-title svg{width:21px;height:21px;stroke-width:2.2;flex-shrink:0}
-.topbar-sub{color:rgba(255,255,255,.88)!important;font-size:12px!important}
-.sidebar-refresh-btn{width:100%;margin-top:9px!important;background:linear-gradient(120deg,#0047AB,#1A1A2E)!important;color:#fff!important;border:1px solid rgba(255,255,255,.16)!important;justify-content:center;min-height:36px;font-weight:700}
-.sidebar-refresh-btn svg{width:16px;height:16px}
+/* Signal Red topbar with Indigo Night headings and refresh action */
+.topbar{background:linear-gradient(110deg,#FF6B35 0%,#FF1840 100%)!important;border-bottom:0!important;box-shadow:0 4px 16px rgba(255,24,64,.18)!important}
+.topbar-title,.topbar-title span,.topbar-sub{color:#1A1A2E!important}
+.topbar-title{font-size:17px!important;font-weight:750!important;display:flex;align-items:center;gap:10px}
+.topbar-title svg{width:21px;height:21px;stroke:#1A1A2E!important;color:#1A1A2E!important;stroke-width:2.2;flex-shrink:0}
+.topbar-sub{font-size:12px!important;font-weight:600}
+.topbar-refresh-btn{background:linear-gradient(120deg,#0047AB,#1A1A2E)!important;color:#fff!important;border:1px solid rgba(255,255,255,.22)!important;justify-content:center;min-height:36px;font-weight:700}
+.topbar-refresh-btn,.topbar-refresh-btn *{color:#fff!important}
+.topbar-refresh-btn svg{width:16px;height:16px;stroke:#fff!important}
 #page-dashboard.active~.topbar{display:none!important}
 
 </style>
@@ -1387,7 +1389,6 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
           <div class="role" id="sidebarRole">Admin</div>
         </div>
       </div>
-      <button class="btn btn-sm sidebar-refresh-btn" onclick="refreshCurrentPage()" title="Sasisha ukurasa"><i data-lucide="refresh-cw" class="icon"></i> Sasisha</button>
       <button class="btn btn-outline btn-sm" onclick="logout()" style="width:100%;margin-top:8px;color:#94A3B8;border-color:rgba(255,255,255,0.1);">
         <i data-lucide="log-out" class="icon" style="color:#EF4444"></i> Toka
       </button>
@@ -1401,7 +1402,9 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
         <div class="topbar-title" id="topbarTitle">Dashboard</div>
         <div class="topbar-sub" id="topbarSub">Karibu kwenye Meshez Kadi</div>
       </div>
-      
+      <div class="topbar-actions">
+        <button class="btn btn-sm topbar-refresh-btn" onclick="refreshCurrentPage()" title="Sasisha ukurasa"><i data-lucide="refresh-cw" class="icon"></i> Sasisha</button>
+      </div>
     </div>
 
     <div class="content">
