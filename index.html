@@ -1294,7 +1294,28 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
 .dashboard-attendance-panel #attendanceBar{background:linear-gradient(90deg,#2563EB,#60A5FA)!important}
 .dashboard-attendance-panel #smsBar{background:linear-gradient(90deg,#F97316,#FDBA74)!important}
 .dashboard-attendance-panel #waBar{background:linear-gradient(90deg,#0D9488,#5EEAD4)!important}
-</style>
+
+  /* Navigator brand typography: echo the dashboard's three-level type hierarchy. */
+  .sidebar .sidebar-logo-text{min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:0}
+  .sidebar .sidebar-logo-text h2{
+    font-family:'Inter',sans-serif!important;
+    font-size:19px!important;font-weight:800!important;
+    letter-spacing:-.55px!important;line-height:1.15!important;
+    color:#fff!important;margin:0 0 4px!important;
+  }
+  .sidebar .sidebar-logo-text .sidebar-logo-theme{
+    display:block;font-family:'Inter',sans-serif!important;
+    font-size:11px!important;font-weight:750!important;
+    line-height:1.35!important;letter-spacing:.1px!important;
+    color:#FFD0BE!important;margin:0 0 3px!important;
+  }
+  .sidebar .sidebar-logo-text .sidebar-logo-slogan{
+    display:block;font-family:'Inter',sans-serif!important;
+    font-size:10px!important;font-weight:400!important;
+    line-height:1.45!important;letter-spacing:0!important;
+    color:#D5DFED!important;margin:0!important;
+  }
+  </style>
 </head>
 <body>
 <script>
@@ -1395,7 +1416,8 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
       <div class="sidebar-logo-icon" role="img" aria-label="Meshez Brands Logo"></div>
       <div class="sidebar-logo-text">
         <h2>Meshez Kadi</h2>
-        <span>Invitation System</span>
+        <span class="sidebar-logo-theme">Invitation System</span>
+        <span class="sidebar-logo-slogan">Invite Them Easy</span>
       </div>
     </div>
 
@@ -7675,7 +7697,8 @@ function applySystemBranding(){
   const authSub=document.querySelector('#authScreen .auth-logo p');
   if(authSub) authSub.textContent=theme+' · '+slogan;
   document.querySelectorAll('.sidebar-logo-text h2').forEach(el=>el.textContent=name);
-  document.querySelectorAll('.sidebar-logo-text span').forEach(el=>el.textContent=theme+' · '+slogan);
+  document.querySelectorAll('.sidebar-logo-theme').forEach(el=>el.textContent=theme);
+  document.querySelectorAll('.sidebar-logo-slogan').forEach(el=>el.textContent=slogan);
   const mobile=document.querySelector('.mobile-header > div:last-child');
   if(mobile) mobile.textContent=name;
   const logoUrl=b.logo||'';
