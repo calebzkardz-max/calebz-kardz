@@ -1141,6 +1141,21 @@ body.dark-mode #guestsTable tr:nth-child(even) td,body.dark-mode #rsvpGuestsTabl
 body.dark-mode #templatesList>div:nth-child(odd){background:#20324D!important}
 body.dark-mode #templatesList>div:nth-child(even){background:#382A31!important}
 
+
+/* Navigation active highlight: stronger Signal Red tint, preserve icon/text colors */
+.nav-item.active{background:linear-gradient(90deg,rgba(240,106,61,.28),rgba(240,106,61,.12))!important;border-left:4px solid #F06A3D!important;box-shadow:inset 0 0 0 1px rgba(240,106,61,.12)}
+.nav-item.active i,.nav-item.active svg{color:inherit!important;stroke:currentColor!important}
+.sidebar-footer .user-info{background:linear-gradient(110deg,#F06A3D,#E94B5B)!important;border:1px solid rgba(255,255,255,.18)!important;border-radius:12px;padding:10px!important;color:#fff!important;box-shadow:0 5px 16px rgba(217,75,82,.22)}
+.sidebar-footer .user-info .name,.sidebar-footer .user-info .role,.sidebar-footer .user-info .user-avatar{color:#fff!important}
+body.dark-mode .nav-item.active{background:linear-gradient(90deg,rgba(240,106,61,.30),rgba(240,106,61,.13))!important;border-left-color:#F06A3D!important}
+body.dark-mode .sidebar-footer .user-info{background:linear-gradient(110deg,#D96849,#B94359)!important}
+#waTable tr:nth-child(odd) td,#reportsTable tr:nth-child(odd) td{background:#F2F4F7}
+#waTable tr:nth-child(even) td,#reportsTable tr:nth-child(even) td{background:#fff}
+#waTable tr:hover td,#reportsTable tr:hover td{background:#E8EEF5}
+body.dark-mode #waTable tr:nth-child(odd) td,body.dark-mode #reportsTable tr:nth-child(odd) td{background:#1B2A40!important}
+body.dark-mode #waTable tr:nth-child(even) td,body.dark-mode #reportsTable tr:nth-child(even) td{background:#152238!important}
+body.dark-mode #waTable tr:hover td,body.dark-mode #reportsTable tr:hover td{background:#243650!important}
+
 </style>
 </head>
 <body>
@@ -1312,9 +1327,7 @@ body.dark-mode #templatesList>div:nth-child(even){background:#382A31!important}
         <div class="topbar-sub" id="topbarSub">Karibu kwenye Meshez Kadi</div>
       </div>
       <div class="topbar-actions">
-        <button class="btn btn-orange btn-sm" onclick="openNewEventModal()">
-          + Event Mpya
-        </button>
+        <button class="btn btn-outline btn-sm" onclick="refreshCurrentPage()" title="Sasisha ukurasa"><i data-lucide="refresh-cw" class="icon-inline"></i> Sasisha</button>
       </div>
     </div>
 
@@ -1409,7 +1422,6 @@ body.dark-mode #templatesList>div:nth-child(even){background:#382A31!important}
           <div>
           </div>
           <div style="display:flex;gap:8px;">
-            <button class="btn btn-outline" onclick="loadEvents()" title="Sasisha"><i data-lucide="refresh-cw" class="icon" style="color:#0047AB"></i> Sasisha</button>
             <button class="btn btn-primary" onclick="openNewEventModal()">+ Event Mpya</button>
           </div>
         </div>
@@ -3253,6 +3265,14 @@ window.addEventListener('load', async () => {
 });
 
 // ===== NAVIGATION =====
+
+function refreshCurrentPage(){
+ const active=document.querySelector(".page.active");
+ const id=active?.id?.replace("page-","");
+ const loaders={dashboard:loadDashboard,events:loadEvents,templates:loadTemplates,invitedesign:loadInvitationDesign,invitations:loadEventGuests,rsvp:onRsvpEventChange,scanner:onScannerEventChange,whatsapp:loadWhatsAppReport,reports:loadReports,users:loadUsers,payments:loadPayments,profile:loadProfile};
+ if(loaders[id]) loaders[id](); else loadEventsDropdown();
+ showToast("Taarifa zinasasishwa...","info");
+}
 function showPage(page) {
   // Zuia ufikiaji wa page kulingana na role (mfano: scanner haruhusiwi
   // kufungua 'users', 'templates', n.k. hata akijaribu kuita showPage() moja
@@ -4082,13 +4102,13 @@ async function loadRsvpEventsAndFolders() {
   const currentVal = rsvpSel.value;
   let html = '<option value="">-- Chagua Event au Folder --</option>';
   if (events.length) {
-    html += '<optgroup label="<i data-lucide="party-popper" class="icon-inline" aria-hidden="true"></i> Matukio (Events)">';
-    events.forEach(e => { html += `<option value="${e.id}" data-folder="false">${e.name}</option>`; });
+    html += '<optgroup label="── MATUKIO (EVENTS) ──">';
+    events.forEach(e => { html += `<option value="${e.id}" data-folder="false">EVENT • ${e.name}</option>`; });
     html += '</optgroup>';
   }
   if (folders.length) {
-    html += '<optgroup label="<i data-lucide="folder" class="icon-inline" aria-hidden="true"></i> Folders (SMS pekee)">';
-    folders.forEach(f => { html += `<option value="${f.id}" data-folder="true"><i data-lucide="folder" class="icon-inline" aria-hidden="true"></i> ${f.name}</option>`; });
+    html += '<optgroup label="── FOLDERS (SMS PEKEE) ──">';
+    folders.forEach(f => { html += `<option value="${f.id}" data-folder="true">FOLDER • ${f.name}</option>`; });
     html += '</optgroup>';
   }
   rsvpSel.innerHTML = html;
@@ -7377,7 +7397,7 @@ async function loadTemplates() {
       <div style="flex:1;">
         <div style="font-size:13px;font-weight:600;">${t.name}</div>
         <span class="badge badge-blue" style="font-size:10px;">${t.type}</span>
-        ${t.event_id ? `<span class="badge badge-green" style="font-size:10px;"><i data-lucide="pin" style="width:10px;height:10px;vertical-align:-1px;"></i> ${eventNameById[t.event_id] || 'Event'}</span>` : `<span class="badge" style="font-size:10px;background:#FEF3C7;color:#92400E;"><i data-lucide="triangle-alert" style="width:10px;height:10px;vertical-align:-1px;"></i> Hakuna event (ya zamani)</span>`}
+        ${t.event_id ? `<span class="badge" style="font-size:10px;background:#E9EEF5;color:#34445C;"><i data-lucide="pin" style="width:10px;height:10px;vertical-align:-1px;"></i> ${eventNameById[t.event_id] || 'Event'}</span>` : `<span class="badge" style="font-size:10px;background:#FEF3C7;color:#92400E;"><i data-lucide="triangle-alert" style="width:10px;height:10px;vertical-align:-1px;"></i> Hakuna event (ya zamani)</span>`}
         ${t.positions ? `<span class="badge" style="font-size:10px;background:#DBEAFE;color:#1A1A2E;"><i data-lucide="check" style="width:10px;height:10px;vertical-align:-1px;"></i> Mpangilio umewekwa</span>` : `<span class="badge" style="font-size:10px;background:#FEE2E2;color:#991B1B;">Mpangilio bado (default)</span>`}
       </div>
       <button class="btn btn-outline btn-sm" onclick="event.stopPropagation();selectTemplateForEditing('${t.id}')" title="Hariri"><i data-lucide="pencil" style="color:#A855F7;width:14px;height:14px;"></i></button>
