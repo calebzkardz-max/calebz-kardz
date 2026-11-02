@@ -3477,7 +3477,7 @@ async function loadEvents() {
   <i data-lucide="calendar-days" style="width:12px;height:12px;vertical-align:-1px;"></i>
   ${e.event_date || 'Tarehe haijawekwa'}
 </div>
-<div class="event-countdown" style="font-size:12px;font-weight:600;margin-top:6px;color:#F59E0B;">
+<div class="event-countdown" style="font-size:12px;font-weight:600;margin-top:6px;color:${seqIdx % 2 === 0 ? '#F59E0B' : '#3B82F6'};">
   ${!e.event_date ? 'Countdown haipatikani' : Math.ceil((new Date(e.event_date + 'T00:00:00') - new Date(new Date().toDateString())) / 86400000) > 0 ? `⏳ Zimebaki siku ${Math.ceil((new Date(e.event_date + 'T00:00:00') - new Date(new Date().toDateString())) / 86400000)}` : Math.ceil((new Date(e.event_date + 'T00:00:00') - new Date(new Date().toDateString())) / 86400000) === 0 ? '🎉 Event ni leo!' : '✓ Event imepita'}
 </div>
       </div>
@@ -3492,8 +3492,8 @@ async function loadEvents() {
             <div class="event-stat-label">Waliofika</div>
           </div>
           <div class="event-stat-item">
-            <div class="event-stat-value" style="color:var(--orange);">${eventStats.get(e.id)?.sms || 0}</div>
-<div class="event-stat-label">SMS</div>
+            <div class="event-stat-value" style="color:var(--orange);">${Math.max(0, (eventStats.get(e.id)?.guests || 0) - (eventStats.get(e.id)?.attended || 0))}</div>
+            <div class="event-stat-label">Hawajafika</div>
 </div>
 </div>
 
