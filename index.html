@@ -3392,6 +3392,29 @@ async function loadEvents() {
   }
 
   const typeIcon = { harusi: 'heart', birthday: 'cake-slice', sendoff: 'gift' };
+    const { data: eventGuests, error: guestsError } = await sb
+    .from('guests')
+    .select('event_id, group_size, used_count, sms_sent')
+    .in('event_id', events.map(e => e.id));
+
+  if (guestsError) {
+    console.error('Imeshindwa kusoma wageni:', guestsError);
+    showToast('Imeshindwa kusoma takwimu za wageni', 'error');
+    return;
+  }
+
+  const eventStats = new Map();
+
+  (eventGuests || []).forEach(g => {
+    if (!eventStats.has(g.event_id)) {
+      eventStats.set(g.event_id, { guests: 0, attended: 0, sms: 0 });
+    }
+
+    const stats = eventStats.get(g.event_id);
+    stats.guests += Number(g.group_size) || 1;
+    stats.attended += Number(g.used_count) || 0;
+    if (g.sms_sent === 'yes') stats.sms++;
+  });
   const typeColor = { harusi: '#EC4899', birthday: '#F59E0B', sendoff: '#A855F7' };
   const typeLabel = { harusi: 'Harusi', birthday: 'Birthday', sendoff: 'Sendoff' };
 
@@ -3407,15 +3430,15 @@ async function loadEvents() {
       <div class="event-card-body">
         <div class="event-stat">
           <div class="event-stat-item">
-            <div class="event-stat-value" style="color:var(--blue);">${e.total_guests || 0}</div>
+            <div class="event-stat-value" style="color:var(--blue);">${eventStats.get(e.id)?.guests || 0}</div>
             <div class="event-stat-label">Wageni</div>
           </div>
           <div class="event-stat-item">
-            <div class="event-stat-value" style="color:var(--green);">${e.attended || 0}</div>
+            <div class="event-stat-value" style="color:var(--green);">${eventStats.get(e.id)?.attended || 0}</div>
             <div class="event-stat-label">Waliofika</div>
           </div>
           <div class="event-stat-item">
-            <div class="event-stat-value" style="color:var(--orange);">${e.sms_sent_count || 0}</div>
+            <div class="event-stat-value" style="color:var(--orange);">${eventStats.get(e.id)?.sms || 0}</div>
             <div class="event-stat-label">SMS</div>
           </div>
         </div>
