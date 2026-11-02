@@ -283,6 +283,14 @@
   .brand-logo-preview{min-height:86px;border:1px dashed var(--gray-300);border-radius:10px;display:flex;align-items:center;justify-content:center;padding:10px;color:var(--gray-400);font-size:12px;background:var(--gray-50)}
   .brand-logo-preview img{max-width:180px;max-height:72px;object-fit:contain}
   .auth-logo-icon,.sidebar-logo-icon{background-size:contain;background-position:center;background-repeat:no-repeat}
+  /* System branding typography and circular logo treatment */
+  .auth-logo-icon{width:112px;height:112px;border-radius:50%;background-color:#fff;background-size:78% 78%;border:1px solid rgba(15,23,42,.08);box-shadow:0 5px 18px rgba(15,23,42,.12);overflow:hidden}
+  .sidebar-logo-icon{width:44px;height:44px;border-radius:50%;background-color:#fff;background-size:78% 78%;border:1px solid rgba(255,255,255,.25);box-shadow:0 2px 8px rgba(0,0,0,.18);overflow:hidden}
+  .auth-logo h1{font-family:'Inter',sans-serif;font-size:32px;font-weight:800;letter-spacing:-.8px;line-height:1.15}
+  .auth-logo p{font-family:'Inter',sans-serif;font-size:13px;font-weight:750;color:#64748B;line-height:1.35;margin-top:7px}
+  .sidebar-logo-text h2{font-family:'Inter',sans-serif;font-size:15px;font-weight:800;letter-spacing:-.25px;line-height:1.2}
+  .sidebar-logo-text span{font-family:'Inter',sans-serif;font-size:10px;font-weight:750;line-height:1.35;color:#CBD5E1;display:block;margin-top:3px}
+
 
   .sidebar-logo-text h2 {
     font-family: 'Playfair Display', serif;
@@ -2555,22 +2563,6 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
                 <small style="display:block;color:var(--gray-400);margin-top:6px;">Picha itabadilishwa kuwa WebP ili kupunguza ukubwa wake.</small>
               </div>
               <button class="btn btn-primary" onclick="saveSystemBranding()"><i data-lucide="save" class="icon-inline"></i> Hifadhi Utambulisho</button>
-            </div>
-            <div class="card">
-              <div class="card-title" style="margin-bottom:16px;"><i data-lucide="globe" class="icon-inline" style="color:#0EA5E9;"></i> Mipangilio ya Mfumo</div>
-              <div class="form-group">
-                <label>Sender ID (SMS)</label>
-                <input type="text" id="settSenderId" value="MESHEZ_KADI" placeholder="MESHEZ_KADI">
-              </div>
-              <div class="form-group">
-                <label>Africa's Talking API Key</label>
-                <input type="password" id="settAtKey" placeholder="atsk_...">
-              </div>
-              <div class="form-group">
-                <label>Africa's Talking Username</label>
-                <input type="text" id="settAtUser" value="sandbox" placeholder="sandbox">
-              </div>
-              <button class="btn btn-primary" onclick="saveSettings()"><i data-lucide="save" class="icon-inline" style="color:#FFFFFF;"></i> Hifadhi Mipangilio</button>
             </div>
 
           </div>
