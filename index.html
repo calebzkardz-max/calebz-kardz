@@ -1156,6 +1156,65 @@ body.dark-mode #waTable tr:nth-child(odd) td,body.dark-mode #reportsTable tr:nth
 body.dark-mode #waTable tr:nth-child(even) td,body.dark-mode #reportsTable tr:nth-child(even) td{background:#152238!important}
 body.dark-mode #waTable tr:hover td,body.dark-mode #reportsTable tr:hover td{background:#243650!important}
 
+
+/* ===== EXECUTIVE DASHBOARD DESIGN ===== */
+#page-dashboard{max-width:1500px;margin:0 auto}
+.dashboard-hero{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;min-height:205px;padding:30px 38px;margin-bottom:26px;border-radius:20px;background:linear-gradient(112deg,#20263D 0%,#243E65 58%,#315B88 100%);box-shadow:0 14px 34px rgba(26,38,62,.18);color:#fff}
+.dashboard-hero:after{content:"";position:absolute;width:420px;height:420px;border-radius:50%;right:5%;top:-280px;background:rgba(255,255,255,.055);pointer-events:none}
+.dashboard-hero-copy{position:relative;z-index:2;max-width:650px}
+.dashboard-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:10px;letter-spacing:1.8px;font-weight:800;color:#F6B49D;margin-bottom:13px}
+.dashboard-eyebrow svg{width:14px;height:14px}
+.dashboard-hero h1{font-size:clamp(26px,3vw,36px);line-height:1.12;letter-spacing:-1.1px;margin:0 0 9px;color:#fff;font-weight:800}
+.dashboard-hero p{font-size:13px;line-height:1.7;color:#D5DFED;margin:0;max-width:520px}
+.dashboard-hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:21px}
+.dashboard-hero-actions .btn{min-height:40px;padding:0 15px;display:inline-flex;align-items:center;gap:8px}
+.dashboard-hero-actions svg{width:15px;height:15px}
+.dashboard-hero .btn-primary{background:linear-gradient(120deg,#E87550,#D94D5C)!important;border:0;box-shadow:0 5px 14px rgba(217,77,92,.22)}
+.dashboard-hero-secondary{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.25);color:#fff}
+.dashboard-hero-secondary:hover{background:rgba(255,255,255,.17)}
+.dashboard-hero-art{width:190px;height:155px;position:relative;flex-shrink:0;margin-right:35px}
+.hero-orbit{position:absolute;border:1px solid rgba(255,255,255,.17);border-radius:50%;transform:rotate(-25deg)}
+.hero-orbit-one{width:180px;height:112px;left:0;top:20px}
+.hero-orbit-two{width:135px;height:155px;left:22px;top:0;transform:rotate(48deg)}
+.hero-art-icon{position:absolute;left:58px;top:42px;width:76px;height:76px;border-radius:23px;display:grid;place-items:center;background:linear-gradient(145deg,rgba(255,255,255,.22),rgba(255,255,255,.08));border:1px solid rgba(255,255,255,.3);box-shadow:0 12px 30px rgba(0,0,0,.12);backdrop-filter:blur(8px)}
+.hero-art-icon svg{width:34px;height:34px;color:#FFD3C1;stroke-width:1.5}
+.hero-spark{position:absolute;color:#FFB18F;font-size:24px}
+.hero-spark-one{right:0;top:24px}.hero-spark-two{left:12px;bottom:7px}
+.dashboard-section-heading{display:flex;justify-content:space-between;align-items:end;margin:0 2px 13px}
+.dashboard-section-heading span{font-size:9px;letter-spacing:1.6px;font-weight:800;color:#D36C4C}
+.dashboard-section-heading h2{font-size:18px;font-weight:750;letter-spacing:-.35px;color:var(--gray-800);margin:4px 0 0}
+.dashboard-section-heading small{font-size:11px;color:var(--gray-400)}
+.dashboard-kpis{gap:14px;margin-bottom:27px}
+.dashboard-kpis .stat-card{position:relative;overflow:hidden;border-radius:15px;min-height:112px;padding:17px 18px;background:#fff!important;border:1px solid #E6E9EF!important;box-shadow:0 4px 14px rgba(26,36,56,.045)!important}
+.dashboard-kpis .stat-card:before{height:3px!important;opacity:1}
+.dashboard-kpis .stat-card:nth-child(4n+1):before{background:#315B91!important}
+.dashboard-kpis .stat-card:nth-child(4n+2):before{background:#27836D!important}
+.dashboard-kpis .stat-card:nth-child(4n+3):before{background:#E87550!important}
+.dashboard-kpis .stat-card:nth-child(4n+4):before{background:#7561A6!important}
+.dashboard-kpis .stat-icon{width:39px;height:39px;border-radius:12px!important;display:grid;place-items:center}
+.dashboard-kpis .stat-value{font-size:27px;font-weight:800;letter-spacing:-.7px;color:#202B3D;margin-top:9px}
+.dashboard-kpis .stat-label{font-size:11px;font-weight:650;color:#758197;letter-spacing:.1px}
+.dashboard-detail-heading{margin-top:3px}
+.dashboard-panels{gap:16px}
+.dashboard-panel{border-radius:15px!important;border:1px solid #E5E8EE!important;box-shadow:0 5px 18px rgba(26,36,56,.045)!important;overflow:hidden}
+.dashboard-panel .card-header{padding:17px 19px;border-bottom:1px solid #EDF0F4}
+.dashboard-panel .card-title{font-size:14px;font-weight:750}
+.dashboard-panel .card-sub{font-size:11px}
+#page-dashboard #dashboardEvents{padding:5px 18px 12px}
+#page-dashboard #dashboardEvents>div:not(.empty-state){padding:13px 4px!important;border-bottom:1px solid #EDF0F4!important}
+#page-dashboard #dashboardStats{padding:18px 20px}
+#page-dashboard .progress-bar{height:8px;border-radius:20px;background:#EDF1F6;overflow:hidden}
+#page-dashboard .progress-fill{border-radius:20px;background:linear-gradient(90deg,#315B91,#5B82B5)!important}
+body.dark-mode .dashboard-hero{background:linear-gradient(112deg,#18243A,#203C61 62%,#294C70);box-shadow:0 14px 34px rgba(0,0,0,.25)}
+body.dark-mode .dashboard-kpis .stat-card{background:linear-gradient(145deg,#1B2B43,#172338)!important;border-color:#30445F!important;box-shadow:0 5px 18px rgba(0,0,0,.16)!important}
+body.dark-mode .dashboard-kpis .stat-value{color:#F2F5FC}
+body.dark-mode .dashboard-kpis .stat-label{color:#A9B8CC}
+body.dark-mode .dashboard-panel{background:linear-gradient(145deg,#1B2A40,#172338)!important;border-color:#30445F!important}
+body.dark-mode .dashboard-panel .card-header,body.dark-mode #page-dashboard #dashboardEvents>div:not(.empty-state){border-color:#2A3B54!important}
+body.dark-mode #page-dashboard .progress-bar{background:#2A3B54}
+body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
+@media(max-width:760px){.dashboard-hero{padding:24px 21px;min-height:190px}.dashboard-hero-art{width:100px;height:110px;margin-right:0;opacity:.75}.hero-orbit-one{width:110px;height:75px}.hero-orbit-two{width:85px;height:105px;left:10px}.hero-art-icon{left:25px;top:25px;width:58px;height:58px;border-radius:18px}.hero-art-icon svg{width:27px;height:27px}.dashboard-section-heading small{display:none}.dashboard-kpis{gap:10px}.dashboard-kpis .stat-card{padding:13px;min-height:102px}.dashboard-kpis .stat-value{font-size:23px}}
+
 </style>
 </head>
 <body>
@@ -1335,7 +1394,24 @@ body.dark-mode #waTable tr:hover td,body.dark-mode #reportsTable tr:hover td{bac
 
       <!-- ===== DASHBOARD PAGE ===== -->
       <div class="page active" id="page-dashboard">
-        <div class="stats-grid">
+        <section class="dashboard-hero">
+          <div class="dashboard-hero-copy">
+            <span class="dashboard-eyebrow"><i data-lucide="sparkles"></i> MESHEZ KADI • OVERVIEW</span>
+            <h1>Dashboard</h1>
+            <p>Muhtasari wa shughuli zako, wageni na matukio yote sehemu moja.</p>
+            <div class="dashboard-hero-actions">
+              <button class="btn btn-primary" onclick="showPage('events')"><i data-lucide="calendar-plus"></i> Simamia Events</button>
+              <button class="btn dashboard-hero-secondary" onclick="showPage('reports')"><i data-lucide="chart-no-axes-combined"></i> Angalia Ripoti</button>
+            </div>
+          </div>
+          <div class="dashboard-hero-art" aria-hidden="true">
+            <div class="hero-orbit hero-orbit-one"></div><div class="hero-orbit hero-orbit-two"></div>
+            <div class="hero-art-icon"><i data-lucide="calendar-heart"></i></div>
+            <span class="hero-spark hero-spark-one">✦</span><span class="hero-spark hero-spark-two">✧</span>
+          </div>
+        </section>
+        <div class="dashboard-section-heading"><div><span>TAKWIMU ZA MFUMO</span><h2>Muhtasari wa jumla</h2></div><small>Takwimu zako kwa muonekano mmoja</small></div>
+        <div class="stats-grid dashboard-kpis">
           <div class="stat-card">
             <div class="stat-icon" style="background:linear-gradient(135deg,#EBF2FF,#DCE9FF);"><i data-lucide="calendar-days" style="color:#0047AB"></i></div>
             <div class="stat-value" id="statEvents">0</div>
@@ -1358,8 +1434,9 @@ body.dark-mode #waTable tr:hover td,body.dark-mode #reportsTable tr:hover td{bac
           </div>
         </div>
 
-        <div class="grid-2">
-          <div class="card">
+        <div class="dashboard-section-heading dashboard-detail-heading"><div><span>SHUGHULI</span><h2>Ufuatiliaji wa matukio</h2></div></div>
+        <div class="grid-2 dashboard-panels">
+          <div class="card dashboard-panel">
             <div class="card-header">
               <div>
                 <div class="card-title">Events za Hivi Karibuni</div>
