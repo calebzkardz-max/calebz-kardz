@@ -1485,7 +1485,7 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
       <div class="user-info" onclick="showPage('profile')">
         <div class="user-avatar" id="sidebarAvatar">M</div>
         <div class="user-details">
-          <div class="name" id="sidebarName">Meshez Kadi</div>
+          <div class="name" id="sidebarName">Mtumiaji</div>
           <div class="role" id="sidebarRole">Admin</div>
         </div>
       </div>
@@ -2574,7 +2574,7 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
           <div class="card">
             <div style="text-align:center;padding:20px 0;">
               <div class="profile-avatar-lg" id="profileAvatar">M</div>
-              <h3 id="profileName" style="font-size:18px;font-weight:700;">Meshez Kadi</h3>
+              <h3 id="profileName" style="font-size:18px;font-weight:700;">Mtumiaji</h3>
               <p id="profileEmail" style="color:var(--gray-400);font-size:13px;margin-top:4px;"></p>
               <span class="badge badge-blue" id="profileRole">Admin</span>
             </div>
@@ -3222,11 +3222,11 @@ let ORG_OWNER_ID = null; // ID ya mwenye mfumo (owner) - events/guests/templates
 const SCANNER_APP_LINK = 'https://ezekielmeshack136-max.github.io/meshez-kadi-scanner/';
 
 async function shareScannerLink() {
-  const message = `Karibu Meshez Kadi Scanner! Tumia link hii kufungua scanner Ingia (login) kwa email na password ulizopewa: ${SCANNER_APP_LINK} .`;
+  const message = `Karibu kwenye Scanner! Tumia link hii kufungua scanner Ingia (login) kwa email na password ulizopewa: ${SCANNER_APP_LINK} .`;
 
   if (navigator.share) {
     try {
-      await navigator.share({ title: 'Meshez Kadi Scanner', text: message, url: SCANNER_APP_LINK });
+      await navigator.share({ title: 'Invitation Scanner', text: message, url: SCANNER_APP_LINK });
       return;
     } catch (e) { /* mtumiaji ame-cancel au haipatikani, endelea chini */ }
   }
@@ -3416,7 +3416,7 @@ async function loadProfile() {
     const welcome = document.getElementById('dashboardWelcome');
     const welcomeRole = document.getElementById('dashboardRoleTitle');
     const welcomeSub = document.getElementById('dashboardWelcomeSub');
-    // Dashboard hero hubaki taarifa za akaunti/mhusika; System Branding ni ya utambulisho wa mfumo pekee.
+    // Dashboard hero displays only the signed-in account holder's information.
     if (welcome) welcome.textContent = 'Karibu, ' + name;
     if (welcomeRole) welcomeRole.textContent = roleTitle;
     if (welcomeSub) welcomeSub.textContent = 'Muhtasari wa shughuli zako, wageni na matukio yote sehemu moja.';
@@ -6819,7 +6819,7 @@ async function deletePromoImage(id, filePath) {
 }
 
 // ===== INVOICE (PDF) KWA KILA EVENT =====
-const BUSINESS_NAME    = 'MESHEZ KADI';
+const BUSINESS_NAME    = 'INVITATION MANAGEMENT SYSTEM';
 const BUSINESS_TAGLINE = 'Huduma za Kadi za Mialiko, Usimamizi wa Wageni na Uchapishaji wa Kadi';
 const BUSINESS_PHONES  = ['+255 753 027 341', '+255 715 873 825', '+255 764 504 278'];
 
