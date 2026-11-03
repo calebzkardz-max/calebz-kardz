@@ -3437,9 +3437,7 @@ function initThemeToggleUI() {
 async function loadProfile() {
   applySystemBranding();
   const savedLanguage=localStorage.getItem('meshez_language')||'sw';
-  document.documentElement.lang=savedLanguage;
-  const sw=document.getElementById('langSwBtn'),en=document.getElementById('langEnBtn');
-  if(sw&&en){sw.classList.toggle('active',savedLanguage==='sw');en.classList.toggle('active',savedLanguage==='en');sw.dataset.lang='sw';en.dataset.lang='en';}
+  applySystemLanguage(savedLanguage,false);
 
   if (!currentUser) return;
   const { data } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
@@ -8040,25 +8038,107 @@ async function saveSystemBranding(){
     showToast('Imeshindikana kuhifadhi System Branding: '+(e.message||e),'error');
   }
 }
-const SYSTEM_TRANSLATIONS={
-  sw:{'Profile & Settings':'Wasifu na Mipangilio','Badilisha Nenosiri':'Badilisha Nenosiri','System Branding':'Utambulisho wa Mfumo','Appearance Mode':'Muonekano wa Mfumo','Light Mode':'Mwanga','Dark Mode':'Giza','Hifadhi Profile':'Hifadhi Wasifu','Hifadhi Mipangilio':'Hifadhi Mipangilio'},
-  en:{'Wasifu na Mipangilio':'Profile & Settings','Badilisha Nenosiri':'Change Password','Utambulisho wa Mfumo':'System Branding','Muonekano wa Mfumo':'Appearance Mode','Mwanga':'Light Mode','Giza':'Dark Mode','Hifadhi Wasifu':'Save Profile','Hifadhi Mipangilio':'Save Settings'}
-};
-function setSystemLanguage(lang){
-  localStorage.setItem('meshez_language',lang);
+// Mfumo mmoja wa tafsiri kwa UI nzima. Maandishi ya fields/taarifa za mtumiaji hayaguswi.
+const SYSTEM_TRANSLATION_PAIRS = [
+['Dashboard','Dashibodi'],['Event Management','Usimamizi wa Matukio'],['Template Management','Usimamizi wa Violezo'],
+['Digital Invitation','Mwaliko wa Kidijitali'],['Send Invitations','Tuma Mialiko'],['RSVP - Shukrani','RSVP - Shukrani'],
+['WhatsApp Monitor','Ufuatiliaji wa WhatsApp'],['Ripoti za Mfumo','System Reports'],['System Reports','Ripoti za Mfumo'],
+['User Management','Usimamizi wa Watumiaji'],['Profile & Settings','Wasifu na Mipangilio'],['Settings','Mipangilio'],
+['Msingi','Main'],['Toka','Log Out'],['Ingia','Sign In'],['Jisajili','Sign Up'],['Barua Pepe','Email Address'],
+['Nenosiri','Password'],['Jina la Kwanza','First Name'],['Jina la Familia','Last Name'],['Hifadhi','Save'],
+['Hifadhi Profile','Save Profile'],['Hifadhi Wasifu','Save Profile'],['Hifadhi Mipangilio','Save Settings'],
+['Badilisha','Edit'],['Futa','Delete'],['Ondoa','Remove'],['Tafuta','Search'],['Chuja','Filter'],
+['Sasisha','Refresh'],['Taarifa zinasasishwa...','Refreshing data...'],['Ongeza','Add'],['Funga','Close'],
+['Ghairi','Cancel'],['Ndiyo','Yes'],['Hapana','No'],['Rudi','Back'],['Endelea','Continue'],
+['Pakua','Download'],['Pakia','Upload'],['Chagua','Select'],['Chagua faili','Choose file'],
+['Hakuna taarifa','No data available'],['Hakuna matukio bado','No events yet'],
+['Bonyeza "+ Event Mpya" kuanza','Click "+ New Event" to get started'],
+['Tukio Jipya','New Event'],['Event Mpya','New Event'],['Jina la Tukio','Event Name'],
+['Aina ya Tukio','Event Type'],['Tarehe ya Tukio','Event Date'],['Mahali pa Tukio','Event Venue'],
+['Wageni','Guests'],['Mgeni','Guest'],['Ongeza Mgeni','Add Guest'],['Jina la Mgeni','Guest Name'],
+['Namba ya Simu','Phone Number'],['Ujumbe','Message'],['Tuma','Send'],['Tuma WhatsApp','Send WhatsApp'],
+['Tuma SMS','Send SMS'],['Imetumwa','Sent'],['Haijatumwa','Not sent'],['Hali','Status'],
+['Vitendo','Actions'],['Maelezo','Details'],['Muhtasari','Overview'],['Jumla','Total'],
+['Leo','Today'],['Jana','Yesterday'],['Wiki hii','This week'],['Mwezi huu','This month'],
+['Tarehe','Date'],['Muda','Time'],['Aina','Type'],['Jina','Name'],['Simu','Phone'],
+['Ruhusa','Permissions'],['Hifadhi Ruhusa','Save Permissions'],['Ruhusa zimehifadhiwa','Permissions saved'],
+['Hakuna ruhusa','No permissions'],['Tengeneza','Create'],['Tengeneza Mwaliko','Create Invitation'],
+['Muundo','Design'],['Rangi','Color'],['Fonti','Font'],['Picha','Image'],['Logo','Logo'],
+['Mwonekano','Appearance'],['Muonekano wa Mfumo','System Appearance'],['Appearance Mode','Muonekano wa Mfumo'],
+['Light Mode','Mwanga'],['Dark Mode','Giza'],['Mwanga','Light Mode'],['Giza','Dark Mode'],
+['Lugha ya Mfumo','System Language'],['System Language','Lugha ya Mfumo'],
+['Utambulisho wa Mfumo','System Branding'],['System Branding','Utambulisho wa Mfumo'],
+['Main Name','Jina Kuu'],['Theme ya Mfumo','System Theme'],['Slogan','Kaulimbiu'],
+['Logo ya Mfumo','System Logo'],['Badilisha Logo','Change Logo'],['Hakuna logo mpya iliyopakiwa','No new logo uploaded'],
+['Hifadhi Utambulisho','Save Branding'],['Badilisha Nenosiri','Change Password'],
+['Nenosiri la Sasa','Current Password'],['Nenosiri Jipya','New Password'],
+['Thibitisha Nenosiri','Confirm Password'],['Hifadhi Nenosiri','Save Password'],
+['Profile','Wasifu'],['Wasifu','Profile'],['Akaunti','Account'],['Mtumiaji','User'],
+['Admin','Msimamizi'],['Managing Director','Mkurugenzi Mkuu'],['Event Manager','Msimamizi wa Matukio'],
+['Event Scanner','Mkaguzi wa Matukio'],['Karibu kwenye Dashboard','Welcome to Dashboard'],
+['Muhtasari wa shughuli zako, wageni na matukio yote sehemu moja.','An overview of your activities, guests and all events in one place.'],
+['Simamia Events','Manage Events'],['Angalia Ripoti','View Reports'],['Hakuna events bado','No events yet'],
+['Taarifa zimehifadhiwa!','Information saved!'],['Mipangilio imehifadhiwa!','Settings saved!'],
+['Imeshindikana kuhifadhi','Could not save'],['Tafadhali jaribu tena.','Please try again.'],
+['Huna ruhusa ya kufungua ukurasa huu','You do not have permission to open this page'],
+['Lugha ya Kiswahili imechaguliwa','Swahili language selected'],['English language selected','English language selected'],
+['Invite Them Easy','Alika kwa Urahisi'],['Invitation Management System','Mfumo wa Usimamizi wa Mialiko'],
+['Harusi','Wedding'],['Birthday','Siku ya Kuzaliwa'],['Sendoff','Send-off'],['Sherehe','Celebration'],
+['Folder','Folda'],['Folders','Mafolda'],['Tengeneza Folda','Create Folder'],['Jina la Folda','Folder Name'],
+['Chagua Tukio','Select Event'],['Tukio','Event'],['Wote','All'],['Zote','All'],['Inasubiri','Pending'],
+['Imekamilika','Completed'],['Imefanikiwa','Successful'],['Imeshindikana','Failed']
+];
+const SYSTEM_TRANSLATIONS={sw:{},en:{}};
+SYSTEM_TRANSLATION_PAIRS.forEach(([en,sw])=>{SYSTEM_TRANSLATIONS.en[sw]=en;SYSTEM_TRANSLATIONS.sw[en]=sw;});
+let systemLanguageObserver=null;
+function translateSystemNode(node,lang){
+  if(!node||node.nodeType!==Node.TEXT_NODE)return;
+  const parent=node.parentElement;
+  if(!parent||parent.closest('script,style,textarea,input,select,option,[contenteditable="true"],.user-content,.preserve-user-text'))return;
+  const raw=node.textContent;
+  const trimmed=raw.trim();
+  if(!trimmed)return;
+  const dict=SYSTEM_TRANSLATIONS[lang]||SYSTEM_TRANSLATIONS.sw;
+  const translated=dict[trimmed];
+  if(translated)node.textContent=raw.replace(trimmed,translated);
+}
+function translateSystemElement(el,lang){
+  if(!el||el.nodeType!==Node.ELEMENT_NODE)return;
+  if(el.matches('input,textarea,select,option,[contenteditable="true"],.user-content,.preserve-user-text'))return;
+  el.childNodes.forEach(n=>{if(n.nodeType===Node.TEXT_NODE)translateSystemNode(n,lang);else if(n.nodeType===Node.ELEMENT_NODE)translateSystemElement(n,lang);});
+  ['placeholder','title','aria-label'].forEach(attr=>{
+    if(!el.hasAttribute(attr))return;
+    const v=el.getAttribute(attr),dict=SYSTEM_TRANSLATIONS[lang]||SYSTEM_TRANSLATIONS.sw;
+    if(dict[v])el.setAttribute(attr,dict[v]);
+  });
+}
+function applySystemLanguage(lang,notify=false){
+  lang=lang==='en'?'en':'sw';
   document.documentElement.lang=lang;
   document.getElementById('langSwBtn')?.classList.toggle('active',lang==='sw');
   document.getElementById('langEnBtn')?.classList.toggle('active',lang==='en');
   document.getElementById('langSwBtn')?.setAttribute('data-lang','sw');
   document.getElementById('langEnBtn')?.setAttribute('data-lang','en');
-  const dict=SYSTEM_TRANSLATIONS[lang]||SYSTEM_TRANSLATIONS.sw;
-  document.querySelectorAll('#page-profile .card-title,#page-profile button,#page-profile h2').forEach(el=>{
-    if(el.dataset.originalText===undefined)el.dataset.originalText=el.textContent.trim();
-    const original=el.dataset.originalText;
-    el.childNodes.forEach(node=>{if(node.nodeType===3&&node.textContent.trim())node.textContent=node.textContent.replace(node.textContent.trim(),dict[original]||dict[node.textContent.trim()]||node.textContent.trim())});
+  translateSystemElement(document.body,lang);
+  if(systemLanguageObserver)systemLanguageObserver.disconnect();
+  systemLanguageObserver=new MutationObserver(records=>{
+    const current=localStorage.getItem('meshez_language')||'sw';
+    records.forEach(record=>{
+      record.addedNodes.forEach(n=>{
+        if(n.nodeType===Node.TEXT_NODE)translateSystemNode(n,current);
+        else if(n.nodeType===Node.ELEMENT_NODE)translateSystemElement(n,current);
+      });
+    });
   });
-  showToast(lang==='sw'?'Lugha ya Kiswahili imechaguliwa':'English language selected','success');
+  systemLanguageObserver.observe(document.body,{childList:true,subtree:true});
+  if(notify)showToast(lang==='sw'?'Lugha ya Kiswahili imechaguliwa':'English language selected','success');
 }
+function setSystemLanguage(lang){
+  lang=lang==='en'?'en':'sw';
+  try{localStorage.setItem('meshez_language',lang);}catch(e){}
+  applySystemLanguage(lang,true);
+}
+
 
 async function saveSettings() {
   const senderId = document.getElementById('settSenderId').value;
