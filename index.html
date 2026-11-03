@@ -294,6 +294,7 @@
   .brand-logo-controls small{display:block;color:var(--gray-500);margin-top:7px;line-height:1.5}
   @media(min-width:640px){.brand-logo-editor{grid-template-columns:minmax(0,1fr) auto}}
   .auth-logo-icon,.sidebar-logo-icon{background-size:contain;background-position:center;background-repeat:no-repeat}
+  .auth-logo-icon img,.sidebar-logo-icon img{display:block;object-fit:contain;flex-shrink:0;}
   /* Circular brand logos: preserve the uploaded image's original aspect ratio. */
   .auth-logo-icon{
     /* Fixed square geometry: never stretch into an oval. */
@@ -1360,7 +1361,7 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
   <div class="auth-card">
     <div class="auth-logo">
       <div class="auth-logo-icon" role="img" aria-label="Meshez Brands Logo"></div>
-      <h1>Meshez Kadi</h1>
+      <h1 class="auth-brand-name"></h1>
       <p class="auth-fixed-theme">Invitation Management System</p>
     </div>
 
@@ -1428,7 +1429,7 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
   <!-- Mobile Header -->
   <div class="mobile-header">
     <button class="hamburger" onclick="openSidebar()">☰</button>
-    <div style="color:white;font-weight:600;font-family:'Playfair Display',serif;">Meshez Kadi</div>
+    <div class="mobile-brand-name" style="color:white;font-weight:600;font-family:'Playfair Display',serif;"></div>
   </div>
 
   <!-- Sidebar -->
@@ -1436,7 +1437,7 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
     <div class="sidebar-logo">
       <div class="sidebar-logo-icon" role="img" aria-label="Meshez Brands Logo"></div>
       <div class="sidebar-logo-text">
-        <h2>Meshez Kadi</h2>
+        <h2 class="sidebar-brand-name"></h2>
         <span class="sidebar-logo-theme">Invitation System</span>
         <span class="sidebar-logo-slogan">Invite Them Easy</span>
       </div>
@@ -2638,7 +2639,7 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
             
             <div class="card" style="margin-bottom:16px;">
               <div class="card-title" style="margin-bottom:16px;"><i data-lucide="type" class="icon-inline" style="color:#D4A72C;"></i> Utambulisho wa Mfumo (System Branding)</div>
-              <div class="form-group"><label>Main Name</label><input id="brandMainName" type="text" value="Meshez Kadi" maxlength="50"></div>
+              <div class="form-group"><label>Main Name</label><input id="brandMainName" type="text" value="" maxlength="50"></div>
               <div class="form-group"><label>Theme ya Mfumo</label><input id="brandSystemTheme" type="text" value="Invitation System" maxlength="70"></div>
               <div class="form-group"><label>Slogan</label><input id="brandSlogan" type="text" value="Invite Them Easy" maxlength="90"></div>
               <div class="form-group">
@@ -7856,7 +7857,7 @@ async function changePassword() {
 // ===== SYSTEM BRANDING + LANGUAGE =====
 let pendingBrandLogo = null;
 function readBrandingCache(){
-  const defaults={name:'Meshez Kadi',theme:'Invitation System',slogan:'Invite Them Easy',logo:'',logoOffline:'',logoPath:'',logoScale:100,updatedAt:''};
+  const defaults={name:'',theme:'Invitation System',slogan:'Invite Them Easy',logo:'',logoOffline:'',logoPath:'',logoScale:100,updatedAt:''};
   try{
     const raw=localStorage.getItem('meshez_system_branding_v2');
     const cached=raw?JSON.parse(raw):null;
@@ -7926,7 +7927,7 @@ function mergeBrandingRow(row){
   const old=getBranding();
   if(!row)return old;
   return {
-    name:row.main_name||old.name||'Meshez Kadi',
+    name:row.main_name||old.name||'',
     theme:row.system_theme||old.theme||'Invitation System',
     slogan:row.slogan||old.slogan||'Invite Them Easy',
     logo:row.logo_url||old.logo||'',
@@ -7980,28 +7981,38 @@ async function loadSystemBrandingFromSupabase(){
 }
 function applySystemBranding(){
   const b=getBranding();
-  const name=b.name||'Meshez Kadi', theme=b.theme||'Invitation System', slogan=b.slogan||'Invite Them Easy';
-  document.title=name+' - Invitation Management System';
-  document.querySelectorAll('.auth-logo h1').forEach(el=>el.textContent=name);
+  const name=b.name||'', theme=b.theme||'Invitation System', slogan=b.slogan||'Invite Them Easy';
+  document.title=(name?name+' - ':'')+'Invitation Management System';
+  document.querySelectorAll('.auth-brand-name,.sidebar-brand-name,.mobile-brand-name').forEach(el=>el.textContent=name);
   const authSub=document.querySelector('#authScreen .auth-logo p');
   if(authSub)authSub.textContent='Invitation Management System';
-  document.querySelectorAll('.sidebar-logo-text h2').forEach(el=>el.textContent=name);
   document.querySelectorAll('.sidebar-logo-theme').forEach(el=>el.textContent=theme);
   document.querySelectorAll('.sidebar-logo-slogan').forEach(el=>el.textContent=slogan);
-  const mobile=document.querySelector('.mobile-header > div:last-child');
-  if(mobile)mobile.textContent=name;
-  // Prefer the embedded local image. A remote Supabase URL cannot render without internet.
+  // Prefer the embedded local image. Render it as a real IMG element (not CSS background)
+  // so browser/offline rendering and image sizing are reliable on Sign In and navigation.
   const logoUrl=b.logoOffline||b.logo||'';
   const logoScale=Math.max(50,Math.min(200,Number(b.logoScale)||100));
   document.querySelectorAll('.auth-logo-icon,.sidebar-logo-icon').forEach(el=>{
-    el.style.backgroundImage=logoUrl?('url("'+logoUrl+'")'):'none';
-    el.style.backgroundSize=logoScale+'% auto';
-    el.style.backgroundPosition='center';
-    el.style.backgroundRepeat='no-repeat';
+    el.replaceChildren();
+    el.style.backgroundImage='none';
     el.style.backgroundColor='#fff';
+    if(logoUrl){
+      const img=document.createElement('img');
+      img.src=logoUrl;
+      img.alt='System logo';
+      img.draggable=false;
+      img.style.width=logoScale+'%';
+      img.style.height=logoScale+'%';
+      img.style.maxWidth='none';
+      img.style.maxHeight='none';
+      img.style.objectFit='contain';
+      img.style.display='block';
+      img.onerror=()=>{img.remove();};
+      el.appendChild(img);
+    }
   });
   const preview=document.getElementById('brandLogoPreview');
-  if(preview)preview.innerHTML=logoUrl?'<img alt="System logo" src="'+logoUrl+'">':'<span>Hakuna logo mpya iliyopakiwa</span>';
+  if(preview){preview.replaceChildren();if(logoUrl){const img=document.createElement('img');img.alt='System logo';img.src=logoUrl;preview.appendChild(img);}else{const span=document.createElement('span');span.textContent='Hakuna logo mpya iliyopakiwa';preview.appendChild(span);}}
   const circlePreview=document.getElementById('brandLogoCirclePreview');
   if(circlePreview){circlePreview.style.backgroundImage=logoUrl?('url("'+logoUrl+'")'):'';circlePreview.style.backgroundSize=logoScale+'% auto';}
   const scaleInput=document.getElementById('brandLogoScale');
