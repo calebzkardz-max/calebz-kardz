@@ -47,8 +47,7 @@
   }
 
   /* ===== AUTH SCREEN ===== */
-  #authScreen{visibility:hidden}
-  #authScreen.branding-ready{visibility:visible}
+  #authScreen{visibility:visible}
   .auth-screen {
     min-height: 100vh;
     display: flex;
@@ -3499,9 +3498,8 @@ window.addEventListener('load', async () => {
     await loadProfile();
     showApp();
   } else {
-    // Reveal auth only after the current public brand has been applied.
-    await loadPublicSystemBranding();
-    document.getElementById('authScreen')?.classList.add('branding-ready');
+    // Show cached brand immediately; refresh it from Supabase in the background.
+    loadPublicSystemBranding();
   }
 });
 
@@ -7918,26 +7916,6 @@ async function loadSystemBrandingFromSupabase(){
   persistBrandingCache();
   applySystemBranding();
 }
-function revealAuthBrandingWhenReady(){
-  const auth=document.getElementById('authScreen');
-  if(!auth)return Promise.resolve();
-  const logo=systemBrandingCache.logo||'';
-  if(!logo){auth.classList.add('branding-ready');return Promise.resolve();}
-  return new Promise(resolve=>{
-    const img=new Image();
-    let done=false;
-    const finish=()=>{
-      if(done)return;
-      done=true;
-      auth.classList.add('branding-ready');
-      resolve();
-    };
-    img.onload=finish;
-    img.onerror=finish;
-    img.src=logo;
-    if(img.complete)finish();
-  });
-}
 function applySystemBranding(){
   const b=getBranding();
   const name=b.name||'', theme=b.theme||'', slogan=b.slogan||'';
@@ -7971,7 +7949,6 @@ function applySystemBranding(){
 }
 // Prime the login screen from the last confirmed Supabase brand cache.
 applySystemBranding();
-revealAuthBrandingWhenReady();
 async function previewBrandLogo(input){
   const file=input.files&&input.files[0]; if(!file)return;
   try{
