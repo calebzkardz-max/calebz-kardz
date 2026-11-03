@@ -1359,6 +1359,8 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
 <div class="auth-screen" id="authScreen">
   <div class="auth-card">
     <div class="auth-logo">
+      <div class="auth-logo-icon" role="img" aria-label="Meshez Brands Logo"></div>
+      <h1>Meshez Kadi</h1>
       <p class="auth-fixed-theme">Invitation Management System</p>
     </div>
 
@@ -1426,14 +1428,17 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
   <!-- Mobile Header -->
   <div class="mobile-header">
     <button class="hamburger" onclick="openSidebar()">☰</button>
-    <div style="color:white;font-weight:600;">Invitations</div>
+    <div style="color:white;font-weight:600;font-family:'Playfair Display',serif;">Meshez Kadi</div>
   </div>
 
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <div class="sidebar-logo">
+      <div class="sidebar-logo-icon" role="img" aria-label="Meshez Brands Logo"></div>
       <div class="sidebar-logo-text">
-        <span>Invitation Management System</span>
+        <h2>Meshez Kadi</h2>
+        <span class="sidebar-logo-theme">Invitation System</span>
+        <span class="sidebar-logo-slogan">Invite Them Easy</span>
       </div>
     </div>
 
@@ -2629,6 +2634,36 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
                 <button type="button" id="langEnBtn" onclick="setSystemLanguage('en')">EN · English</button>
               </div>
             </div>
+
+            
+            <div class="card" style="margin-bottom:16px;">
+              <div class="card-title" style="margin-bottom:16px;"><i data-lucide="type" class="icon-inline" style="color:#D4A72C;"></i> Utambulisho wa Mfumo (System Branding)</div>
+              <div class="form-group"><label>Main Name</label><input id="brandMainName" type="text" value="Meshez Kadi" maxlength="50"></div>
+              <div class="form-group"><label>Theme ya Mfumo</label><input id="brandSystemTheme" type="text" value="Invitation System" maxlength="70"></div>
+              <div class="form-group"><label>Slogan</label><input id="brandSlogan" type="text" value="Invite Them Easy" maxlength="90"></div>
+              <div class="form-group">
+                <label>Logo ya Mfumo</label>
+                <div class="brand-logo-editor">
+                  <div id="brandLogoPreview" class="brand-logo-preview"><span>Hakuna logo mpya iliyopakiwa</span></div>
+                  <div class="brand-logo-adjust">
+                    <div class="brand-logo-circle-preview" id="brandLogoCirclePreview" aria-label="Muonekano wa logo ndani ya duara"></div>
+                    <div class="brand-logo-controls">
+                      <label for="brandLogoScale">Ukubwa wa logo ndani ya duara</label>
+                      <div class="brand-logo-scale-row">
+                        <button type="button" class="btn btn-outline btn-sm" onclick="nudgeBrandLogoScale(-5)" aria-label="Punguza logo">−</button>
+                        <input id="brandLogoScale" type="range" min="50" max="200" step="5" value="100" oninput="setBrandLogoScale(this.value)">
+                        <button type="button" class="btn btn-outline btn-sm" onclick="nudgeBrandLogoScale(5)" aria-label="Ongeza logo">+</button>
+                        <strong id="brandLogoScaleValue">100%</strong>
+                      </div>
+                      <small>Ongeza ili logo isogee karibu na ukingo wa duara; punguza ili ipate nafasi zaidi.</small>
+                    </div>
+                  </div>
+                </div>
+                <input type="file" id="brandLogoFile" accept="image/*" onchange="previewBrandLogo(this)">
+                <small style="display:block;color:var(--gray-400);margin-top:6px;">Picha itabadilishwa kuwa WebP ili kupunguza ukubwa wake.</small>
+              </div>
+              <button class="btn btn-primary" onclick="saveSystemBranding()"><i data-lucide="save" class="icon-inline"></i> Hifadhi Utambulisho</button>
+            </div>
           </div>
         </div>
       </div>
@@ -3432,6 +3467,7 @@ async function loadProfile() {
     document.getElementById('profPhone').value = data.phone || '';
   }
   await loadOrgOwnerId();
+  await loadSystemBrandingFromSupabase();
 }
 
 function showApp() {
@@ -3462,8 +3498,9 @@ window.addEventListener('load', async () => {
     await loadProfile();
     showApp();
   } else {
-    // Authentication screen no longer loads remote branding or logo data.
-    try { localStorage.removeItem('meshez_system_branding_v2'); localStorage.removeItem('meshez_system_branding'); } catch (e) {}
+    // Paint the last saved brand immediately, then refresh it from Supabase.
+    applySystemBranding();
+    loadPublicSystemBranding();
   }
 });
 
@@ -7818,6 +7855,183 @@ async function changePassword() {
 try { localStorage.removeItem('meshez_system_branding_v2'); localStorage.removeItem('meshez_system_branding'); } catch (e) {}
 
 // Mfumo mmoja wa tafsiri kwa UI nzima. Maandishi ya fields/taarifa za mtumiaji hayaguswi.
+// ===== SYSTEM BRANDING + LANGUAGE =====
+let pendingBrandLogo = null;
+function readBrandingCache(){
+  try{
+    const raw=localStorage.getItem('meshez_system_branding_v2');
+    const cached=raw?JSON.parse(raw):null;
+    if(cached&&typeof cached==='object'){
+      return {
+        name:typeof cached.name==='string'?cached.name:'',
+        theme:typeof cached.theme==='string'?cached.theme:'',
+        slogan:typeof cached.slogan==='string'?cached.slogan:'',
+        logo:typeof cached.logo==='string'?cached.logo:'',
+        logoPath:typeof cached.logoPath==='string'?cached.logoPath:'',
+        logoScale:Math.max(50,Math.min(200,Number(cached.logoScale)||100)),
+        updatedAt:cached.updatedAt||''
+      };
+    }
+  }catch(e){}
+  return {name:'',theme:'',slogan:'',logo:'',logoPath:'',logoScale:100,updatedAt:''};
+}
+let systemBrandingCache=readBrandingCache();
+function persistBrandingCache(){
+  try{localStorage.setItem('meshez_system_branding_v2',JSON.stringify(systemBrandingCache));}catch(e){}
+  try{localStorage.removeItem('meshez_system_branding');}catch(e){}
+}
+function getBranding(){return {...systemBrandingCache};}
+async function loadPublicSystemBranding(){
+  try{
+    const {data,error}=await sb.rpc('get_public_system_branding');
+    if(error)throw error;
+    const row=Array.isArray(data)?data[0]:data;
+    systemBrandingCache=row?{
+      name:row.main_name||'',theme:row.system_theme||'',slogan:row.slogan||'',
+      logo:row.logo_url||'',logoPath:row.logo_path||'',
+      logoScale:Math.max(50,Math.min(200,Number(row.logo_scale)||100)),
+      updatedAt:Date.now()
+    }:{name:'',theme:'',slogan:'',logo:'',logoPath:'',logoScale:100,updatedAt:Date.now()};
+    persistBrandingCache();
+    applySystemBranding();
+    await revealAuthBrandingWhenReady();
+  }catch(e){
+    console.warn('Public system branding haijapatikana; cache ya sasa imeachwa salama:',e);
+    persistBrandingCache();
+    applySystemBranding();
+    await revealAuthBrandingWhenReady();
+  }
+}
+async function loadSystemBrandingFromSupabase(){
+  if(!ORG_OWNER_ID)return;
+  const {data,error}=await sb.from('system_branding')
+    .select('main_name,system_theme,slogan,logo_url,logo_path,logo_scale')
+    .eq('user_id',ORG_OWNER_ID).maybeSingle();
+  if(error){
+    console.error('Imeshindwa kupakia System Branding kutoka Supabase:',error);
+    showToast('System Branding haijapakiwa. Hakikisha migration ya system_branding ime-run kwenye Supabase.','error');
+    return;
+  }
+  systemBrandingCache=data?{
+    name:data.main_name||'',theme:data.system_theme||'',slogan:data.slogan||'',
+    logo:data.logo_url||'',logoPath:data.logo_path||'',
+    logoScale:Math.max(50,Math.min(200,Number(data.logo_scale)||100)),
+    updatedAt:Date.now()
+  }:{name:'',theme:'',slogan:'',logo:'',logoPath:'',logoScale:100,updatedAt:Date.now()};
+  persistBrandingCache();
+  applySystemBranding();
+}
+function applySystemBranding(){
+  const b=getBranding();
+  const name=b.name||'', theme=b.theme||'', slogan=b.slogan||'';
+  document.querySelectorAll('.auth-logo h1').forEach(el=>el.textContent=name);
+  const authSub=document.querySelector('#authScreen .auth-logo p');
+  if(authSub) authSub.textContent='Invitation Management System';
+  document.querySelectorAll('.sidebar-logo-text h2').forEach(el=>el.textContent=name);
+  document.querySelectorAll('.sidebar-logo-theme').forEach(el=>el.textContent=theme);
+  document.querySelectorAll('.sidebar-logo-slogan').forEach(el=>el.textContent=slogan);
+  const mobile=document.querySelector('.mobile-header > div:last-child');
+  if(mobile) mobile.textContent=name;
+  const logoUrl=b.logo||'';
+  const logoScale=Math.max(50,Math.min(200,Number(b.logoScale)||100));
+  document.querySelectorAll('.auth-logo-icon,.sidebar-logo-icon').forEach(el=>{
+    el.style.backgroundImage=logoUrl?('url("'+logoUrl+'")'):'none';
+    el.style.backgroundSize=logoScale+'% auto';
+    el.style.backgroundPosition='center';
+    el.style.backgroundRepeat='no-repeat';
+    el.style.backgroundColor='#fff';
+  });
+  const preview=document.getElementById('brandLogoPreview');
+  if(preview) preview.innerHTML=logoUrl?'<img alt="System logo" src="'+logoUrl+'">':'<span>Hakuna logo mpya iliyopakiwa</span>';
+  const circlePreview=document.getElementById('brandLogoCirclePreview');
+  if(circlePreview){circlePreview.style.backgroundImage=logoUrl?('url("'+logoUrl+'")'):'';circlePreview.style.backgroundSize=logoScale+'% auto';}
+  const scaleInput=document.getElementById('brandLogoScale');
+  if(scaleInput)scaleInput.value=logoScale;
+  const scaleLabel=document.getElementById('brandLogoScaleValue');
+  if(scaleLabel)scaleLabel.textContent=logoScale+'%';
+  const n=document.getElementById('brandMainName'),t=document.getElementById('brandSystemTheme'),sl=document.getElementById('brandSlogan');
+  if(n)n.value=name;if(t)t.value=theme;if(sl)sl.value=slogan;
+}
+// Prime the login screen and browser title from the last confirmed local cache.
+applySystemBranding();
+async function previewBrandLogo(input){
+  const file=input.files&&input.files[0]; if(!file)return;
+  try{
+    const blob=await convertImageToWebP(file,0.82);
+    if(blob.size>450000) throw new Error('Logo bado ni kubwa. Tumia picha ndogo zaidi.');
+    pendingBrandLogo=blob;
+    const url=URL.createObjectURL(blob);
+    document.getElementById('brandLogoPreview').innerHTML='<img alt="Logo preview" src="'+url+'">';
+    const circlePreview=document.getElementById('brandLogoCirclePreview');
+    if(circlePreview)circlePreview.style.backgroundImage='url("'+url+'")';
+    showToast('Logo imebadilishwa kuwa WebP. Bonyeza Hifadhi Utambulisho.', 'success');
+  }catch(e){showToast('Logo: '+e.message,'error');input.value='';}
+}
+function setBrandLogoScale(value){
+  const scale=Math.max(50,Math.min(200,Number(value)||100));
+  systemBrandingCache.logoScale=scale;
+  document.querySelectorAll('.auth-logo-icon,.sidebar-logo-icon').forEach(el=>el.style.backgroundSize=scale+'% auto');
+  const preview=document.getElementById('brandLogoCirclePreview');
+  if(preview)preview.style.backgroundSize=scale+'% auto';
+  const label=document.getElementById('brandLogoScaleValue');
+  if(label)label.textContent=scale+'%';
+}
+function nudgeBrandLogoScale(change){
+  const input=document.getElementById('brandLogoScale');
+  if(!input)return;
+  input.value=Math.max(50,Math.min(200,(Number(input.value)||100)+change));
+  setBrandLogoScale(input.value);
+}
+async function saveSystemBranding(){
+  if(!currentUser||!ORG_OWNER_ID)return showToast('Taarifa za akaunti hazijakamilika. Ingia tena.','error');
+  const name=document.getElementById('brandMainName').value.trim();
+  const theme=document.getElementById('brandSystemTheme').value.trim();
+  const slogan=document.getElementById('brandSlogan').value.trim();
+  if(!name||!theme||!slogan)return showToast('Jaza Main Name, Theme na Slogan.','error');
+
+  const previous=getBranding();
+  let logo=previous.logo||'', logoPath=previous.logoPath||'';
+  const logoScale=Math.max(50,Math.min(200,Number(document.getElementById('brandLogoScale')?.value)||Number(previous.logoScale)||100));
+  try{
+    if(pendingBrandLogo){
+      const nextPath=ORG_OWNER_ID+'/system-branding/logo_'+Date.now()+'.webp';
+      const {error:uploadError}=await sb.storage.from(PROMO_BUCKET).upload(nextPath,pendingBrandLogo,{
+        contentType:'image/webp',upsert:false,cacheControl:'31536000'
+      });
+      if(uploadError)throw uploadError;
+      const {data:{publicUrl}}=sb.storage.from(PROMO_BUCKET).getPublicUrl(nextPath);
+      logo=publicUrl;
+      logoPath=nextPath;
+    }
+
+    const {error}=await sb.from('system_branding').upsert({
+      user_id:ORG_OWNER_ID,
+      main_name:name,
+      system_theme:theme,
+      slogan,
+      logo_url:logo||null,
+      logo_path:logoPath||null,
+      logo_scale:logoScale,
+      updated_at:new Date().toISOString()
+    },{onConflict:'user_id'});
+    if(error){
+      if(pendingBrandLogo&&logoPath&&logoPath!==previous.logoPath)await sb.storage.from(PROMO_BUCKET).remove([logoPath]);
+      throw error;
+    }
+
+    systemBrandingCache={name,theme,slogan,logo,logoPath,logoScale,updatedAt:Date.now()};
+    persistBrandingCache();
+    if(previous.logoPath&&previous.logoPath!==logoPath)await sb.storage.from(PROMO_BUCKET).remove([previous.logoPath]);
+    pendingBrandLogo=null;
+    const fileInput=document.getElementById('brandLogoFile');if(fileInput)fileInput.value='';
+    applySystemBranding();
+    showToast('Utambulisho wa mfumo umehifadhiwa Supabase.','success');
+  }catch(e){
+    console.error('System Branding save error:',e);
+    showToast('Imeshindikana kuhifadhi System Branding: '+(e.message||e),'error');
+  }
+}
+
 const SYSTEM_TRANSLATION_PAIRS = [
 ['Dashboard','Dashibodi'],['Event Management','Usimamizi wa Matukio'],['Template Management','Usimamizi wa Violezo'],
 ['Digital Invitation','Mwaliko wa Kidijitali'],['Send Invitations','Tuma Mialiko'],['RSVP - Shukrani','RSVP - Shukrani'],
