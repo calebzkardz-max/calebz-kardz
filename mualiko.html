@@ -464,6 +464,31 @@
     footer{padding-top:20px;padding-bottom:20px;}
   }
 
+
+  /* Snap Cards information dropdown */
+  .hero-heading-wrap{max-width:1080px;margin:0 auto 22px;text-align:center;}
+  .hero-heading-wrap h1{margin:0 auto;max-width:22ch;}
+  .btn-open-info{
+    display:inline-flex;align-items:center;justify-content:center;
+    margin-top:18px;padding:12px 38px;border:0;border-radius:999px;
+    background:var(--emerald);color:#fff;font-family:"Work Sans",sans-serif;
+    font-size:15px;font-weight:700;letter-spacing:.08em;cursor:pointer;
+    box-shadow:0 8px 20px -9px rgba(31,68,54,.65);
+  }
+  .btn-open-info:hover{filter:brightness(1.07);transform:translateY(-1px);}
+  #snapDetails[hidden],#snapSections[hidden]{display:none !important;}
+  #snapDetails:not([hidden]){display:block;}
+  #snapSections:not([hidden]){display:block;}
+  /* Rudisha nafasi ya wastani kwenye sehemu nne zilizobana sana. */
+  #reception,#dresscode,#program,#hosts,#providers,#note,#thankyou{
+    padding-top:32px;padding-bottom:32px;
+  }
+  @media(max-width:480px){
+    #reception,#dresscode,#program,#hosts,#providers,#note,#thankyou{
+      padding-top:27px;padding-bottom:27px;
+    }
+  }
+
 </style>
 </head>
 <body>
@@ -674,15 +699,22 @@
     <p class="reveal" style="margin-top:10px; max-width:260px;"><span id="thankyouIntro">Tunafurahi kukuwa nawe katika siku hii. Tuonane </span><span id="thankyouDate">14 Februari 2027</span><span id="thankyouOutro">!</span></p>
   </section>
 
-  <footer>
-    <div class="brand" style="font-size:14px; letter-spacing:0.12em; text-transform:none; font-family:'Cinzel'; font-weight:600; color:var(--plum-deep); opacity:1;">Snap Cards - Digital Invitation</div>
-    <div style="margin-top:8px; font-family:'Cormorant Garamond'; font-size:16px; color:var(--plum-deep); opacity:0.75;">Simply Invite Better</div>
-    <div style="margin-top:12px; font-family:'Jost'; font-size:10px; letter-spacing:0.18em; text-transform:uppercase; color:var(--gold); opacity:0.8;">Powered by Meshez Brands</div>
-  </footer>
 
 </div>
 
 <script>
+  // ---------- SNAP CARDS DETAILS DROPDOWN ----------
+  function toggleSnapInfo(){
+    const details = document.getElementById('snapDetails');
+    const sections = document.getElementById('snapSections');
+    const button = document.getElementById('snapInfoToggle');
+    const willOpen = details.hasAttribute('hidden');
+    if(willOpen){ details.removeAttribute('hidden'); sections.removeAttribute('hidden'); }
+    else { details.setAttribute('hidden',''); sections.setAttribute('hidden',''); }
+    button.setAttribute('aria-expanded', String(willOpen));
+    button.textContent = willOpen ? 'FUNGA' : 'FUNGUA';
+  }
+
   // ---------- WELCOME SCREEN (Hello + maua + kijana anayepunga mkono) ----------
   // Hii ndiyo skrini ya kwanza mgeni anayoiona. Akiigusa, inafifia (fade) na
   // kuonyesha Cover ya kifahari (monogram/jina/picha) iliyokuwa nyuma yake.
@@ -1630,9 +1662,13 @@
 <body>
 
 <header class="hero">
+  <div class="hero-heading-wrap">
+    <h1 id="heroH1">Je, Ungependa Kutufahamu? — Snap Cards</h1>
+    <button type="button" class="btn-open-info" id="snapInfoToggle" aria-expanded="false" aria-controls="snapDetails snapSections" onclick="toggleSnapInfo()">FUNGUA</button>
+  </div>
+  <div id="snapDetails" hidden>
   <div class="hero-grid">
     <div>
-      <h1 id="heroH1">Je, Ungependa Kututafahamu? — Snap Cards</h1>
       <p class="lede" id="heroLede1">Snap Cards ni idara kutoka Meshez_Brands inayoaminika katika utengenezaji wa kadi za mialiko za kielektroniki zenye QR code na picha nadhifu. Hadi sasa tunatoa huduma Tanzania na Kenya. Mialiko huwafikia wageni sehemu zote za inchi hizi.</p>
       <p class="lede" style="margin-top:16px;" id="heroLede2">Snap Cards — tunabadilisha jinsi mialiko ya harusi, Send-off, Birthday na Graduation inavyotengenezwa, inavyotumwa na inavyothibitishwa mlangoni kwa haraka, kwa usalama na kwa mtindo unaovutia.</p>
       <p class="services-heading" id="heroSvcHeading">Tunachofanya:-</p>
@@ -1690,8 +1726,10 @@
       </div>
     </div>
   </div>
+  </div>
 </header>
 
+<div id="snapSections" hidden>
 <div class="strip">
   <div class="track">
     <span class="stripHarusi">Harusi</span><span>Send-Off</span><span>Kitchen Party</span><span class="stripVikao">Vikao</span><span>Graduation</span><span>Anniversaries</span><span>Corporate Events</span>
@@ -1781,6 +1819,8 @@
     </div>
   </div>
 </section>
+
+</div>
 
 <section class="block" id="uliza">
   <div class="wrap">
