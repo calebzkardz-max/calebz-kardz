@@ -7879,17 +7879,42 @@ async function loadSystemBrandingFromSupabase(){
     showToast('System Branding haijapakiwa. Hakikisha migration ya system_branding ime-run kwenye Supabase.','error');
     return;
   }
-  systemBrandingCache=data?{
-    name:data.main_name||'Meshez Kadi',
-    theme:data.system_theme||'Invitation System',
-    slogan:data.slogan||'Invite Them Easy',
-    logo:data.logo_url||'',
-    logoPath:data.logo_path||'',
-    logoScale:Math.max(50,Math.min(200,Number(data.logo_scale)||100))
-  }:{
-    name:'Meshez Kadi',theme:'Invitation System',slogan:'Invite Them Easy',
-    logo:'',logoPath:'',logoScale:100
-  };
+  if(data){
+    systemBrandingCache={
+      name:data.main_name||'Meshez Kadi',theme:data.system_theme||'Invitation System',
+      slogan:data.slogan||'Invite Them Easy',logo:data.logo_url||'',
+      logoPath:data.logo_path||'',logoScale:Math.max(50,Math.min(200,Number(data.logo_scale)||100))
+    };
+  }else{
+    // Nakili branding ya zamani kwenda Supabase mara moja bila kufuta browser data.
+    let legacy={};
+    try{legacy=JSON.parse(localStorage.getItem('meshez_system_branding')||'{}')||{};}catch(e){}
+    const migrated={
+      name:legacy.name||'Meshez Kadi',theme:legacy.theme||'Invitation System',
+      slogan:legacy.slogan||'Invite Them Easy',logo:'',logoPath:'',
+      logoScale:Math.max(50,Math.min(200,Number(legacy.logoScale)||100))
+    };
+    try{
+      if(typeof legacy.logo==='string'&&legacy.logo.startsWith('data:image/webp;base64,')){
+        const raw=atob(legacy.logo.split(',')[1]);
+        const bytes=new Uint8Array(raw.length);
+        for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);
+        const blob=new Blob([bytes],{type:'image/webp'});
+        const path=ORG_OWNER_ID+'/system-branding/logo_migrated_'+Date.now()+'.webp';
+        const {error:upError}=await sb.storage.from(PROMO_BUCKET).upload(path,blob,{contentType:'image/webp',upsert:false});
+        if(upError)throw upError;
+        migrated.logo=sb.storage.from(PROMO_BUCKET).getPublicUrl(path).data.publicUrl;
+        migrated.logoPath=path;
+      }
+      const {error:saveError}=await sb.from('system_branding').upsert({
+        user_id:ORG_OWNER_ID,main_name:migrated.name,system_theme:migrated.theme,
+        slogan:migrated.slogan,logo_url:migrated.logo||null,logo_path:migrated.logoPath||null,
+        logo_scale:migrated.logoScale,updated_at:new Date().toISOString()
+      },{onConflict:'user_id'});
+      if(saveError)throw saveError;
+    }catch(e){console.error('Legacy branding copy failed:',e);showToast('Branding ya zamani haikuweza kuhamishwa: '+e.message,'error');}
+    systemBrandingCache=migrated;
+  }
   applySystemBranding();
 }
 function applySystemBranding(){
