@@ -22,8 +22,8 @@ create policy snap_cards_public_settings_owner_manage
   on public.snap_cards_public_settings
   for all
   to authenticated
-  using (auth.uid() = user_id)
-  with check (auth.uid() = user_id);
+  using (public.get_org_owner_id() = user_id)
+  with check (public.get_org_owner_id() = user_id);
 
 -- Public invitation pages can read ONLY the public contact number and portfolio
 -- for the owner id included in the invitation event. No anonymous write access.
