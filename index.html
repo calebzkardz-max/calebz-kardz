@@ -47,6 +47,8 @@
   }
 
   /* ===== AUTH SCREEN ===== */
+  #authScreen{visibility:hidden}
+  #authScreen.branding-ready{visibility:visible}
   .auth-screen {
     min-height: 100vh;
     display: flex;
@@ -3497,8 +3499,9 @@ window.addEventListener('load', async () => {
     await loadProfile();
     showApp();
   } else {
-    // Branding ya login inasomwa public kupitia RPC bila kuhitaji kuingia kwanza.
+    // Reveal auth only after the current public brand has been applied.
     await loadPublicSystemBranding();
+    document.getElementById('authScreen')?.classList.add('branding-ready');
   }
 });
 
@@ -7851,41 +7854,50 @@ async function changePassword() {
 
 // ===== SYSTEM BRANDING + LANGUAGE =====
 let pendingBrandLogo = null;
-let systemBrandingCache = {
-  name:'Meshez Kadi', theme:'Invitation System', slogan:'Invite Them Easy',
-  logo:'', logoPath:'', logoScale:100
-};
-function getBranding(){ return {...systemBrandingCache}; }
+function readBrandingCache(){
+  try{
+    const raw=localStorage.getItem('meshez_system_branding_v2');
+    const cached=raw?JSON.parse(raw):null;
+    if(cached&&typeof cached==='object'){
+      return {
+        name:typeof cached.name==='string'?cached.name:'',
+        theme:typeof cached.theme==='string'?cached.theme:'',
+        slogan:typeof cached.slogan==='string'?cached.slogan:'',
+        logo:typeof cached.logo==='string'?cached.logo:'',
+        logoPath:typeof cached.logoPath==='string'?cached.logoPath:'',
+        logoScale:Math.max(50,Math.min(200,Number(cached.logoScale)||100)),
+        updatedAt:cached.updatedAt||''
+      };
+    }
+  }catch(e){}
+  return {name:'',theme:'',slogan:'',logo:'',logoPath:'',logoScale:100,updatedAt:''};
+}
+let systemBrandingCache=readBrandingCache();
+function persistBrandingCache(){
+  try{localStorage.setItem('meshez_system_branding_v2',JSON.stringify(systemBrandingCache));}catch(e){}
+  try{localStorage.removeItem('meshez_system_branding');}catch(e){}
+}
+function getBranding(){return {...systemBrandingCache};}
 async function loadPublicSystemBranding(){
   try{
     const {data,error}=await sb.rpc('get_public_system_branding');
     if(error)throw error;
     const row=Array.isArray(data)?data[0]:data;
-    if(!row){
-      systemBrandingCache={name:'',theme:'',slogan:'',logo:'',logoPath:'',logoScale:100};
-      applySystemBranding();
-      return;
-    }
-    systemBrandingCache={
-      name:row.main_name||'Meshez Kadi',
-      theme:row.system_theme||'Invitation System',
-      slogan:row.slogan||'Invite Them Easy',
-      logo:row.logo_url||'',
-      logoPath:row.logo_path||'',
-      logoScale:Math.max(50,Math.min(200,Number(row.logo_scale)||100))
-    };
+    systemBrandingCache=row?{
+      name:row.main_name||'',theme:row.system_theme||'',slogan:row.slogan||'',
+      logo:row.logo_url||'',logoPath:row.logo_path||'',
+      logoScale:Math.max(50,Math.min(200,Number(row.logo_scale)||100)),
+      updatedAt:Date.now()
+    }:{name:'',theme:'',slogan:'',logo:'',logoPath:'',logoScale:100,updatedAt:Date.now()};
+    persistBrandingCache();
     applySystemBranding();
-    // Hakikisha logo ya auth inapata URL mpya bila cache ya browser.
-    const authLogo=document.querySelector('#authScreen .auth-logo-icon');
-    if(authLogo&&systemBrandingCache.logo){
-      authLogo.style.backgroundImage='url("'+systemBrandingCache.logo+(systemBrandingCache.logo.includes('?')?'&':'?')+'v='+encodeURIComponent(row.updated_at||Date.now())+'")';
-    }
   }catch(e){
-    console.warn('Public system branding haijapatikana:',e);
+    console.warn('Public system branding haijapatikana; cache ya sasa imeachwa salama:',e);
+    applySystemBranding();
   }
 }
 async function loadSystemBrandingFromSupabase(){
-  if(!ORG_OWNER_ID) return;
+  if(!ORG_OWNER_ID)return;
   const {data,error}=await sb.from('system_branding')
     .select('main_name,system_theme,slogan,logo_url,logo_path,logo_scale')
     .eq('user_id',ORG_OWNER_ID).maybeSingle();
@@ -7894,42 +7906,13 @@ async function loadSystemBrandingFromSupabase(){
     showToast('System Branding haijapakiwa. Hakikisha migration ya system_branding ime-run kwenye Supabase.','error');
     return;
   }
-  if(data){
-    systemBrandingCache={
-      name:data.main_name||'Meshez Kadi',theme:data.system_theme||'Invitation System',
-      slogan:data.slogan||'Invite Them Easy',logo:data.logo_url||'',
-      logoPath:data.logo_path||'',logoScale:Math.max(50,Math.min(200,Number(data.logo_scale)||100))
-    };
-  }else{
-    // Nakili branding ya zamani kwenda Supabase mara moja bila kufuta browser data.
-    let legacy={};
-    try{legacy=JSON.parse(localStorage.getItem('meshez_system_branding')||'{}')||{};}catch(e){}
-    const migrated={
-      name:legacy.name||'Meshez Kadi',theme:legacy.theme||'Invitation System',
-      slogan:legacy.slogan||'Invite Them Easy',logo:'',logoPath:'',
-      logoScale:Math.max(50,Math.min(200,Number(legacy.logoScale)||100))
-    };
-    try{
-      if(typeof legacy.logo==='string'&&legacy.logo.startsWith('data:image/webp;base64,')){
-        const raw=atob(legacy.logo.split(',')[1]);
-        const bytes=new Uint8Array(raw.length);
-        for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);
-        const blob=new Blob([bytes],{type:'image/webp'});
-        const path=ORG_OWNER_ID+'/system-branding/logo_migrated_'+Date.now()+'.webp';
-        const {error:upError}=await sb.storage.from(PROMO_BUCKET).upload(path,blob,{contentType:'image/webp',upsert:false});
-        if(upError)throw upError;
-        migrated.logo=sb.storage.from(PROMO_BUCKET).getPublicUrl(path).data.publicUrl;
-        migrated.logoPath=path;
-      }
-      const {error:saveError}=await sb.from('system_branding').upsert({
-        user_id:ORG_OWNER_ID,main_name:migrated.name,system_theme:migrated.theme,
-        slogan:migrated.slogan,logo_url:migrated.logo||null,logo_path:migrated.logoPath||null,
-        logo_scale:migrated.logoScale,updated_at:new Date().toISOString()
-      },{onConflict:'user_id'});
-      if(saveError)throw saveError;
-    }catch(e){console.error('Legacy branding copy failed:',e);showToast('Branding ya zamani haikuweza kuhamishwa: '+e.message,'error');}
-    systemBrandingCache=migrated;
-  }
+  systemBrandingCache=data?{
+    name:data.main_name||'',theme:data.system_theme||'',slogan:data.slogan||'',
+    logo:data.logo_url||'',logoPath:data.logo_path||'',
+    logoScale:Math.max(50,Math.min(200,Number(data.logo_scale)||100)),
+    updatedAt:Date.now()
+  }:{name:'',theme:'',slogan:'',logo:'',logoPath:'',logoScale:100,updatedAt:Date.now()};
+  persistBrandingCache();
   applySystemBranding();
 }
 function applySystemBranding(){
@@ -7946,7 +7929,8 @@ function applySystemBranding(){
   const logoUrl=b.logo||'';
   const logoScale=Math.max(50,Math.min(200,Number(b.logoScale)||100));
   document.querySelectorAll('.auth-logo-icon,.sidebar-logo-icon').forEach(el=>{
-    el.style.backgroundImage=logoUrl?('url("'+logoUrl+'")'):'none';
+    const logoSrc=logoUrl?(logoUrl+(logoUrl.includes('?')?'&':'?')+'brand='+encodeURIComponent(systemBrandingCache.updatedAt||'current')):'';
+    el.style.backgroundImage=logoSrc?('url("'+logoSrc+'")'):'none';
     el.style.backgroundSize=logoScale+'% auto';
     el.style.backgroundPosition='center';
     el.style.backgroundRepeat='no-repeat';
@@ -7963,6 +7947,9 @@ function applySystemBranding(){
   const n=document.getElementById('brandMainName'),t=document.getElementById('brandSystemTheme'),sl=document.getElementById('brandSlogan');
   if(n)n.value=name;if(t)t.value=theme;if(sl)sl.value=slogan;
 }
+// Prime the login screen from the last confirmed Supabase brand cache.
+applySystemBranding();
+if(systemBrandingCache.name||systemBrandingCache.logo)document.getElementById('authScreen')?.classList.add('branding-ready');
 async function previewBrandLogo(input){
   const file=input.files&&input.files[0]; if(!file)return;
   try{
@@ -8028,7 +8015,8 @@ async function saveSystemBranding(){
       throw error;
     }
 
-    systemBrandingCache={name,theme,slogan,logo,logoPath,logoScale};
+    systemBrandingCache={name,theme,slogan,logo,logoPath,logoScale,updatedAt:Date.now()};
+    persistBrandingCache();
     if(previous.logoPath&&previous.logoPath!==logoPath)await sb.storage.from(PROMO_BUCKET).remove([previous.logoPath]);
     pendingBrandLogo=null;
     const fileInput=document.getElementById('brandLogoFile');if(fileInput)fileInput.value='';
@@ -8091,26 +8079,65 @@ const SYSTEM_TRANSLATION_PAIRS = [
 ];
 const SYSTEM_TRANSLATIONS={sw:{},en:{}};
 SYSTEM_TRANSLATION_PAIRS.forEach(([en,sw])=>{SYSTEM_TRANSLATIONS.en[sw]=en;SYSTEM_TRANSLATIONS.sw[en]=sw;});
+const systemOriginalText=new WeakMap();
+const systemOriginalAttributes=new WeakMap();
 let systemLanguageObserver=null;
+function systemDictionary(lang){return SYSTEM_TRANSLATIONS[lang==='en'?'en':'sw']||SYSTEM_TRANSLATIONS.sw;}
 function translateSystemNode(node,lang){
   if(!node||node.nodeType!==Node.TEXT_NODE)return;
   const parent=node.parentElement;
-  if(!parent||parent.closest('script,style,textarea,input,select,option,[contenteditable="true"],.user-content,.preserve-user-text'))return;
-  const raw=node.textContent;
-  const trimmed=raw.trim();
-  if(!trimmed)return;
-  const dict=SYSTEM_TRANSLATIONS[lang]||SYSTEM_TRANSLATIONS.sw;
-  const translated=dict[trimmed];
-  if(translated)node.textContent=raw.replace(trimmed,translated);
+  if(!parent||parent.closest('script,style,textarea,input,[contenteditable="true"],.user-content,.preserve-user-text'))return;
+  const current=node.textContent;
+  let state=systemOriginalText.get(node);
+  if(!state)state={source:current,rendered:current};
+  else if(current!==state.rendered)state.source=current;
+  const source=state.source;
+  const trimmed=source.trim();
+  const translated=trimmed?systemDictionary(lang)[trimmed]:null;
+  const output=translated?source.replace(trimmed,translated):source;
+  state.rendered=output;
+  systemOriginalText.set(node,state);
+  if(current!==output)node.textContent=output;
+}
+function translateSystemAttribute(el,attr,lang){
+  if(!el||!el.hasAttribute(attr))return;
+  let states=systemOriginalAttributes.get(el);
+  if(!states){states={};systemOriginalAttributes.set(el,states);}
+  const current=el.getAttribute(attr);
+  let state=states[attr];
+  if(!state)state={source:current,rendered:current};
+  else if(current!==state.rendered)state.source=current;
+  const output=systemDictionary(lang)[state.source]||state.source;
+  state.rendered=output;
+  states[attr]=state;
+  if(current!==output)el.setAttribute(attr,output);
 }
 function translateSystemElement(el,lang){
   if(!el||el.nodeType!==Node.ELEMENT_NODE)return;
-  if(el.matches('input,textarea,select,option,[contenteditable="true"],.user-content,.preserve-user-text'))return;
-  el.childNodes.forEach(n=>{if(n.nodeType===Node.TEXT_NODE)translateSystemNode(n,lang);else if(n.nodeType===Node.ELEMENT_NODE)translateSystemElement(n,lang);});
-  ['placeholder','title','aria-label'].forEach(attr=>{
-    if(!el.hasAttribute(attr))return;
-    const v=el.getAttribute(attr),dict=SYSTEM_TRANSLATIONS[lang]||SYSTEM_TRANSLATIONS.sw;
-    if(dict[v])el.setAttribute(attr,dict[v]);
+  if(el.matches('script,style,input,textarea,[contenteditable="true"],.user-content,.preserve-user-text'))return;
+  el.childNodes.forEach(n=>{
+    if(n.nodeType===Node.TEXT_NODE)translateSystemNode(n,lang);
+    else if(n.nodeType===Node.ELEMENT_NODE)translateSystemElement(n,lang);
+  });
+  ['placeholder','title','aria-label'].forEach(attr=>translateSystemAttribute(el,attr,lang));
+}
+function observeSystemLanguage(){
+  if(systemLanguageObserver)systemLanguageObserver.disconnect();
+  systemLanguageObserver=new MutationObserver(records=>{
+    let lang='sw';
+    try{lang=localStorage.getItem('meshez_language')||'sw';}catch(e){}
+    records.forEach(record=>{
+      if(record.type==='characterData')translateSystemNode(record.target,lang);
+      else if(record.type==='attributes')translateSystemAttribute(record.target,record.attributeName,lang);
+      else record.addedNodes.forEach(node=>{
+        if(node.nodeType===Node.TEXT_NODE)translateSystemNode(node,lang);
+        else if(node.nodeType===Node.ELEMENT_NODE)translateSystemElement(node,lang);
+      });
+    });
+  });
+  systemLanguageObserver.observe(document.body,{
+    childList:true,subtree:true,characterData:true,attributes:true,
+    attributeFilter:['placeholder','title','aria-label']
   });
 }
 function applySystemLanguage(lang,notify=false){
@@ -8120,19 +8147,9 @@ function applySystemLanguage(lang,notify=false){
   document.getElementById('langEnBtn')?.classList.toggle('active',lang==='en');
   document.getElementById('langSwBtn')?.setAttribute('data-lang','sw');
   document.getElementById('langEnBtn')?.setAttribute('data-lang','en');
-  translateSystemElement(document.body,lang);
   if(systemLanguageObserver)systemLanguageObserver.disconnect();
-  systemLanguageObserver=new MutationObserver(records=>{
-    const current=localStorage.getItem('meshez_language')||'sw';
-    records.forEach(record=>{
-      if(record.type==='characterData')translateSystemNode(record.target,current);
-      record.addedNodes.forEach(n=>{
-        if(n.nodeType===Node.TEXT_NODE)translateSystemNode(n,current);
-        else if(n.nodeType===Node.ELEMENT_NODE)translateSystemElement(n,current);
-      });
-    });
-  });
-  systemLanguageObserver.observe(document.body,{childList:true,subtree:true,characterData:true});
+  translateSystemElement(document.body,lang);
+  observeSystemLanguage();
   if(notify)showToast(lang==='sw'?'Lugha ya Kiswahili imechaguliwa':'English language selected','success');
 }
 function setSystemLanguage(lang){
