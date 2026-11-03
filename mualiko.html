@@ -414,6 +414,56 @@
 
   /* Anga (nyota/sayari/comet) haihitajiki tena - background sasa ni nyepesi (cream) */
   .planet, .comet, #sparkleCanvas, .space-stars, .space-planet{display:none !important;}
+
+  /* ============ COMPACT INVITATION LAYOUT ============ */
+  /* Punguza urefu wa kila sehemu ili mgeni asilazimike kuscroll sana. */
+  #cover{min-height:100svh;}
+  #hero{
+    min-height:auto;
+    padding:88px 22px 22px;
+    gap:12px;
+  }
+  #hero .doves-wrap{margin-bottom:4px;}
+  #hero #heroTitle{margin:0;}
+  #hero #heroVerse{margin:0;}
+  #countdown{
+    min-height:auto;
+    padding:20px 22px 26px;
+  }
+  #welcome,#story,#pass,#reception,#dresscode,#program,
+  #hosts,#providers,#gift,#note{
+    min-height:auto;
+    padding:28px 22px;
+  }
+  #welcome .guest-name{margin:8px 0 4px;}
+  #welcome .date-badge{margin-top:12px;padding:9px 24px;}
+  #story .story-line{margin-top:3px;}
+  #story #storyText{margin-top:8px !important;}
+  #pass .pass-card{margin-top:9px !important;padding:20px;gap:10px;}
+  #reception .venue-photo-grid{margin-top:10px;}
+  #reception #venueName{margin-top:10px !important;}
+  #reception .map-btn{margin-top:10px;}
+  #dresscode .swatch-grid{margin-top:7px;gap:10px;}
+  #program .program-list{margin-top:8px;gap:8px;}
+  #program .program-body{padding:6px 0;}
+  #hosts .hosts-grid{margin-top:9px;gap:24px;}
+  #providers .providers-list{margin-top:8px;}
+  #providers .provider-item{padding:8px 0;}
+  #gift .gift-card{margin-top:8px;padding:17px;}
+  #note .note-form{margin-top:8px;gap:9px;}
+  #note .note-form textarea{min-height:78px;padding:10px;}
+  #note .note-form button{padding:11px;}
+  #note .note-sent{margin-top:6px;}
+  #thankyou{min-height:auto;padding:28px 22px 20px;}
+  footer{padding:24px 20px;}
+  @media(max-width:480px){
+    #hero{padding-top:76px;padding-bottom:18px;}
+    #countdown{padding:16px 18px 20px;}
+    #welcome,#story,#pass,#reception,#dresscode,#program,
+    #hosts,#providers,#gift,#note,#thankyou{padding-top:22px;padding-bottom:22px;}
+    footer{padding-top:20px;padding-bottom:20px;}
+  }
+
 </style>
 </head>
 <body>
