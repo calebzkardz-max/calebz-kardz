@@ -1851,21 +1851,6 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
           <input type="hidden" id="invDesignId">
           <input type="hidden" id="invDesignEventId">
 
-          <!-- SNAP CARDS: NAMBA YA WHATSAPP + PICHA SITA ZA KAZI -->
-          <div class="card" style="margin-bottom:16px;border:1px solid #D6B56D;">
-            <div class="card-header">
-              <div class="card-title"><i data-lucide="message-circle" class="icon" style="color:#16A34A"></i> Mawasiliano ya Snap Cards</div>
-            </div>
-            <div class="form-group" style="margin-bottom:8px;">
-              <label for="snapCardsWhatsappPhone">Namba ya WhatsApp ya Snap Cards (namba moja kwa mawasiliano yote)</label>
-              <input type="tel" id="snapCardsWhatsappPhone" inputmode="tel" placeholder="Mfano: 2557XXXXXXXX">
-              <small style="display:block;color:var(--gray-400);margin-top:6px;">Weka namba yenye country code, mfano 255 kwa Tanzania. Namba hii itaunganishwa na “Ongea nasi WhatsApp” na “Tuma kupitia WhatsApp” kwenye ukurasa wa mualiko.</small>
-            </div>
-            <div style="font-size:13px;font-weight:700;margin:14px 0 8px;">Kazi zetu za hivi Karibuni — picha 6</div>
-            <p style="font-size:11px;color:var(--gray-400);margin:0 0 12px;">Pakia picha moja kwa kila nafasi. Picha zitajipanga ndani ya vijedwali vyake bila kuvuruga uwiano, na mgeni akigusa picha ataiona kwa ukubwa mkubwa.</p>
-            <div id="snapPortfolioSlots" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;"></div>
-          </div>
-
           <!-- COVER & HADITHI -->
           <div class="card" style="margin-bottom:16px;">
             <div class="card-header">
@@ -2056,6 +2041,21 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
               <label>Taarifa za Zawadi/Mchango</label>
               <textarea id="invGiftInfo" rows="3" placeholder="M-Pesa/Selcom: 0713 079 348&#10;Jina: Josephine Mushi"></textarea>
             </div>
+          </div>
+
+          <!-- SNAP CARDS: NAMBA YA WHATSAPP + PICHA SITA ZA KAZI -->
+          <div class="card" style="margin-bottom:16px;border:1px solid #D6B56D;">
+            <div class="card-header">
+              <div class="card-title"><i data-lucide="message-circle" class="icon" style="color:#16A34A"></i> Mawasiliano ya Snap Cards</div>
+            </div>
+            <div class="form-group" style="margin-bottom:8px;">
+              <label for="snapCardsWhatsappPhone">Namba ya WhatsApp ya Snap Cards (namba moja kwa mawasiliano yote)</label>
+              <input type="tel" id="snapCardsWhatsappPhone" inputmode="tel" placeholder="Mfano: 2557XXXXXXXX">
+              <small style="display:block;color:var(--gray-400);margin-top:6px;">Weka namba yenye country code, mfano 255 kwa Tanzania. Namba hii itaunganishwa na “Ongea nasi WhatsApp” na “Tuma kupitia WhatsApp” kwenye ukurasa wa mualiko.</small>
+            </div>
+            <div style="font-size:13px;font-weight:700;margin:14px 0 8px;">Kazi zetu za hivi Karibuni — picha 6</div>
+            <p style="font-size:11px;color:var(--gray-400);margin:0 0 12px;">Pakia picha moja kwa kila nafasi. Picha zitajipanga ndani ya vijedwali vyake bila kuvuruga uwiano, na mgeni akigusa picha ataiona kwa ukubwa mkubwa.</p>
+            <div id="snapPortfolioSlots" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;"></div>
           </div>
 
           <button class="btn btn-primary" style="width:100%;" onclick="saveInvitationDesign()">
@@ -3478,6 +3478,7 @@ async function loadProfile() {
     document.getElementById('profPhone').value = data.phone || '';
   }
   await loadOrgOwnerId();
+  await loadSystemBrandingFromSupabase();
 }
 
 function showApp() {
@@ -7863,8 +7864,33 @@ async function changePassword() {
 
 // ===== SYSTEM BRANDING + LANGUAGE =====
 let pendingBrandLogo = null;
-function getBranding(){
-  try{return JSON.parse(localStorage.getItem('meshez_system_branding')||'{}')}catch(e){return {}}
+let systemBrandingCache = {
+  name:'Meshez Kadi', theme:'Invitation System', slogan:'Invite Them Easy',
+  logo:'', logoPath:'', logoScale:100
+};
+function getBranding(){ return {...systemBrandingCache}; }
+async function loadSystemBrandingFromSupabase(){
+  if(!ORG_OWNER_ID) return;
+  const {data,error}=await sb.from('system_branding')
+    .select('main_name,system_theme,slogan,logo_url,logo_path,logo_scale')
+    .eq('user_id',ORG_OWNER_ID).maybeSingle();
+  if(error){
+    console.error('Imeshindwa kupakia System Branding kutoka Supabase:',error);
+    showToast('System Branding haijapakiwa. Hakikisha migration ya system_branding ime-run kwenye Supabase.','error');
+    return;
+  }
+  systemBrandingCache=data?{
+    name:data.main_name||'Meshez Kadi',
+    theme:data.system_theme||'Invitation System',
+    slogan:data.slogan||'Invite Them Easy',
+    logo:data.logo_url||'',
+    logoPath:data.logo_path||'',
+    logoScale:Math.max(50,Math.min(200,Number(data.logo_scale)||100))
+  }:{
+    name:'Meshez Kadi',theme:'Invitation System',slogan:'Invite Them Easy',
+    logo:'',logoPath:'',logoScale:100
+  };
+  applySystemBranding();
 }
 function applySystemBranding(){
   const b=getBranding();
@@ -7909,8 +7935,7 @@ async function previewBrandLogo(input){
 }
 function setBrandLogoScale(value){
   const scale=Math.max(50,Math.min(200,Number(value)||100));
-  const b=getBranding();b.logoScale=scale;
-  try{localStorage.setItem('meshez_system_branding',JSON.stringify(b));}catch(e){}
+  systemBrandingCache.logoScale=scale;
   document.querySelectorAll('.auth-logo-icon,.sidebar-logo-icon').forEach(el=>el.style.backgroundSize=scale+'% auto');
   const preview=document.getElementById('brandLogoCirclePreview');
   if(preview)preview.style.backgroundSize=scale+'% auto';
@@ -7924,20 +7949,52 @@ function nudgeBrandLogoScale(change){
   setBrandLogoScale(input.value);
 }
 async function saveSystemBranding(){
+  if(!currentUser||!ORG_OWNER_ID)return showToast('Taarifa za akaunti hazijakamilika. Ingia tena.','error');
   const name=document.getElementById('brandMainName').value.trim();
   const theme=document.getElementById('brandSystemTheme').value.trim();
   const slogan=document.getElementById('brandSlogan').value.trim();
-  if(!name||!theme||!slogan)return showToast('Jaza Main Name, Theme na Slogan.', 'error');
-  const b=getBranding(); let logo=b.logo||'';
-  if(pendingBrandLogo){
-    logo=await new Promise((resolve,reject)=>{
-      const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=reject;reader.readAsDataURL(pendingBrandLogo);
-    });
+  if(!name||!theme||!slogan)return showToast('Jaza Main Name, Theme na Slogan.','error');
+
+  const previous=getBranding();
+  let logo=previous.logo||'', logoPath=previous.logoPath||'';
+  const logoScale=Math.max(50,Math.min(200,Number(document.getElementById('brandLogoScale')?.value)||Number(previous.logoScale)||100));
+  try{
+    if(pendingBrandLogo){
+      const nextPath=ORG_OWNER_ID+'/system-branding/logo_'+Date.now()+'.webp';
+      const {error:uploadError}=await sb.storage.from(PROMO_BUCKET).upload(nextPath,pendingBrandLogo,{
+        contentType:'image/webp',upsert:false,cacheControl:'31536000'
+      });
+      if(uploadError)throw uploadError;
+      const {data:{publicUrl}}=sb.storage.from(PROMO_BUCKET).getPublicUrl(nextPath);
+      logo=publicUrl;
+      logoPath=nextPath;
+    }
+
+    const {error}=await sb.from('system_branding').upsert({
+      user_id:ORG_OWNER_ID,
+      main_name:name,
+      system_theme:theme,
+      slogan,
+      logo_url:logo||null,
+      logo_path:logoPath||null,
+      logo_scale:logoScale,
+      updated_at:new Date().toISOString()
+    },{onConflict:'user_id'});
+    if(error){
+      if(pendingBrandLogo&&logoPath&&logoPath!==previous.logoPath)await sb.storage.from(PROMO_BUCKET).remove([logoPath]);
+      throw error;
+    }
+
+    systemBrandingCache={name,theme,slogan,logo,logoPath,logoScale};
+    if(previous.logoPath&&previous.logoPath!==logoPath)await sb.storage.from(PROMO_BUCKET).remove([previous.logoPath]);
+    pendingBrandLogo=null;
+    const fileInput=document.getElementById('brandLogoFile');if(fileInput)fileInput.value='';
+    applySystemBranding();
+    showToast('Utambulisho wa mfumo umehifadhiwa Supabase.','success');
+  }catch(e){
+    console.error('System Branding save error:',e);
+    showToast('Imeshindikana kuhifadhi System Branding: '+(e.message||e),'error');
   }
-  const logoScale=Math.max(50,Math.min(200,Number(document.getElementById('brandLogoScale')?.value)||Number(b.logoScale)||100));
-  try{localStorage.setItem('meshez_system_branding',JSON.stringify({name,theme,slogan,logo,logoScale}));}
-  catch(e){return showToast('Imeshindikana kuhifadhi. Logo inaweza kuwa kubwa mno kwa hifadhi ya kivinjari.','error');}
-  pendingBrandLogo=null;applySystemBranding();showToast('Utambulisho wa mfumo umehifadhiwa.','success');
 }
 const SYSTEM_TRANSLATIONS={
   sw:{'Profile & Settings':'Wasifu na Mipangilio','Badilisha Nenosiri':'Badilisha Nenosiri','System Branding':'Utambulisho wa Mfumo','Appearance Mode':'Muonekano wa Mfumo','Light Mode':'Mwanga','Dark Mode':'Giza','Hifadhi Profile':'Hifadhi Wasifu','Hifadhi Mipangilio':'Hifadhi Mipangilio'},
