@@ -3452,9 +3452,10 @@ async function loadProfile() {
     const welcome = document.getElementById('dashboardWelcome');
     const welcomeRole = document.getElementById('dashboardRoleTitle');
     const welcomeSub = document.getElementById('dashboardWelcomeSub');
-    if (welcome) welcome.textContent = 'Welcome, ' + name;
-    if (welcomeRole) welcomeRole.textContent = roleTitle;
-    if (welcomeSub) welcomeSub.textContent = 'Muhtasari wa shughuli zako, wageni na matukio yote sehemu moja.';
+    const branding=getBranding();
+    if (welcome) welcome.textContent = branding.name || 'Meshez Kadi';
+    if (welcomeRole) welcomeRole.textContent = branding.theme || roleTitle;
+    if (welcomeSub) welcomeSub.textContent = branding.slogan || 'Muhtasari wa shughuli zako, wageni na matukio yote sehemu moja.';
     document.getElementById('sidebarAvatar').textContent = initials;
     document.getElementById('sidebarName').textContent = name;
     document.getElementById('sidebarRole').textContent = data.role || 'Admin';
@@ -3496,6 +3497,9 @@ window.addEventListener('load', async () => {
     currentUser = data.session.user;
     await loadProfile();
     showApp();
+  } else {
+    // Branding ya login inasomwa public kupitia RPC bila kuhitaji kuingia kwanza.
+    await loadPublicSystemBranding();
   }
 });
 
@@ -7853,6 +7857,25 @@ let systemBrandingCache = {
   logo:'', logoPath:'', logoScale:100
 };
 function getBranding(){ return {...systemBrandingCache}; }
+async function loadPublicSystemBranding(){
+  try{
+    const {data,error}=await sb.rpc('get_public_system_branding');
+    if(error)throw error;
+    const row=Array.isArray(data)?data[0]:data;
+    if(!row)return;
+    systemBrandingCache={
+      name:row.main_name||'Meshez Kadi',
+      theme:row.system_theme||'Invitation System',
+      slogan:row.slogan||'Invite Them Easy',
+      logo:row.logo_url||'',
+      logoPath:row.logo_path||'',
+      logoScale:Math.max(50,Math.min(200,Number(row.logo_scale)||100))
+    };
+    applySystemBranding();
+  }catch(e){
+    console.warn('Public system branding haijapatikana:',e);
+  }
+}
 async function loadSystemBrandingFromSupabase(){
   if(!ORG_OWNER_ID) return;
   const {data,error}=await sb.from('system_branding')
@@ -7912,6 +7935,12 @@ function applySystemBranding(){
   document.querySelectorAll('.sidebar-logo-slogan').forEach(el=>el.textContent=slogan);
   const mobile=document.querySelector('.mobile-header > div:last-child');
   if(mobile) mobile.textContent=name;
+  const dashboardName=document.getElementById('dashboardWelcome');
+  const dashboardTheme=document.getElementById('dashboardRoleTitle');
+  const dashboardSlogan=document.getElementById('dashboardWelcomeSub');
+  if(dashboardName) dashboardName.textContent=name;
+  if(dashboardTheme) dashboardTheme.textContent=theme;
+  if(dashboardSlogan) dashboardSlogan.textContent=slogan;
   const logoUrl=b.logo||'';
   const logoScale=Math.max(50,Math.min(200,Number(b.logoScale)||100));
   document.querySelectorAll('.auth-logo-icon,.sidebar-logo-icon').forEach(el=>{
