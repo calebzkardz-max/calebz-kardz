@@ -3490,6 +3490,7 @@ function showApp() {
 
 // Check auth on load
 window.addEventListener('load', async () => {
+  applySystemLanguage(localStorage.getItem('meshez_language')||'sw',false);
   const { data } = await sb.auth.getSession();
   if (data.session) {
     currentUser = data.session.user;
@@ -8124,13 +8125,14 @@ function applySystemLanguage(lang,notify=false){
   systemLanguageObserver=new MutationObserver(records=>{
     const current=localStorage.getItem('meshez_language')||'sw';
     records.forEach(record=>{
+      if(record.type==='characterData')translateSystemNode(record.target,current);
       record.addedNodes.forEach(n=>{
         if(n.nodeType===Node.TEXT_NODE)translateSystemNode(n,current);
         else if(n.nodeType===Node.ELEMENT_NODE)translateSystemElement(n,current);
       });
     });
   });
-  systemLanguageObserver.observe(document.body,{childList:true,subtree:true});
+  systemLanguageObserver.observe(document.body,{childList:true,subtree:true,characterData:true});
   if(notify)showToast(lang==='sw'?'Lugha ya Kiswahili imechaguliwa':'English language selected','success');
 }
 function setSystemLanguage(lang){
