@@ -8040,7 +8040,7 @@ const SYSTEM_TRANSLATION_PAIRS = [
 ['Cancel','Ghairi'],['Yes','Ndiyo'],['No','Hapana'],['Back','Rudi'],['Continue','Endelea'],
 ['Download','Pakua'],['Upload','Pakia'],['Select','Chagua'],['Choose file','Chagua faili'],
 ['No data available','Hakuna taarifa'],['No events yet','Hakuna matukio bado'],
-['Click "+ New Event" to get started','Bonyeza "+ Event Mpya" kuanza'],
+['Click "+ Event Mpya" to get started','Bonyeza "+ Event Mpya" kuanza'],
 ['New Event','Tukio Jipya'],['New Event','Event Mpya'],['Event Name','Jina la Tukio'],
 ['Event Type','Aina ya Tukio'],['Event Date','Tarehe ya Tukio'],['Event Venue','Mahali pa Tukio'],
 ['Guests','Wageni'],['Guest','Mgeni'],['Add Guest','Ongeza Mgeni'],['Guest Name','Jina la Mgeni'],
@@ -8052,12 +8052,12 @@ const SYSTEM_TRANSLATION_PAIRS = [
 ['Permissions','Ruhusa'],['Save Permissions','Hifadhi Ruhusa'],['Permissions saved','Ruhusa zimehifadhiwa'],
 ['No permissions','Hakuna ruhusa'],['Create','Tengeneza'],['Create Invitation','Tengeneza Mwaliko'],
 ['Design','Muundo'],['Color','Rangi'],['Font','Fonti'],['Image','Picha'],['Logo','Logo'],
-['Appearance','Mwonekano'],['System Appearance','Muonekano wa Mfumo'],['Appearance Mode','Muonekano wa Mfumo'],
+['Appearance','Mwonekano'],['System Appearance','Muonekano wa Mfumo'],['Appearance Mode','Hali ya Mwonekano'],
 ['Light Mode','Mwanga'],['Dark Mode','Giza'],
 ['System Language','Lugha ya Mfumo'],
 ['System Branding','Utambulisho wa Mfumo'],
 ['Main Name','Jina Kuu'],['System Theme','Mandhari ya Mfumo'],['Slogan','Kaulimbiu'],
-['System Logo','Logo ya Mfumo'],['Change Logo','Badilisha Logo'],['No new logo uploaded','Hakuna logo mpya iliyopakiwa'],
+['System Logo','Nembo ya Mfumo'],['Change Logo','Badilisha Logo'],['No new logo uploaded','Hakuna logo mpya iliyopakiwa'],
 ['Save Branding','Hifadhi Utambulisho'],['Change Password','Badilisha Nenosiri'],
 ['Current Password','Nenosiri la Sasa'],['New Password','Nenosiri Jipya'],
 ['Confirm Password','Thibitisha Nenosiri'],['Save Password','Hifadhi Nenosiri'],
@@ -8065,11 +8065,11 @@ const SYSTEM_TRANSLATION_PAIRS = [
 ['Admin','Msimamizi'],['Managing Director','Mkurugenzi Mkuu'],['Event Manager','Msimamizi wa Matukio'],
 ['Event Scanner','Mkaguzi wa Matukio'],['Welcome to Dashboard','Karibu kwenye Dashboard'],
 ['An overview of your activities, guests and all events in one place.','Muhtasari wa shughuli zako, wageni na matukio yote sehemu moja.'],
-['Manage Events','Simamia Events'],['View Reports','Angalia Ripoti'],['Hakuna events bado','No events yet'],
+['Manage Events','Simamia Events'],['View Reports','Angalia Ripoti'],['No events yet','Hakuna events bado'],
 ['Information saved!','Taarifa zimehifadhiwa!'],['Settings saved!','Mipangilio imehifadhiwa!'],
 ['Could not save','Imeshindikana kuhifadhi'],['Please try again.','Tafadhali jaribu tena.'],
 ['You do not have permission to open this page','Huna ruhusa ya kufungua ukurasa huu'],
-['Swahili language selected','Lugha ya Kiswahili imechaguliwa'],['English language selected','English language selected'],
+['Swahili language selected','Lugha ya Kiswahili imechaguliwa'],['English language selected','Lugha ya Kiingereza imechaguliwa'],
 ['Invite Them Easy','Alika kwa Urahisi'],['Invitation Management System','Mfumo wa Usimamizi wa Mialiko'],
 ['Wedding','Harusi'],['Birthday','Siku ya Kuzaliwa'],['Sendoff','Send-off'],['Celebration','Sherehe'],
 ['Folder','Folda'],['Folders','Mafolda'],['Create Folder','Tengeneza Folda'],['Folder Name','Jina la Folda'],
@@ -8108,6 +8108,8 @@ function translateSystemNode(node,lang){
 }
 function translateSystemAttribute(el,attr,lang){
   if(!el||!el.hasAttribute(attr))return;
+  // Never translate values of text-entry fields; only button-like input labels are UI copy.
+  if(attr==='value'&&!el.matches('input[type="button"],input[type="submit"],input[type="reset"]'))return;
   let states=systemOriginalAttributes.get(el);
   if(!states){states={};systemOriginalAttributes.set(el,states);}
   const current=el.getAttribute(attr);
@@ -8123,7 +8125,7 @@ function translateSystemElement(el,lang){
   if(!el||el.nodeType!==Node.ELEMENT_NODE)return;
   if(el.matches('script,style,.user-content,.preserve-user-text,[contenteditable="true"]'))return;
   // Never translate what the user typed. Translate UI text and form-control hints.
-  const isFormControl=el.matches('input,textarea,select');
+  const isFormControl=el.matches('input,textarea');
   if(!isFormControl)el.childNodes.forEach(n=>{
     if(n.nodeType===Node.TEXT_NODE)translateSystemNode(n,lang);
     else if(n.nodeType===Node.ELEMENT_NODE)translateSystemElement(n,lang);
