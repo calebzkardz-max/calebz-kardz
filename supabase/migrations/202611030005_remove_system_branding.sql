@@ -3,9 +3,8 @@
 
 begin;
 
-delete from storage.objects
-where bucket_id = 'promo-images'
-  and name like '%/system-branding/%';
+-- Storage objects must be removed through the Supabase Storage API or Dashboard.
+-- Do not DELETE directly from storage.objects; Supabase protects this table.
 
 drop policy if exists "system_branding_logo_insert" on storage.objects;
 drop policy if exists "system_branding_logo_delete" on storage.objects;
