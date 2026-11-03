@@ -7856,68 +7856,127 @@ async function changePassword() {
 // ===== SYSTEM BRANDING + LANGUAGE =====
 let pendingBrandLogo = null;
 function readBrandingCache(){
+  const defaults={name:'Meshez Kadi',theme:'Invitation System',slogan:'Invite Them Easy',logo:'',logoOffline:'',logoPath:'',logoScale:100,updatedAt:''};
   try{
     const raw=localStorage.getItem('meshez_system_branding_v2');
     const cached=raw?JSON.parse(raw):null;
     if(cached&&typeof cached==='object'){
       return {
-        name:typeof cached.name==='string'&&cached.name.trim()?cached.name:'Meshez Kadi',
-        theme:typeof cached.theme==='string'&&cached.theme.trim()?cached.theme:'Invitation System',
-        slogan:typeof cached.slogan==='string'&&cached.slogan.trim()?cached.slogan:'Invite Them Easy',
+        name:typeof cached.name==='string'&&cached.name.trim()?cached.name:defaults.name,
+        theme:typeof cached.theme==='string'&&cached.theme.trim()?cached.theme:defaults.theme,
+        slogan:typeof cached.slogan==='string'&&cached.slogan.trim()?cached.slogan:defaults.slogan,
         logo:typeof cached.logo==='string'?cached.logo:'',
+        logoOffline:typeof cached.logoOffline==='string'?cached.logoOffline:'',
         logoPath:typeof cached.logoPath==='string'?cached.logoPath:'',
         logoScale:Math.max(50,Math.min(200,Number(cached.logoScale)||100)),
         updatedAt:cached.updatedAt||''
       };
     }
-  }catch(e){}
-  return {name:'Meshez Kadi',theme:'Invitation System',slogan:'Invite Them Easy',logo:'',logoPath:'',logoScale:100,updatedAt:''};
+    // Migrate the previous local cache key rather than discarding an existing identity.
+    const legacyRaw=localStorage.getItem('meshez_system_branding');
+    if(legacyRaw){
+      const legacy=JSON.parse(legacyRaw);
+      if(legacy&&typeof legacy==='object'){
+        return {
+          name:legacy.name||legacy.mainName||defaults.name,
+          theme:legacy.theme||legacy.systemTheme||defaults.theme,
+          slogan:legacy.slogan||defaults.slogan,
+          logo:legacy.logo||legacy.logoUrl||'',
+          logoOffline:legacy.logoOffline||legacy.logoDataUrl||'',
+          logoPath:legacy.logoPath||'',
+          logoScale:Math.max(50,Math.min(200,Number(legacy.logoScale)||100)),
+          updatedAt:legacy.updatedAt||''
+        };
+      }
+    }
+  }catch(e){console.warn('Brand cache read:',e);}
+  return defaults;
 }
 let systemBrandingCache=readBrandingCache();
 function persistBrandingCache(){
-  try{localStorage.setItem('meshez_system_branding_v2',JSON.stringify(systemBrandingCache));}catch(e){}
-  try{localStorage.removeItem('meshez_system_branding');}catch(e){}
+  try{localStorage.setItem('meshez_system_branding_v2',JSON.stringify(systemBrandingCache));}catch(e){console.warn('Brand cache could not be persisted:',e);}
 }
 function getBranding(){return {...systemBrandingCache};}
+function blobToDataUrl(blob){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=()=>resolve(String(reader.result||''));
+    reader.onerror=()=>reject(reader.error||new Error('Imeshindikana kusoma logo'));
+    reader.readAsDataURL(blob);
+  });
+}
+async function cacheBrandLogoForOffline(url){
+  if(!url||String(url).startsWith('data:'))return;
+  try{
+    const response=await fetch(url,{cache:'force-cache'});
+    if(!response.ok)throw new Error('Logo image HTTP '+response.status);
+    const blob=await response.blob();
+    if(!blob.type.startsWith('image/'))throw new Error('Faili la logo si picha');
+    // Keep the local copy compact so it fits comfortably in browser storage.
+    if(blob.size>650000)throw new Error('Logo ni kubwa mno kwa offline cache');
+    const dataUrl=await blobToDataUrl(blob);
+    if(dataUrl){
+      systemBrandingCache.logoOffline=dataUrl;
+      persistBrandingCache();
+      applySystemBranding();
+    }
+  }catch(e){console.warn('Offline logo cache haikuweza kusasishwa:',e);}
+}
+function mergeBrandingRow(row){
+  const old=getBranding();
+  if(!row)return old;
+  return {
+    name:row.main_name||old.name||'Meshez Kadi',
+    theme:row.system_theme||old.theme||'Invitation System',
+    slogan:row.slogan||old.slogan||'Invite Them Easy',
+    logo:row.logo_url||old.logo||'',
+    logoOffline:old.logoOffline||'',
+    logoPath:row.logo_path||old.logoPath||'',
+    logoScale:Math.max(50,Math.min(200,Number(row.logo_scale)||Number(old.logoScale)||100)),
+    updatedAt:row.updated_at||Date.now()
+  };
+}
 async function loadPublicSystemBranding(){
+  // Show the saved local identity immediately. Network calls must never blank it.
+  applySystemBranding();
   try{
     const {data,error}=await sb.rpc('get_public_system_branding');
     if(error)throw error;
     const row=Array.isArray(data)?data[0]:data;
-    systemBrandingCache=row?{
-      name:row.main_name||'Meshez Kadi',theme:row.system_theme||'Invitation System',slogan:row.slogan||'Invite Them Easy',
-      logo:row.logo_url||'',logoPath:row.logo_path||'',
-      logoScale:Math.max(50,Math.min(200,Number(row.logo_scale)||100)),
-      updatedAt:Date.now()
-    }:{name:'Meshez Kadi',theme:'Invitation System',slogan:'Invite Them Easy',logo:'',logoPath:'',logoScale:100,updatedAt:Date.now()};
-    persistBrandingCache();
-    applySystemBranding();
-    await revealAuthBrandingWhenReady();
+    if(row){
+      systemBrandingCache=mergeBrandingRow(row);
+      persistBrandingCache();
+      applySystemBranding();
+      if(systemBrandingCache.logo&&!systemBrandingCache.logoOffline){
+        await cacheBrandLogoForOffline(systemBrandingCache.logo);
+      }
+    }
   }catch(e){
-    console.warn('Public system branding haijapatikana; cache ya sasa imeachwa salama:',e);
-    persistBrandingCache();
+    console.warn('Public system branding haijapatikana; identity ya local imehifadhiwa:',e);
     applySystemBranding();
-    await revealAuthBrandingWhenReady();
   }
+  await revealAuthBrandingWhenReady();
 }
 async function loadSystemBrandingFromSupabase(){
   if(!ORG_OWNER_ID)return;
-  const {data,error}=await sb.from('system_branding')
-    .select('main_name,system_theme,slogan,logo_url,logo_path,logo_scale')
-    .eq('user_id',ORG_OWNER_ID).maybeSingle();
-  if(error){
-    console.error('Imeshindwa kupakia System Branding kutoka Supabase:',error);
-    showToast('System Branding haijapakiwa. Hakikisha migration ya system_branding ime-run kwenye Supabase.','error');
-    return;
+  try{
+    const {data,error}=await sb.from('system_branding')
+      .select('main_name,system_theme,slogan,logo_url,logo_path,logo_scale,updated_at')
+      .eq('user_id',ORG_OWNER_ID).maybeSingle();
+    if(error)throw error;
+    // A missing row must not overwrite the last good local branding.
+    if(!data){applySystemBranding();return;}
+    systemBrandingCache=mergeBrandingRow(data);
+    persistBrandingCache();
+    applySystemBranding();
+    if(systemBrandingCache.logo&&!systemBrandingCache.logoOffline){
+      await cacheBrandLogoForOffline(systemBrandingCache.logo);
+    }
+  }catch(e){
+    console.error('Imeshindwa kupakia System Branding kutoka Supabase:',e);
+    // Keep the local copy visible while offline or when Supabase is unavailable.
+    applySystemBranding();
   }
-  systemBrandingCache=data?{
-    name:data.main_name||'Meshez Kadi',theme:data.system_theme||'Invitation System',slogan:data.slogan||'Invite Them Easy',
-    logo:data.logo_url||'',logoPath:data.logo_path||'',
-    logoScale:Math.max(50,Math.min(200,Number(data.logo_scale)||100)),
-    updatedAt:Date.now()
-  }:{name:'Meshez Kadi',theme:'Invitation System',slogan:'Invite Them Easy',logo:'',logoPath:'',logoScale:100,updatedAt:Date.now()};
-  persistBrandingCache();
-  applySystemBranding();
 }
 function applySystemBranding(){
   const b=getBranding();
@@ -7925,13 +7984,14 @@ function applySystemBranding(){
   document.title=name+' - Invitation Management System';
   document.querySelectorAll('.auth-logo h1').forEach(el=>el.textContent=name);
   const authSub=document.querySelector('#authScreen .auth-logo p');
-  if(authSub) authSub.textContent='Invitation Management System';
+  if(authSub)authSub.textContent='Invitation Management System';
   document.querySelectorAll('.sidebar-logo-text h2').forEach(el=>el.textContent=name);
   document.querySelectorAll('.sidebar-logo-theme').forEach(el=>el.textContent=theme);
   document.querySelectorAll('.sidebar-logo-slogan').forEach(el=>el.textContent=slogan);
   const mobile=document.querySelector('.mobile-header > div:last-child');
-  if(mobile) mobile.textContent=name;
-  const logoUrl=b.logo||'';
+  if(mobile)mobile.textContent=name;
+  // Prefer the embedded local image. A remote Supabase URL cannot render without internet.
+  const logoUrl=b.logoOffline||b.logo||'';
   const logoScale=Math.max(50,Math.min(200,Number(b.logoScale)||100));
   document.querySelectorAll('.auth-logo-icon,.sidebar-logo-icon').forEach(el=>{
     el.style.backgroundImage=logoUrl?('url("'+logoUrl+'")'):'none';
@@ -7941,7 +8001,7 @@ function applySystemBranding(){
     el.style.backgroundColor='#fff';
   });
   const preview=document.getElementById('brandLogoPreview');
-  if(preview) preview.innerHTML=logoUrl?'<img alt="System logo" src="'+logoUrl+'">':'<span>Hakuna logo mpya iliyopakiwa</span>';
+  if(preview)preview.innerHTML=logoUrl?'<img alt="System logo" src="'+logoUrl+'">':'<span>Hakuna logo mpya iliyopakiwa</span>';
   const circlePreview=document.getElementById('brandLogoCirclePreview');
   if(circlePreview){circlePreview.style.backgroundImage=logoUrl?('url("'+logoUrl+'")'):'';circlePreview.style.backgroundSize=logoScale+'% auto';}
   const scaleInput=document.getElementById('brandLogoScale');
@@ -7951,19 +8011,19 @@ function applySystemBranding(){
   const n=document.getElementById('brandMainName'),t=document.getElementById('brandSystemTheme'),sl=document.getElementById('brandSlogan');
   if(n)n.value=name;if(t)t.value=theme;if(sl)sl.value=slogan;
 }
-// Prime the login screen and browser title from the last confirmed local cache.
+// Paint from local storage before making any network request.
 applySystemBranding();
 async function previewBrandLogo(input){
-  const file=input.files&&input.files[0]; if(!file)return;
+  const file=input.files&&input.files[0];if(!file)return;
   try{
     const blob=await convertImageToWebP(file,0.82);
-    if(blob.size>450000) throw new Error('Logo bado ni kubwa. Tumia picha ndogo zaidi.');
+    if(blob.size>450000)throw new Error('Logo bado ni kubwa. Tumia picha ndogo zaidi.');
     pendingBrandLogo=blob;
     const url=URL.createObjectURL(blob);
     document.getElementById('brandLogoPreview').innerHTML='<img alt="Logo preview" src="'+url+'">';
     const circlePreview=document.getElementById('brandLogoCirclePreview');
     if(circlePreview)circlePreview.style.backgroundImage='url("'+url+'")';
-    showToast('Logo imebadilishwa kuwa WebP. Bonyeza Hifadhi Utambulisho.', 'success');
+    showToast('Logo imebadilishwa kuwa WebP. Bonyeza Hifadhi Utambulisho.','success');
   }catch(e){showToast('Logo: '+e.message,'error');input.value='';}
 }
 function setBrandLogoScale(value){
@@ -7976,8 +8036,7 @@ function setBrandLogoScale(value){
   if(label)label.textContent=scale+'%';
 }
 function nudgeBrandLogoScale(change){
-  const input=document.getElementById('brandLogoScale');
-  if(!input)return;
+  const input=document.getElementById('brandLogoScale');if(!input)return;
   input.value=Math.max(50,Math.min(200,(Number(input.value)||100)+change));
   setBrandLogoScale(input.value);
 }
@@ -7987,12 +8046,14 @@ async function saveSystemBranding(){
   const theme=document.getElementById('brandSystemTheme').value.trim();
   const slogan=document.getElementById('brandSlogan').value.trim();
   if(!name||!theme||!slogan)return showToast('Jaza Main Name, Theme na Slogan.','error');
-
   const previous=getBranding();
-  let logo=previous.logo||'', logoPath=previous.logoPath||'';
+  let logo=previous.logo||'',logoPath=previous.logoPath||'',logoOffline=previous.logoOffline||'';
   const logoScale=Math.max(50,Math.min(200,Number(document.getElementById('brandLogoScale')?.value)||Number(previous.logoScale)||100));
+  let newLogoPath='';
   try{
     if(pendingBrandLogo){
+      // Make a local, self-contained copy before depending on the network.
+      logoOffline=await blobToDataUrl(pendingBrandLogo);
       const nextPath=ORG_OWNER_ID+'/system-branding/logo_'+Date.now()+'.webp';
       const {error:uploadError}=await sb.storage.from(PROMO_BUCKET).upload(nextPath,pendingBrandLogo,{
         contentType:'image/webp',upsert:false,cacheControl:'31536000'
@@ -8001,35 +8062,38 @@ async function saveSystemBranding(){
       const {data:{publicUrl}}=sb.storage.from(PROMO_BUCKET).getPublicUrl(nextPath);
       logo=publicUrl;
       logoPath=nextPath;
+      newLogoPath=nextPath;
     }
-
+    // Persist the local pair immediately; a lost connection after upload must not
+    // leave the login screen with a name but no logo.
+    systemBrandingCache={name,theme,slogan,logo,logoOffline,logoPath,logoScale,updatedAt:Date.now()};
+    persistBrandingCache();
+    applySystemBranding();
     const {error}=await sb.from('system_branding').upsert({
-      user_id:ORG_OWNER_ID,
-      main_name:name,
-      system_theme:theme,
-      slogan,
-      logo_url:logo||null,
-      logo_path:logoPath||null,
-      logo_scale:logoScale,
+      user_id:ORG_OWNER_ID,main_name:name,system_theme:theme,slogan,
+      logo_url:logo||null,logo_path:logoPath||null,logo_scale:logoScale,
       updated_at:new Date().toISOString()
     },{onConflict:'user_id'});
-    if(error){
-      if(pendingBrandLogo&&logoPath&&logoPath!==previous.logoPath)await sb.storage.from(PROMO_BUCKET).remove([logoPath]);
-      throw error;
+    if(error)throw error;
+    if(previous.logoPath&&previous.logoPath!==logoPath){
+      const {error:removeError}=await sb.storage.from(PROMO_BUCKET).remove([previous.logoPath]);
+      if(removeError)console.warn('Old logo cleanup failed:',removeError);
     }
-
-    systemBrandingCache={name,theme,slogan,logo,logoPath,logoScale,updatedAt:Date.now()};
-    persistBrandingCache();
-    if(previous.logoPath&&previous.logoPath!==logoPath)await sb.storage.from(PROMO_BUCKET).remove([previous.logoPath]);
     pendingBrandLogo=null;
     const fileInput=document.getElementById('brandLogoFile');if(fileInput)fileInput.value='';
-    applySystemBranding();
-    showToast('Utambulisho wa mfumo umehifadhiwa Supabase.','success');
+    showToast('Utambulisho umehifadhiwa Supabase na kwenye kifaa hiki.','success');
   }catch(e){
+    // Keep the chosen identity locally even if the network/database fails.
+    if(pendingBrandLogo&&logoOffline){
+      systemBrandingCache={name,theme,slogan,logo,logoOffline,logoPath,logoScale,updatedAt:Date.now(),pendingSync:true};
+      persistBrandingCache();
+      applySystemBranding();
+    }
     console.error('System Branding save error:',e);
-    showToast('Imeshindikana kuhifadhi System Branding: '+(e.message||e),'error');
+    showToast('Imehifadhiwa kwenye kifaa hiki; Supabase bado haijathibitisha: '+(e.message||e),'warning');
   }
 }
+
 
 const SYSTEM_TRANSLATION_PAIRS = [
 ['Dashboard','Dashibodi'],['Event Management','Usimamizi wa Matukio'],['Template Management','Usimamizi wa Violezo'],
