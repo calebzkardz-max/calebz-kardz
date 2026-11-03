@@ -765,19 +765,23 @@
   const MIEZI_EN = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   const SIKU_EN  = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
-  function formatDateSw(dateStr){
+  function parseEventDate(dateStr){
     if(!dateStr) return null;
-    // event_date huhifadhiwa kama 'YYYY-MM-DD' - tunaijenga bila timezone shift
-    const [y, m, d] = dateStr.split('-').map(Number);
-    const dt = new Date(y, (m || 1) - 1, d || 1);
-    return `${SIKU_SW[dt.getDay()]}, ${dt.getDate()} ${MIEZI_SW[dt.getMonth()]} ${dt.getFullYear()}`;
+    const match=String(dateStr).trim().slice(0,10).match(/^(\\d{4})-(\\d{2})-(\\d{2})$/);
+    if(!match) return null;
+    const y=Number(match[1]),m=Number(match[2]),d=Number(match[3]);
+    const dt=new Date(y,m-1,d);
+    return dt.getFullYear()===y && dt.getMonth()===m-1 && dt.getDate()===d ? dt : null;
+  }
+
+  function formatDateSw(dateStr){
+    const dt=parseEventDate(dateStr);
+    return dt ? `${SIKU_SW[dt.getDay()]}, ${dt.getDate()} ${MIEZI_SW[dt.getMonth()]} ${dt.getFullYear()}` : null;
   }
 
   function formatDateEn(dateStr){
-    if(!dateStr) return null;
-    const [y, m, d] = dateStr.split('-').map(Number);
-    const dt = new Date(y, (m || 1) - 1, d || 1);
-    return `${SIKU_EN[dt.getDay()]}, ${MIEZI_EN[dt.getMonth()]} ${dt.getDate()}, ${dt.getFullYear()}`;
+    const dt=parseEventDate(dateStr);
+    return dt ? `${SIKU_EN[dt.getDay()]}, ${MIEZI_EN[dt.getMonth()]} ${dt.getDate()}, ${dt.getFullYear()}` : null;
   }
 
   // lang: 'sw' (default) au 'en' - hutoka kwenye Digital Invitation
@@ -793,7 +797,9 @@
         type:'meshezSetLang',
         lang: currentLang,
         guestName: lastGuestName || null,
-        eventDate: lastEventDateStr ? formatDate(lastEventDateStr, currentLang) : null
+        eventDateISO: lastEventDateStr ? String(lastEventDateStr).slice(0,10) : null,
+        whatsappPhone: lastSnapCardsPublicSettings.whatsapp_phone || '',
+        portfolioImages: lastSnapCardsPublicSettings.portfolio_images || []
       }, '*');
     }catch(e){}
   }
@@ -1089,6 +1095,7 @@
   let lastEventData = null;     // eventData nzima - inatunzwa ili maudhui ya admin (bilingual) yaandikwe
   let lastContent = null;       // upya kila lugha inapobadilika (bila kupakia upya Supabase)
   let lastGuestName = null;     // jina halisi la mgeni - kwa ajili ya "invite-card" mfano kwenye landing
+  let lastSnapCardsPublicSettings = { whatsapp_phone:'', portfolio_images:[null,null,null,null,null,null] };
 
   function applyLanguage(lang){
     if(!T[lang]) lang = 'sw';
@@ -1169,8 +1176,10 @@
         landingFr.contentWindow.postMessage({
           type:'meshezSetLang',
           lang: lang,
-          guestName: lastGuestName,
-          eventDate: lastEventDateStr ? formatDate(lastEventDateStr, lang) : null
+          guestName: lastGuestName || null,
+          eventDateISO: lastEventDateStr ? String(lastEventDateStr).slice(0,10) : null,
+          whatsappPhone: lastSnapCardsPublicSettings.whatsapp_phone || '',
+          portfolioImages: lastSnapCardsPublicSettings.portfolio_images || []
         }, '*');
       }
     }catch(e){}
@@ -1260,7 +1269,24 @@
       const forcedLang = eventData.ui_language_mode || content?.ui_language_mode || null;
       lastEventDateStr = eventData.event_date || null;
       lastEventTimeText = formatTimeAMPM(eventData.event_time) || null;
-      // Baada ya kupata taarifa za Supabase, sasisha badge ya Snap Cards mara moja.
+      lastSnapCardsPublicSettings = { whatsapp_phone:'', portfolio_images:[null,null,null,null,null,null] };
+      if(eventData.user_id){
+        try{
+          const {data:publicSettings,error:publicSettingsError}=await sb.rpc(
+            'get_snap_cards_public_settings',
+            {p_user_id:eventData.user_id}
+          );
+          if(!publicSettingsError && publicSettings){
+            lastSnapCardsPublicSettings={
+              whatsapp_phone:publicSettings.whatsapp_phone || '',
+              portfolio_images:Array.isArray(publicSettings.portfolio_images)
+                ? publicSettings.portfolio_images : [null,null,null,null,null,null]
+            };
+          }else if(publicSettingsError){
+            console.warn('Snap Cards public settings hazijapatikana:',publicSettingsError.message);
+          }
+        }catch(settingsError){ console.warn('Snap Cards public settings:',settingsError); }
+      }
       syncLandingInvitationData();
 
       if(forcedLang === 'en' || forcedLang === 'sw'){
@@ -1623,18 +1649,22 @@
   .loc-card p{font-size:14.5px;color:#5a494e;margin-top:10px;}
 
   /* recent works */
-  .works{margin-top:52px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
-  .work-card{border-radius:10px;padding:24px 22px;display:flex;flex-direction:column;justify-content:flex-start;color:#fff;position:relative;}
-  .work-card .tag{font-size:12px;letter-spacing:.02em;opacity:.85;}
-  .work-card .title{font-family:"Fraunces",serif;font-style:italic;font-size:20px;margin-top:12px;}
-  .work-card .loc{font-size:13px;opacity:.75;margin-top:8px;padding-top:0;}
-  .work-card img{width:100%;height:auto;display:block;border-radius:6px;margin-top:16px;}
+  .works{margin-top:34px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;}
+  .work-card{aspect-ratio:4/5;min-width:0;border-radius:10px;padding:0;overflow:hidden;display:flex;align-items:center;justify-content:center;color:#fff;position:relative;cursor:pointer;border:1px solid rgba(199,154,62,.35);}
+  .work-card img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .35s ease;}
+  .work-card:hover img{transform:scale(1.045);}
+  .work-empty{font-size:13px;letter-spacing:.04em;opacity:.8;text-align:center;padding:12px;}
   .work-card.c1{background:linear-gradient(160deg,#4A2036,#2A1220);}
   .work-card.c2{background:linear-gradient(160deg,#1F4436,#14291F);}
   .work-card.c3{background:linear-gradient(160deg,#7A4E1E,#3E280D);}
   .work-card.c4{background:linear-gradient(160deg,#39415F,#1E2236);}
   .work-card.c5{background:linear-gradient(160deg,#5E2A2A,#301414);}
   .work-card.c6{background:linear-gradient(160deg,#2C4A4A,#152525);}
+  .work-lightbox{position:fixed;inset:0;z-index:9999;background:rgba(12,8,12,.94);display:none;align-items:center;justify-content:center;padding:28px;}
+  .work-lightbox.open{display:flex;}
+  .work-lightbox img{max-width:94vw;max-height:90vh;width:auto;height:auto;object-fit:contain;border-radius:8px;}
+  .work-lightbox-close{position:absolute;top:14px;right:18px;width:44px;height:44px;border:0;border-radius:50%;background:rgba(255,255,255,.16);color:#fff;font-size:30px;cursor:pointer;}
+  @media(max-width:520px){.works{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}.work-lightbox{padding:12px;}}
 
   /* posters */
   .posters{margin-top:52px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
@@ -1759,7 +1789,7 @@
         <li id="svc7">Kutuma SMS kwa wajumbe kukumbusha michango kabla ya tukio</li>
       </ul>
       <div class="cta-row">
-        <a class="btn-whatsapp" href="https://wa.me/255000000000?text=Habari%2C%20naomba%20taarifa%20kuhusu%20Meshez%20Kadi" target="_blank" rel="noopener">
+        <a class="btn-whatsapp" id="heroWhatsappLink" href="#uliza">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M17.5 14.4c-.3-.1-1.7-.8-1.9-.9-.3-.1-.4-.1-.6.1-.2.3-.7.9-.8 1-.2.2-.3.2-.5.1-1.5-.7-2.5-1.3-3.5-3-.3-.5.3-.4.8-1.4.1-.2 0-.4 0-.5C11 9.5 10.6 8.4 10.3 7.6c-.2-.6-.4-.5-.6-.5h-.5c-.2 0-.5.1-.7.3-.2.3-1 1-1 2.3 0 1.4 1 2.7 1.1 2.9.1.2 2 3.1 4.9 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.5-.3z" fill="#fff"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.9.5 3.6 1.4 5.1L2 22l5-1.3c1.4.8 3.1 1.2 4.9 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.7 0-3.2-.5-4.6-1.3l-.3-.2-3 .8.8-2.9-.2-.3C4 15 3.5 13.5 3.5 12 3.5 7.3 7.3 3.5 12 3.5S20.5 7.3 20.5 12 16.7 20.2 12 20.2z" fill="#fff"/></svg>
           <span id="heroCtaText">Ongea nasi WhatsApp</span>
         </a>
@@ -1812,7 +1842,7 @@
       </div>
     </div>
     <div class="cta-row" style="margin-top:36px;">
-      <a class="btn-whatsapp" href="https://wa.me/255000000000?text=Habari%2C%20naomba%20taarifa%20kuhusu%20Meshez%20Kadi" target="_blank" rel="noopener">
+      <a class="btn-whatsapp" id="ctaWhatsappLink2" href="#uliza">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M17.5 14.4c-.3-.1-1.7-.8-1.9-.9-.3-.1-.4-.1-.6.1-.2.3-.7.9-.8 1-.2.2-.3.2-.5.1-1.5-.7-2.5-1.3-3.5-3-.3-.5.3-.4.8-1.4.1-.2 0-.4 0-.5C11 9.5 10.6 8.4 10.3 7.6c-.2-.6-.4-.5-.6-.5h-.5c-.2 0-.5.1-.7.3-.2.3-1 1-1 2.3 0 1.4 1 2.7 1.1 2.9.1.2 2 3.1 4.9 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.5-.3z" fill="#fff"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.9.5 3.6 1.4 5.1L2 22l5-1.3c1.4.8 3.1 1.2 4.9 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.7 0-3.2-.5-4.6-1.3l-.3-.2-3 .8.8-2.9-.2-.3C4 15 3.5 13.5 3.5 12 3.5 7.3 7.3 3.5 12 3.5S20.5 7.3 20.5 12 16.7 20.2 12 20.2z" fill="#fff"/></svg>
         <span id="ctaWaText2">Ongea nasi WhatsApp</span>
       </a>
@@ -1854,16 +1884,20 @@
   <div class="wrap">
     <h2 id="worksH2">Kazi zetu za hivi Karibuni</h2>
     <p class="intro" id="worksIntro">Baadhi ya mialiko tuliyoitengeneza hivi karibuni kwa wateja wetu.</p>
-    <div class="works">
-      <div class="work-card c1"><div class="tag" id="workTag1">HARUSI</div><div class="title">Amina &amp; Juma</div><div class="loc">Dodoma, Tanzania</div></div>
-      <div class="work-card c2"><div class="tag">SEND-OFF</div><div class="title">Neema</div><div class="loc">Nairobi, Kenya</div></div>
-      <div class="work-card c3"><div class="tag">BIRTHDAY</div><div class="title">Kevin @30</div><div class="loc">Kampala, Uganda</div></div>
-      <div class="work-card c4"><div class="tag" id="workTag4">HARUSI</div><div class="title">Fatuma &amp; David</div><div class="loc">Dodoma, Tanzania</div></div>
-      <div class="work-card c5"><div class="tag">SEND-OFF</div><div class="title">Rehema</div><div class="loc">Dodoma, Tanzania</div></div>
-      <div class="work-card c6"><div class="tag">BIRTHDAY</div><div class="title">Baby Zawadi @1</div><div class="loc">Nairobi, Kenya</div></div>
+    <div class="works" id="worksGallery" aria-label="Picha sita za kazi za hivi karibuni">
+      <div class="work-card c1"><div class="work-empty">Picha ya kazi 1</div></div>
+      <div class="work-card c2"><div class="work-empty">Picha ya kazi 2</div></div>
+      <div class="work-card c3"><div class="work-empty">Picha ya kazi 3</div></div>
+      <div class="work-card c4"><div class="work-empty">Picha ya kazi 4</div></div>
+      <div class="work-card c5"><div class="work-empty">Picha ya kazi 5</div></div>
+      <div class="work-card c6"><div class="work-empty">Picha ya kazi 6</div></div>
     </div>
   </div>
 </section>
+<div class="work-lightbox" id="workLightbox" aria-hidden="true" onclick="closeWorkImage()">
+  <button type="button" class="work-lightbox-close" aria-label="Funga picha" onclick="event.stopPropagation();closeWorkImage()">×</button>
+  <img id="workLightboxImage" alt="Picha ya kazi iliyokuzwa" onclick="event.stopPropagation()">
+</div>
 <div class="snap-close-wrap">
   <button type="button" class="btn-open-info" id="snapInfoToggleBottom" aria-expanded="true" aria-controls="snapDetails snapSections" onclick="var d=document.getElementById('snapDetails'),s=document.getElementById('snapSections');d.hidden=true;s.hidden=true;var t=document.getElementById('snapInfoToggle');if(t){t.textContent='FUNGUA';t.setAttribute('aria-expanded','false');}this.textContent='FUNGUA';this.setAttribute('aria-expanded','false');if(t)t.scrollIntoView({behavior:'smooth',block:'center'});">FUNGA</button>
 </div>
@@ -1923,23 +1957,27 @@
 <script>
   document.getElementById('inquiryForm').addEventListener('submit', function(e){
     e.preventDefault();
-    var jina = document.getElementById('jina').value.trim();
-    var simu = document.getElementById('simu').value.trim();
-    var mji = document.getElementById('mji').value.trim();
-    var tukio = document.getElementById('tukio').value.trim();
-    var tarehe = document.getElementById('tarehe').value;
-    var ujumbe = document.getElementById('ujumbe').value.trim();
-    var details = [];
-    if(jina) details.push("Jina: " + jina);
-    if(simu) details.push("Namba ya simu: " + simu);
-    if(mji) details.push("Mji / Nchi: " + mji);
-    if(tukio) details.push("Aina ya tukio: " + tukio);
-    if(tarehe) details.push("Tarehe ya tukio: " + tarehe);
-    if(ujumbe) details.push("Ujumbe: " + ujumbe);
-    var text = "Habari, naomba kupata taarifa kuhusu huduma za Snap Cards.";
-    if(details.length) text += "\n" + details.join("\n");
-    var url = "https://wa.me/255000000000?text=" + encodeURIComponent(text);
-    window.open(url, "_blank");
+    var phone=String(snapCardsWhatsappPhone||"").replace(/\\D/g,"");
+    if(!phone){
+      alert(currentLandingLang==="en" ? "Snap Cards WhatsApp contact number has not been configured yet." : "Namba ya WhatsApp ya Snap Cards bado haijawekwa.");
+      return;
+    }
+    var jina=document.getElementById('jina').value.trim();
+    var simu=document.getElementById('simu').value.trim();
+    var mji=document.getElementById('mji').value.trim();
+    var tukio=document.getElementById('tukio').value.trim();
+    var tarehe=document.getElementById('tarehe').value;
+    var ujumbe=document.getElementById('ujumbe').value.trim();
+    var details=[];
+    if(jina)details.push("Jina: "+jina);
+    if(simu)details.push("Namba ya simu: "+simu);
+    if(mji)details.push("Mji / Nchi: "+mji);
+    if(tukio)details.push("Aina ya tukio: "+tukio);
+    if(tarehe)details.push("Tarehe ya tukio: "+tarehe);
+    if(ujumbe)details.push("Ujumbe: "+ujumbe);
+    var message="Habari, naomba kupata taarifa kuhusu huduma za Snap Cards.";
+    if(details.length)message+="\\n"+details.join("\\n");
+    window.open("https://wa.me/"+phone+"?text="+encodeURIComponent(message),"_blank");
   });
 
   // ---------- LUGHA (SW/EN) - Snap Cards landing page ----------
@@ -2168,25 +2206,96 @@
   // "invite-card" mfano - kwa kawaida ni "Fulani"/tarehe tuli, lakini
   // ukurasa mkuu wa mualiko unatuma jina halisi la mgeni na tarehe halisi
   // ya tukio (ikishapatikana), ili mfano huu uonyeshe taarifa halisi.
-  function applyLandingGuestInfo(name, dateTxt){
-    var mn = document.getElementById("mockNames");
-    if(mn && name){ mn.textContent = name; }
-    var md = document.getElementById("mockDate");
-    var mday = document.getElementById("mockDay");
-    if(dateTxt){
-      var dateParts = String(dateTxt).split(",");
-      if(mday && dateParts.length > 1){ mday.textContent = dateParts.shift().trim(); }
-      if(md){ md.textContent = dateParts.join(",").trim() || String(dateTxt).trim(); }
+  function applyLandingGuestInfo(name, dateIso){
+    var mn=document.getElementById("mockNames");
+    if(mn) mn.textContent=name || (currentLandingLang==="en" ? "Guest" : "Mgeni");
+    var dt=null;
+    if(dateIso){
+      var match=String(dateIso).trim().slice(0,10).match(/^(\\d{4})-(\\d{2})-(\\d{2})$/);
+      if(match){
+        var y=Number(match[1]),m=Number(match[2]),d=Number(match[3]),candidate=new Date(y,m-1,d);
+        if(candidate.getFullYear()===y && candidate.getMonth()===m-1 && candidate.getDate()===d) dt=candidate;
+      }
+    }
+    var md=document.getElementById("mockDate"),mday=document.getElementById("mockDay");
+    if(dt){
+      var swDays=["Jumapili","Jumatatu","Jumanne","Jumatano","Alhamisi","Ijumaa","Jumamosi"];
+      var enDays=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+      var swMonths=["Januari","Februari","Machi","Aprili","Mei","Juni","Julai","Agosti","Septemba","Oktoba","Novemba","Desemba"];
+      var enMonths=["January","February","March","April","May","June","July","August","September","October","November","December"];
+      if(mday) mday.textContent=(currentLandingLang==="en"?enDays:swDays)[dt.getDay()];
+      if(md) md.textContent=currentLandingLang==="en"
+        ? enMonths[dt.getMonth()]+" "+dt.getDate()+", "+dt.getFullYear()
+        : dt.getDate()+" "+swMonths[dt.getMonth()]+" "+dt.getFullYear();
+    }else{
+      if(mday) mday.textContent=currentLandingLang==="en"?"Event day":"Siku ya tukio";
+      if(md) md.textContent=currentLandingLang==="en"?"Event date":"Tarehe ya tukio";
     }
   }
 
-  // Sikiliza lugha inayotoka kwenye ukurasa mkuu wa mualiko (juu ya sehemu hii)
-  window.addEventListener("message", function(ev){
-    if(ev && ev.data && ev.data.type === "meshezSetLang"){
-      if(ev.data.lang === "sw" || ev.data.lang === "en"){
-        applyLandingLang(ev.data.lang);
+  var snapCardsWhatsappPhone="";
+  function applyLandingContactPhone(phone){
+    snapCardsWhatsappPhone=String(phone||"").replace(/\\D/g,"");
+    ["heroWhatsappLink","ctaWhatsappLink2"].forEach(function(id){
+      var link=document.getElementById(id);
+      if(!link) return;
+      if(snapCardsWhatsappPhone){
+        link.href="https://wa.me/"+snapCardsWhatsappPhone+"?text="+encodeURIComponent("Habari, naomba kupata taarifa kuhusu huduma za Snap Cards.");
+        link.target="_blank";link.setAttribute("rel","noopener");
+      }else{link.href="#uliza";link.removeAttribute("target");}
+    });
+  }
+
+  function applyLandingPortfolioImages(images){
+    var gallery=document.getElementById("worksGallery");
+    if(!gallery) return;
+    gallery.innerHTML="";
+    var slots=Array.isArray(images)?images:[];
+    for(var i=0;i<6;i++){
+      var item=slots[i];
+      var url=item && typeof item==="object" ? item.url : (typeof item==="string"?item:"");
+      if(!/^https?:\\/\\//i.test(String(url||""))) url="";
+      var card=document.createElement("div");
+      card.className="work-card c"+(i+1);
+      card.setAttribute("role","button");card.setAttribute("tabindex","0");
+      card.setAttribute("aria-label",(currentLandingLang==="en"?"Open portfolio image ":"Fungua picha ya kazi ")+(i+1));
+      if(url){
+        var img=document.createElement("img");
+        img.src=url;img.alt=(currentLandingLang==="en"?"Snap Cards portfolio image ":"Picha ya kazi ya Snap Cards ")+(i+1);
+        img.loading="lazy";card.appendChild(img);
+        card.addEventListener("click",function(u){return function(){openWorkImage(u);};}(url));
+        card.addEventListener("keydown",function(u){return function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();openWorkImage(u);}};}(url));
+      }else{
+        var placeholder=document.createElement("div");
+        placeholder.className="work-empty";
+        placeholder.textContent=(currentLandingLang==="en"?"Portfolio image ":"Picha ya kazi ")+(i+1);
+        card.appendChild(placeholder);
       }
-      applyLandingGuestInfo(ev.data.guestName, ev.data.eventDate);
+      gallery.appendChild(card);
+    }
+  }
+
+  function openWorkImage(url){
+    var modal=document.getElementById("workLightbox"),img=document.getElementById("workLightboxImage");
+    if(!modal||!img||!url)return;
+    img.src=url;modal.classList.add("open");modal.setAttribute("aria-hidden","false");
+    document.body.style.overflow="hidden";
+  }
+  function closeWorkImage(){
+    var modal=document.getElementById("workLightbox"),img=document.getElementById("workLightboxImage");
+    if(!modal)return;
+    modal.classList.remove("open");modal.setAttribute("aria-hidden","true");
+    if(img)img.src="";
+    document.body.style.overflow="";
+  }
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")closeWorkImage();});
+
+  window.addEventListener("message",function(ev){
+    if(ev && ev.data && ev.data.type==="meshezSetLang"){
+      if(ev.data.lang==="sw"||ev.data.lang==="en") applyLandingLang(ev.data.lang);
+      applyLandingGuestInfo(ev.data.guestName,ev.data.eventDateISO);
+      applyLandingContactPhone(ev.data.whatsappPhone);
+      applyLandingPortfolioImages(ev.data.portfolioImages);
     }
   });
 
@@ -2229,8 +2338,10 @@
         frame.contentWindow.postMessage({
           type:'meshezSetLang',
           lang: currentLang,
-          guestName: lastGuestName,
-          eventDate: lastEventDateStr ? formatDate(lastEventDateStr, currentLang) : null
+          guestName: lastGuestName || null,
+          eventDateISO: lastEventDateStr ? String(lastEventDateStr).slice(0,10) : null,
+          whatsappPhone: lastSnapCardsPublicSettings.whatsapp_phone || '',
+          portfolioImages: lastSnapCardsPublicSettings.portfolio_images || []
         }, '*');
       }
     }catch(e){}
