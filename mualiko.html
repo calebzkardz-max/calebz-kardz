@@ -1491,7 +1491,16 @@
   }
   .btn-open-info:hover{filter:brightness(1.04);transform:translateY(-1px);}
   .snap-close-wrap{display:flex;justify-content:center;padding:26px 24px 8px;}
-  #mockEyebrow{margin:0 auto 14px;text-align:center;}
+  .snap-badge-group{max-width:460px;margin:0 auto 14px;text-align:center;}
+  .snap-badge-group .card-stage{height:270px;width:100%;max-width:460px;margin:0 auto;}
+  .snap-badge-group .invite-card{width:78%;top:8px;left:2%;}
+  .snap-badge-group .qr-seal{width:126px;height:126px;right:5%;bottom:6px;}
+  .snap-badge-group .qr-seal svg{width:68px;height:68px;}
+  #mockEyebrow{margin:0 auto 0;text-align:center;}
+  @media(max-width:480px){
+    .snap-badge-group .card-stage{height:245px;}
+    .snap-badge-group .qr-seal{width:112px;height:112px;}
+  }
   #snapDetails[hidden],#snapSections[hidden]{display:none !important;}
   header.hero{padding-bottom:14px;}
   #uliza.block{padding-top:42px;}
@@ -1682,7 +1691,35 @@
 
 <header class="hero">
   <div class="hero-heading-wrap">
-    <div class="eyebrow" id="mockEyebrow">SNAP CARDS NI FURAHA YETU KUKUALIKA</div>
+    <div class="snap-badge-group">
+    <div class="card-stage">
+      <div class="invite-card">
+        <div class="names" id="mockNames">Fulani</div>
+        <hr>
+        <div class="date" id="mockDate">Jumamosi, 14 Novemba</div>
+      </div>
+      <div class="qr-seal">
+        <svg viewBox="0 0 100 100" fill="none">
+          <rect x="8" y="8" width="28" height="28" rx="3" stroke="#2A1220" stroke-width="6"/>
+          <rect x="64" y="8" width="28" height="28" rx="3" stroke="#2A1220" stroke-width="6"/>
+          <rect x="8" y="64" width="28" height="28" rx="3" stroke="#2A1220" stroke-width="6"/>
+          <rect x="17" y="17" width="10" height="10" fill="#2A1220"/>
+          <rect x="73" y="17" width="10" height="10" fill="#2A1220"/>
+          <rect x="17" y="73" width="10" height="10" fill="#2A1220"/>
+          <rect x="50" y="8" width="8" height="8" fill="#2A1220"/>
+          <rect x="50" y="24" width="8" height="8" fill="#2A1220"/>
+          <rect x="66" y="50" width="8" height="8" fill="#2A1220"/>
+          <rect x="82" y="50" width="8" height="8" fill="#2A1220"/>
+          <rect x="50" y="66" width="8" height="8" fill="#2A1220"/>
+          <rect x="50" y="82" width="8" height="8" fill="#2A1220"/>
+          <rect x="34" y="50" width="8" height="8" fill="#2A1220"/>
+          <rect x="34" y="34" width="8" height="8" fill="#2A1220"/>
+          <rect x="66" y="66" width="8" height="8" fill="#2A1220"/>
+        </svg>
+      </div>
+    </div>
+      <div class="eyebrow" id="mockEyebrow">SNAP CARDS NI FURAHA YETU KUKUALIKA</div>
+    </div>
     <h1 id="heroH1">Je, Ungependa Kutufahamu? — Snap Cards</h1>
     <button type="button" class="btn-open-info" id="snapInfoToggle" aria-expanded="false" aria-controls="snapDetails snapSections">FUNGUA</button>
   </div>
@@ -1718,32 +1755,7 @@
       </p>
     </div>
 
-    <div class="card-stage">
-      <div class="invite-card">
-        <div class="names" id="mockNames">Fulani</div>
-        <hr>
-        <div class="date" id="mockDate">Jumamosi, 14 Novemba</div>
-      </div>
-      <div class="qr-seal">
-        <svg viewBox="0 0 100 100" fill="none">
-          <rect x="8" y="8" width="28" height="28" rx="3" stroke="#2A1220" stroke-width="6"/>
-          <rect x="64" y="8" width="28" height="28" rx="3" stroke="#2A1220" stroke-width="6"/>
-          <rect x="8" y="64" width="28" height="28" rx="3" stroke="#2A1220" stroke-width="6"/>
-          <rect x="17" y="17" width="10" height="10" fill="#2A1220"/>
-          <rect x="73" y="17" width="10" height="10" fill="#2A1220"/>
-          <rect x="17" y="73" width="10" height="10" fill="#2A1220"/>
-          <rect x="50" y="8" width="8" height="8" fill="#2A1220"/>
-          <rect x="50" y="24" width="8" height="8" fill="#2A1220"/>
-          <rect x="66" y="50" width="8" height="8" fill="#2A1220"/>
-          <rect x="82" y="50" width="8" height="8" fill="#2A1220"/>
-          <rect x="50" y="66" width="8" height="8" fill="#2A1220"/>
-          <rect x="50" y="82" width="8" height="8" fill="#2A1220"/>
-          <rect x="34" y="50" width="8" height="8" fill="#2A1220"/>
-          <rect x="34" y="34" width="8" height="8" fill="#2A1220"/>
-          <rect x="66" y="66" width="8" height="8" fill="#2A1220"/>
-        </svg>
-      </div>
-    </div>
+
   </div>
   </div>
 </header>
