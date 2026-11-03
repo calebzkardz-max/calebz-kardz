@@ -2276,17 +2276,12 @@
   }
 
   function openWorkImage(url){
-    var modal=document.getElementById("workLightbox"),img=document.getElementById("workLightboxImage");
-    if(!modal||!img||!url)return;
-    img.src=url;modal.classList.add("open");modal.setAttribute("aria-hidden","false");
-    document.body.style.overflow="hidden";
+    if(!url || !/^https?:\\/\\//i.test(String(url)))return;
+    // Fungua kwenye viewport ya ukurasa mkuu, si ndani ya iframe ndefu.
+    try{ window.parent.postMessage({type:"meshezOpenPortfolioImage",url:String(url)}, "*"); }catch(e){}
   }
   function closeWorkImage(){
-    var modal=document.getElementById("workLightbox"),img=document.getElementById("workLightboxImage");
-    if(!modal)return;
-    modal.classList.remove("open");modal.setAttribute("aria-hidden","true");
-    if(img)img.src="";
-    document.body.style.overflow="";
+    try{ window.parent.postMessage({type:"meshezClosePortfolioImage"}, "*"); }catch(e){}
   }
   document.addEventListener("keydown",function(e){if(e.key==="Escape")closeWorkImage();});
 
@@ -2313,6 +2308,52 @@
 </html>
 `;
   var frame = document.getElementById('landingFrame');
+
+  // Lightbox ya picha sita huwekwa kwenye ukurasa mkuu ili position:fixed
+  // ifuate viewport halisi ya simu/PC, si urefu wa iframe.
+  (function setupPortfolioLightbox(){
+    var style = document.createElement('style');
+    style.textContent = [
+      '#snapPortfolioLightbox{position:fixed;inset:0;z-index:2147483000;display:none;align-items:center;justify-content:center;padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));background:rgba(12,8,12,.94);}',
+      '#snapPortfolioLightbox.open{display:flex;}',
+      '#snapPortfolioLightbox img{display:block;max-width:calc(100vw - 32px);max-height:calc(100vh - 32px);max-height:calc(100dvh - 32px);width:auto;height:auto;object-fit:contain;border-radius:8px;}',
+      '#snapPortfolioLightbox button{position:absolute;top:max(12px, env(safe-area-inset-top));right:14px;width:44px;height:44px;border:0;border-radius:50%;background:rgba(255,255,255,.18);color:#fff;font-size:30px;line-height:1;cursor:pointer;z-index:1;}',
+      'body.snap-portfolio-open{overflow:hidden!important;touch-action:none;}'
+    ].join('');
+    document.head.appendChild(style);
+
+    var modal = document.createElement('div');
+    modal.id = 'snapPortfolioLightbox';
+    modal.setAttribute('aria-hidden','true');
+    modal.innerHTML = '<button type="button" aria-label="Funga picha">×</button><img alt="Picha ya kazi iliyokuzwa">';
+    document.body.appendChild(modal);
+
+    var image = modal.querySelector('img');
+    function close(){
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden','true');
+      image.removeAttribute('src');
+      document.body.classList.remove('snap-portfolio-open');
+    }
+    modal.addEventListener('click', close);
+    modal.querySelector('button').addEventListener('click', close);
+    image.addEventListener('click', function(e){e.stopPropagation();});
+
+    window.addEventListener('message', function(ev){
+      if(!frame || ev.source !== frame.contentWindow || !ev.data)return;
+      if(ev.data.type === 'meshezOpenPortfolioImage'){
+        var url = String(ev.data.url || '');
+        if(!/^https?:\\/\\//i.test(url))return;
+        image.src = url;
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden','false');
+        document.body.classList.add('snap-portfolio-open');
+      }else if(ev.data.type === 'meshezClosePortfolioImage'){
+        close();
+      }
+    });
+    document.addEventListener('keydown', function(e){if(e.key === 'Escape')close();});
+  })();
 
   function resizeFrame(){
     try{
