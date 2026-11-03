@@ -785,6 +785,19 @@
     return lang === 'en' ? formatDateEn(dateStr) : formatDateSw(dateStr);
   }
 
+  function syncLandingInvitationData(){
+    try{
+      var landingFr = document.getElementById('landingFrame');
+      if(!landingFr || !landingFr.contentWindow) return;
+      landingFr.contentWindow.postMessage({
+        type:'meshezSetLang',
+        lang: currentLang,
+        guestName: lastGuestName || null,
+        eventDate: lastEventDateStr ? formatDate(lastEventDateStr, currentLang) : null
+      }, '*');
+    }catch(e){}
+  }
+
   function formatTimeAMPM(time24){
     if(!time24) return '';
     const [hStr, mStr] = time24.split(':');
@@ -1247,6 +1260,8 @@
       const forcedLang = eventData.ui_language_mode || content?.ui_language_mode || null;
       lastEventDateStr = eventData.event_date || null;
       lastEventTimeText = formatTimeAMPM(eventData.event_time) || null;
+      // Baada ya kupata taarifa za Supabase, sasisha badge ya Snap Cards mara moja.
+      syncLandingInvitationData();
 
       if(forcedLang === 'en' || forcedLang === 'sw'){
         languageLocked = true;
@@ -1726,7 +1741,7 @@
     </div>
     </div>
     <h1 id="heroH1">Je, Ungependa Kutufahamu? — Snap Cards</h1>
-    <button type="button" class="btn-open-info" id="snapInfoToggle" aria-expanded="false" aria-controls="snapDetails snapSections">FUNGUA</button>
+    <button type="button" class="btn-open-info" id="snapInfoToggle" aria-expanded="false" aria-controls="snapDetails snapSections" onclick="var d=document.getElementById('snapDetails'),s=document.getElementById('snapSections'),o=d.hasAttribute('hidden');d.hidden=!o;s.hidden=!o;this.textContent=o?'FUNGA':'FUNGUA';this.setAttribute('aria-expanded',String(o));var b=document.getElementById('snapInfoToggleBottom');if(b){b.textContent=o?'FUNGA':'FUNGUA';b.setAttribute('aria-expanded',String(o));}">FUNGUA</button>
   </div>
   <div id="snapDetails" hidden>
   <div class="hero-grid">
@@ -1850,7 +1865,7 @@
   </div>
 </section>
 <div class="snap-close-wrap">
-  <button type="button" class="btn-open-info" id="snapInfoToggleBottom" aria-expanded="true" aria-controls="snapDetails snapSections">FUNGA</button>
+  <button type="button" class="btn-open-info" id="snapInfoToggleBottom" aria-expanded="true" aria-controls="snapDetails snapSections" onclick="var d=document.getElementById('snapDetails'),s=document.getElementById('snapSections');d.hidden=true;s.hidden=true;var t=document.getElementById('snapInfoToggle');if(t){t.textContent='FUNGUA';t.setAttribute('aria-expanded','false');}this.textContent='FUNGUA';this.setAttribute('aria-expanded','false');if(t)t.scrollIntoView({behavior:'smooth',block:'center'});">FUNGA</button>
 </div>
 
 </div>
@@ -1906,37 +1921,6 @@
 </section>
 
 <script>
-  // Dropdown ya Snap Cards: vitufe vya juu na chini vinafanya kazi pamoja.
-  (function(){
-    var topToggle = document.getElementById('snapInfoToggle');
-    var bottomToggle = document.getElementById('snapInfoToggleBottom');
-    var details = document.getElementById('snapDetails');
-    var sections = document.getElementById('snapSections');
-    if(!topToggle || !bottomToggle || !details || !sections) return;
-
-    function setSnapInfoOpen(isOpen){
-      if(isOpen){
-        details.removeAttribute('hidden');
-        sections.removeAttribute('hidden');
-      } else {
-        details.setAttribute('hidden','');
-        sections.setAttribute('hidden','');
-      }
-      [topToggle,bottomToggle].forEach(function(button){
-        button.setAttribute('aria-expanded', String(isOpen));
-        button.textContent = isOpen ? 'FUNGA' : 'FUNGUA';
-      });
-    }
-
-    topToggle.addEventListener('click', function(){
-      setSnapInfoOpen(details.hasAttribute('hidden'));
-    });
-    bottomToggle.addEventListener('click', function(){
-      setSnapInfoOpen(false);
-      topToggle.scrollIntoView({behavior:'smooth',block:'center'});
-    });
-  })();
-
   document.getElementById('inquiryForm').addEventListener('submit', function(e){
     e.preventDefault();
     var jina = document.getElementById('jina').value.trim();
