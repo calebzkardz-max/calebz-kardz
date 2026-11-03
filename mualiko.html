@@ -1490,6 +1490,8 @@
     transition:transform .18s ease,filter .18s ease;
   }
   .btn-open-info:hover{filter:brightness(1.04);transform:translateY(-1px);}
+  .snap-close-wrap{display:flex;justify-content:center;padding:26px 24px 8px;}
+  #mockEyebrow{margin:0 auto 14px;text-align:center;}
   #snapDetails[hidden],#snapSections[hidden]{display:none !important;}
   header.hero{padding-bottom:14px;}
   #uliza.block{padding-top:42px;}
@@ -1680,6 +1682,7 @@
 
 <header class="hero">
   <div class="hero-heading-wrap">
+    <div class="eyebrow" id="mockEyebrow">SNAP CARDS NI FURAHA YETU KUKUALIKA</div>
     <h1 id="heroH1">Je, Ungependa Kutufahamu? — Snap Cards</h1>
     <button type="button" class="btn-open-info" id="snapInfoToggle" aria-expanded="false" aria-controls="snapDetails snapSections">FUNGUA</button>
   </div>
@@ -1717,7 +1720,6 @@
 
     <div class="card-stage">
       <div class="invite-card">
-        <div class="eyebrow" id="mockEyebrow">SNAP CARDS NI FURAHA YETU KUKUALIKA</div>
         <div class="names" id="mockNames">Fulani</div>
         <hr>
         <div class="date" id="mockDate">Jumamosi, 14 Novemba</div>
@@ -1836,6 +1838,9 @@
     </div>
   </div>
 </section>
+<div class="snap-close-wrap">
+  <button type="button" class="btn-open-info" id="snapInfoToggleBottom" aria-expanded="true" aria-controls="snapDetails snapSections">FUNGA</button>
+</div>
 
 </div>
 
@@ -1890,23 +1895,34 @@
 </section>
 
 <script>
-  // Dropdown ya Snap Cards: inaendeshwa ndani ya iframe hii.
+  // Dropdown ya Snap Cards: vitufe vya juu na chini vinafanya kazi pamoja.
   (function(){
-    var toggle = document.getElementById('snapInfoToggle');
+    var topToggle = document.getElementById('snapInfoToggle');
+    var bottomToggle = document.getElementById('snapInfoToggleBottom');
     var details = document.getElementById('snapDetails');
     var sections = document.getElementById('snapSections');
-    if(!toggle || !details || !sections) return;
-    toggle.addEventListener('click', function(){
-      var willOpen = details.hasAttribute('hidden');
-      if(willOpen){
+    if(!topToggle || !bottomToggle || !details || !sections) return;
+
+    function setSnapInfoOpen(isOpen){
+      if(isOpen){
         details.removeAttribute('hidden');
         sections.removeAttribute('hidden');
       } else {
         details.setAttribute('hidden','');
         sections.setAttribute('hidden','');
       }
-      toggle.setAttribute('aria-expanded', String(willOpen));
-      toggle.textContent = willOpen ? 'FUNGA' : 'FUNGUA';
+      [topToggle,bottomToggle].forEach(function(button){
+        button.setAttribute('aria-expanded', String(isOpen));
+        button.textContent = isOpen ? 'FUNGA' : 'FUNGUA';
+      });
+    }
+
+    topToggle.addEventListener('click', function(){
+      setSnapInfoOpen(details.hasAttribute('hidden'));
+    });
+    bottomToggle.addEventListener('click', function(){
+      setSnapInfoOpen(false);
+      topToggle.scrollIntoView({behavior:'smooth',block:'center'});
     });
   })();
 
