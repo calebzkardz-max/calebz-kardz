@@ -1851,6 +1851,21 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
           <input type="hidden" id="invDesignId">
           <input type="hidden" id="invDesignEventId">
 
+          <!-- SNAP CARDS: NAMBA YA WHATSAPP + PICHA SITA ZA KAZI -->
+          <div class="card" style="margin-bottom:16px;border:1px solid #D6B56D;">
+            <div class="card-header">
+              <div class="card-title"><i data-lucide="message-circle" class="icon" style="color:#16A34A"></i> Mawasiliano ya Snap Cards</div>
+            </div>
+            <div class="form-group" style="margin-bottom:8px;">
+              <label for="snapCardsWhatsappPhone">Namba ya WhatsApp ya Snap Cards (namba moja kwa mawasiliano yote)</label>
+              <input type="tel" id="snapCardsWhatsappPhone" inputmode="tel" placeholder="Mfano: 2557XXXXXXXX">
+              <small style="display:block;color:var(--gray-400);margin-top:6px;">Weka namba yenye country code, mfano 255 kwa Tanzania. Namba hii itaunganishwa na “Ongea nasi WhatsApp” na “Tuma kupitia WhatsApp” kwenye ukurasa wa mualiko.</small>
+            </div>
+            <div style="font-size:13px;font-weight:700;margin:14px 0 8px;">Kazi zetu za hivi Karibuni — picha 6</div>
+            <p style="font-size:11px;color:var(--gray-400);margin:0 0 12px;">Pakia picha moja kwa kila nafasi. Picha zitajipanga ndani ya vijedwali vyake bila kuvuruga uwiano, na mgeni akigusa picha ataiona kwa ukubwa mkubwa.</p>
+            <div id="snapPortfolioSlots" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;"></div>
+          </div>
+
           <!-- COVER & HADITHI -->
           <div class="card" style="margin-bottom:16px;">
             <div class="card-header">
@@ -7183,6 +7198,139 @@ const DRESS_COLOR_OPTIONS = [
   { hex: '#EF4444', name: 'Red' },
 ];
 
+let snapCardsPublicSettingsCache = {
+  whatsapp_phone: '',
+  portfolio_images: [null,null,null,null,null,null]
+};
+
+function normalizeSnapWhatsappPhone(value){
+  return String(value || '').replace(/[^0-9]/g,'');
+}
+
+function renderSnapPortfolioSlots(){
+  const wrap=document.getElementById('snapPortfolioSlots');
+  if(!wrap) return;
+  wrap.innerHTML='';
+  const images=Array.isArray(snapCardsPublicSettingsCache.portfolio_images)
+    ? snapCardsPublicSettingsCache.portfolio_images : [];
+  for(let i=0;i<6;i++){
+    const item=images[i] && typeof images[i]==='object' ? images[i] : null;
+    const card=document.createElement('div');
+    card.style.cssText='min-width:0;border:1px solid var(--gray-200);border-radius:9px;padding:7px;background:var(--gray-50);';
+    const preview=document.createElement('div');
+    preview.style.cssText='width:100%;aspect-ratio:4/5;border-radius:6px;overflow:hidden;background:#EEE7DB;display:flex;align-items:center;justify-content:center;';
+    if(item?.url){
+      const img=document.createElement('img');
+      img.src=item.url;img.alt='Picha ya kazi '+(i+1);
+      img.style.cssText='width:100%;height:100%;object-fit:cover;display:block;';
+      preview.appendChild(img);
+    }else{
+      preview.innerHTML='<span style="font-size:11px;color:#8A7A7E;text-align:center;padding:4px;">Picha '+(i+1)+'</span>';
+    }
+    const label=document.createElement('div');
+    label.textContent='Picha '+(i+1);
+    label.style.cssText='font-size:11px;font-weight:700;margin:7px 0;text-align:center;';
+    const file=document.createElement('input');
+    file.type='file';file.accept='image/jpeg,image/png,image/webp';file.style.display='none';
+    file.addEventListener('change',()=>uploadSnapPortfolioSlot(i+1,file));
+    const actions=document.createElement('div');
+    actions.style.cssText='display:flex;gap:5px;';
+    const upload=document.createElement('button');
+    upload.type='button';upload.className='btn btn-outline btn-sm';upload.style.cssText='flex:1;padding:6px 3px;font-size:10px;';
+    upload.textContent=item?.url?'Badilisha':'Pakia';
+    upload.addEventListener('click',()=>file.click());
+    const remove=document.createElement('button');
+    remove.type='button';remove.className='btn btn-outline btn-sm';remove.style.cssText='padding:6px 8px;font-size:10px;';
+    remove.textContent='Ondoa';remove.disabled=!item?.url;
+    remove.addEventListener('click',()=>removeSnapPortfolioSlot(i+1));
+    actions.append(upload,remove);
+    card.append(preview,label,file,actions);
+    wrap.appendChild(card);
+  }
+}
+
+async function loadSnapCardsPublicSettings(){
+  if(!ORG_OWNER_ID) return;
+  const {data,error}=await sb.from('snap_cards_public_settings')
+    .select('whatsapp_phone,portfolio_images')
+    .eq('user_id',ORG_OWNER_ID).maybeSingle();
+  if(error){
+    console.error('Snap Cards settings:',error);
+    showToast('Mipangilio ya Snap Cards haijasomeka. Hakikisha SQL ya snap_cards_public_settings imeendeshwa.','error');
+    return;
+  }
+  snapCardsPublicSettingsCache={
+    whatsapp_phone:data?.whatsapp_phone || '',
+    portfolio_images:Array.isArray(data?.portfolio_images)?data.portfolio_images:[null,null,null,null,null,null]
+  };
+  while(snapCardsPublicSettingsCache.portfolio_images.length<6)snapCardsPublicSettingsCache.portfolio_images.push(null);
+  document.getElementById('snapCardsWhatsappPhone').value=snapCardsPublicSettingsCache.whatsapp_phone;
+  renderSnapPortfolioSlots();
+}
+
+async function saveSnapCardsPublicSettings(){
+  if(!ORG_OWNER_ID) throw new Error('Owner wa mfumo hajapatikana.');
+  const phone=normalizeSnapWhatsappPhone(document.getElementById('snapCardsWhatsappPhone')?.value);
+  const images=Array.isArray(snapCardsPublicSettingsCache.portfolio_images)
+    ? snapCardsPublicSettingsCache.portfolio_images.slice(0,6) : [null,null,null,null,null,null];
+  while(images.length<6)images.push(null);
+  const {error}=await sb.from('snap_cards_public_settings').upsert({
+    user_id:ORG_OWNER_ID,
+    whatsapp_phone:phone,
+    portfolio_images:images,
+    updated_at:new Date().toISOString()
+  },{onConflict:'user_id'});
+  if(error) throw error;
+  snapCardsPublicSettingsCache.whatsapp_phone=phone;
+  snapCardsPublicSettingsCache.portfolio_images=images;
+}
+
+async function uploadSnapPortfolioSlot(slot,input){
+  const file=input.files?.[0];
+  if(!file)return;
+  try{
+    showToast('Inaandaa picha ya nafasi '+slot+'...','info');
+    const blob=await convertImageToWebP(file);
+    const path=ORG_OWNER_ID+'/snap-portfolio/slot-'+slot+'-'+Date.now()+'.webp';
+    const {error:uploadError}=await sb.storage.from('promo-images').upload(path,blob,{contentType:'image/webp',upsert:false});
+    if(uploadError)throw uploadError;
+    const {data:{publicUrl}}=sb.storage.from('promo-images').getPublicUrl(path);
+    const images=Array.isArray(snapCardsPublicSettingsCache.portfolio_images)
+      ? snapCardsPublicSettingsCache.portfolio_images.slice(0,6) : [null,null,null,null,null,null];
+    while(images.length<6)images.push(null);
+    const old=images[slot-1];
+    images[slot-1]={url:publicUrl,path:path};
+    snapCardsPublicSettingsCache.portfolio_images=images;
+    try{await saveSnapCardsPublicSettings();}
+    catch(e){
+      await sb.storage.from('promo-images').remove([path]);
+      throw e;
+    }
+    if(old?.path) await sb.storage.from('promo-images').remove([old.path]);
+    renderSnapPortfolioSlots();
+    showToast('Picha '+slot+' imehifadhiwa.','success');
+  }catch(e){
+    showToast('Imeshindikana kupakia picha '+slot+': '+(e.message||e),'error');
+  }finally{input.value='';}
+}
+
+async function removeSnapPortfolioSlot(slot){
+  const images=Array.isArray(snapCardsPublicSettingsCache.portfolio_images)
+    ? snapCardsPublicSettingsCache.portfolio_images.slice(0,6) : [null,null,null,null,null,null];
+  while(images.length<6)images.push(null);
+  const old=images[slot-1];
+  if(!old?.url)return;
+  if(!confirm('Una uhakika unataka kuondoa picha ya nafasi '+slot+'?'))return;
+  images[slot-1]=null;
+  snapCardsPublicSettingsCache.portfolio_images=images;
+  try{
+    await saveSnapCardsPublicSettings();
+    if(old.path)await sb.storage.from('promo-images').remove([old.path]);
+    renderSnapPortfolioSlots();
+    showToast('Picha '+slot+' imeondolewa.','success');
+  }catch(e){showToast('Imeshindikana kuondoa picha: '+(e.message||e),'error');}
+}
+
 async function loadInvitationDesign() {
   const eventId = document.getElementById('inviteDesignEventSelect').value;
   const emptyState = document.getElementById('inviteDesignEmptyState');
@@ -7225,6 +7373,8 @@ async function loadInvitationDesign() {
   document.getElementById('invVenuePhoto2Url').value = data?.venue_photo_2 || '';
   document.getElementById('venuePhoto2Preview').style.backgroundImage = data?.venue_photo_2 ? `url('${data.venue_photo_2}')` : 'none';
   document.getElementById('invGiftInfo').value = data?.gift_info || '';
+
+  await loadSnapCardsPublicSettings();
 
   document.getElementById('dressColorsList').innerHTML = '';
   document.getElementById('programList').innerHTML = '';
@@ -7279,7 +7429,13 @@ async function saveInvitationDesign() {
   const { error } = await sb.from('invitation_designs').upsert(payload, { onConflict: 'event_id' });
   if (error) return showToast('Kosa: ' + error.message + ' (Huenda jedwali la invitation_designs halijatengenezwa - angalia SQL ya Hatua 1)', 'error');
 
-  showToast('Digital Invitation imehifadhiwa!', 'success');
+  try {
+    await saveSnapCardsPublicSettings();
+  } catch (settingsError) {
+    return showToast('Design imehifadhiwa lakini namba/picha za Snap Cards hazijahifadhiwa: ' + settingsError.message, 'error');
+  }
+
+  showToast('Digital Invitation na mipangilio ya Snap Cards vimehifadhiwa!', 'success');
   loadInvitationDesign();
 }
 
