@@ -295,6 +295,23 @@
   @media(min-width:640px){.brand-logo-editor{grid-template-columns:minmax(0,1fr) auto}}
   .auth-logo-icon,.sidebar-logo-icon{background-size:contain;background-position:center;background-repeat:no-repeat}
   .auth-logo-icon img,.sidebar-logo-icon img{display:block;object-fit:contain;flex-shrink:0;}
+  .auth-logo-icon{
+    position:relative!important;display:flex!important;
+    align-items:center!important;justify-content:center!important;
+    flex-direction:row!important;
+  }
+  .auth-logo-icon>img{
+    display:block!important;position:relative!important;
+    width:100%!important;height:100%!important;
+    max-width:100%!important;max-height:100%!important;
+    min-width:0!important;min-height:0!important;
+    object-fit:contain!important;object-position:center!important;
+    visibility:visible!important;opacity:1!important;
+  }
+  .sidebar-logo-icon>img{
+    display:block!important;max-width:100%!important;max-height:100%!important;
+    object-fit:contain!important;object-position:center!important;
+  }
   /* Circular brand logos: preserve the uploaded image's original aspect ratio. */
   .auth-logo-icon{
     /* Fixed square geometry: never stretch into an oval. */
@@ -3356,6 +3373,9 @@ async function logout() {
   currentUser = null;
   document.getElementById('mainApp').style.display = 'none';
   document.getElementById('authScreen').style.display = 'flex';
+  // Refresh the public sign-in identity from the same branding record after logout.
+  applySystemBranding();
+  loadPublicSystemBranding().catch(e=>console.warn('Auth branding refresh:',e));
   if (qrScanner) { try { qrScanner.clear(); } catch(e) {} }
 }
 
@@ -7956,7 +7976,7 @@ async function loadPublicSystemBranding(){
     console.warn('Public system branding haijapatikana; identity ya local imehifadhiwa:',e);
     applySystemBranding();
   }
-  await revealAuthBrandingWhenReady();
+  // Branding is already applied synchronously above; do not wait on an absent helper.
 }
 async function loadSystemBrandingFromSupabase(){
   if(!ORG_OWNER_ID)return;
