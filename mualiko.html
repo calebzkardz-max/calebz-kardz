@@ -1559,7 +1559,10 @@
   @keyframes scroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
   @media (prefers-reduced-motion: reduce){.strip .track{animation:none;}}
 
-  section.block{padding:96px 24px;}
+  section.block{padding:56px 24px;}
+  #kuhusu.block{padding-top:30px;}
+  #stepsSection.block{padding-top:34px;background:transparent !important;}
+  #kazi.block{padding-top:34px;}
   .kicker{color:var(--gold);}
   .block h2{font-size:clamp(28px,3.4vw,38px);color:var(--plum-deep);max-width:24ch;}
   .block p.intro{max-width:56ch;margin-top:16px;font-size:17px;color:#4a3a3f;}
@@ -1802,7 +1805,7 @@
   </div>
 </section>
 
-<section class="block" style="background:var(--cream-2);">
+<section class="block" id="stepsSection">
   <div class="wrap">
     <p class="kicker" id="stepsKicker">JINSI TUNAVYOFANYA KAZI</p>
     <h2 id="stepsH2">Kutoka taarifa za tukio hadi mgeni kuingia mlangoni</h2>
@@ -1829,12 +1832,6 @@
         <p id="step4P1">Mlangoni, QR inaskaniwa na programu yetu — mgeni anathibitishwa papo hapo.</p>
       </div>
     </div>
-  </div>
-</section>
-
-<section class="block">
-  <div class="wrap">
-    <h2 id="eventsH2">Kwa kila aina ya sherehe yako Snap Cards tunafanya tukio lako kwa upekee wake.</h2>
   </div>
 </section>
 
@@ -1867,11 +1864,11 @@
       <div>
         <div class="field">
           <label for="jina" id="lblJina">Jina lako</label>
-          <input type="text" id="jina" required>
+          <input type="text" id="jina">
         </div>
         <div class="field">
           <label for="simu" id="lblSimu">Namba yako ya simu</label>
-          <input type="tel" id="simu" required>
+          <input type="tel" id="simu">
         </div>
         <div class="field">
           <label for="mji" id="lblMji">Mji / Nchi</label>
@@ -1942,15 +1939,21 @@
 
   document.getElementById('inquiryForm').addEventListener('submit', function(e){
     e.preventDefault();
-    var jina = document.getElementById('jina').value;
-    var simu = document.getElementById('simu').value;
-    var mji = document.getElementById('mji').value;
-    var tukio = document.getElementById('tukio').value;
+    var jina = document.getElementById('jina').value.trim();
+    var simu = document.getElementById('simu').value.trim();
+    var mji = document.getElementById('mji').value.trim();
+    var tukio = document.getElementById('tukio').value.trim();
     var tarehe = document.getElementById('tarehe').value;
-    var ujumbe = document.getElementById('ujumbe').value;
-    var text = "Habari, naitwa " + jina + " (namba yangu: " + simu + "). Nipo " + mji + " na ninahitaji kadi ya " + tukio + "."
-      + (tarehe ? " Tarehe ya tukio: " + tarehe + "." : "")
-      + (ujumbe ? " " + ujumbe : "");
+    var ujumbe = document.getElementById('ujumbe').value.trim();
+    var details = [];
+    if(jina) details.push("Jina: " + jina);
+    if(simu) details.push("Namba ya simu: " + simu);
+    if(mji) details.push("Mji / Nchi: " + mji);
+    if(tukio) details.push("Aina ya tukio: " + tukio);
+    if(tarehe) details.push("Tarehe ya tukio: " + tarehe);
+    if(ujumbe) details.push("Ujumbe: " + ujumbe);
+    var text = "Habari, naomba kupata taarifa kuhusu huduma za Snap Cards.";
+    if(details.length) text += "\n" + details.join("\n");
     var url = "https://wa.me/255000000000?text=" + encodeURIComponent(text);
     window.open(url, "_blank");
   });
@@ -2010,7 +2013,7 @@
       workTagHarusi:"HARUSI",
       inqKicker:"ULIZA SASA",
       inqH2:"Je, una tukio hivi karibuni? Tujulishe kuhusu tukio lako!",
-      inqIntro:"Wasiliana nasi. Jaza taarifa za awali kisha bonyeza kitufe \\"Tuma Kupitia Whatsapp\\" kufungua ukurasa wa Whatsapp. Karibu Sana.",
+      inqIntro:"Wasiliana nasi. Jaza taarifa zozote unazopenda (zote ni hiari), kisha bonyeza Tuma Kupitia WhatsApp. Hata ukiwa na taarifa chache tu, ujumbe utatumwa. Karibu Sana.",
       lblJina:"Jina lako", lblSimu:"Namba yako ya simu", lblMji:"Mji / Nchi", lblTukio:"Aina ya tukio",
       lblTarehe:"Tarehe ya tukio", lblUjumbe:"Ujumbe wako",
       phMji:"Andika mji au nchi yako", phTukio:"Mfano: Harusi, Send-off, Birthday...", phUjumbe:"Tuambie zaidi kuhusu tukio lako...",
@@ -2069,7 +2072,7 @@
       workTagHarusi:"WEDDING",
       inqKicker:"ENQUIRE NOW",
       inqH2:"Have an upcoming event? Tell us about it!",
-      inqIntro:"Get in touch with us. Fill in the details below then tap \\"Send via WhatsApp\\" to open WhatsApp. You're most welcome.",
+      inqIntro:"Get in touch with us. Fill in any details you wish (all fields are optional), then tap Send via WhatsApp. You can send your enquiry even with only a few details. Welcome!",
       lblJina:"Your name", lblSimu:"Your phone number", lblMji:"City / Country", lblTukio:"Type of event",
       lblTarehe:"Event date", lblUjumbe:"Your message",
       phMji:"Enter your city or country", phTukio:"E.g: Wedding, Send-off, Birthday...", phUjumbe:"Tell us more about your event...",
