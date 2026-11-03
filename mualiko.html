@@ -1693,7 +1693,7 @@
 </style>
 </head>
 <body>
-
+<div id="landingPageRoot" style="display:flow-root;min-height:0;">
 <header class="hero">
   <div class="hero-heading-wrap">
     <div class="snap-badge-group">
@@ -2215,6 +2215,7 @@
   })();
 <\/script>
 
+</div>
 </body>
 </html>
 `;
@@ -2223,11 +2224,11 @@
   function resizeFrame(){
     try{
       var doc = frame.contentWindow.document;
-      var h = Math.max(
-        doc.documentElement.scrollHeight,
-        doc.body ? doc.body.scrollHeight : 0
-      );
-      if(h > 0){ frame.style.height = h + 'px'; }
+      var root = doc.getElementById('landingPageRoot');
+      if(!root) return;
+      // Pima maudhui halisi, si viewport ya iframe, ili urefu upungue na kuongezeka.
+      var h = Math.ceil(root.getBoundingClientRect().height);
+      if(h >= 0){ frame.style.height = h + 'px'; }
     }catch(e){}
   }
 
@@ -2266,7 +2267,10 @@
     try{
       var ro = new ResizeObserver(resizeFrame);
       frame.addEventListener('load', function(){
-        try{ ro.observe(frame.contentWindow.document.body); }catch(e){}
+        try{
+          var root = frame.contentWindow.document.getElementById('landingPageRoot');
+          if(root) ro.observe(root);
+        }catch(e){}
       });
     }catch(e){}
   }
