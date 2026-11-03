@@ -1888,35 +1888,24 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
                     <span id="invCoverNamesYLabel" style="width:36px; text-align:center; font-size:12px;">0</span>
                     <button type="button" class="btn btn-outline btn-sm" onclick="adjustCoverPos('Names', 4)">+</button>
                   </div>
-                  <div class="pos-row" style="display:flex; align-items:center; gap:8px;">
-                    <span style="width:110px; font-size:12px; color:var(--gray-600);">"Gusa Kufungua"</span>
-                    <button type="button" class="btn btn-outline btn-sm" onclick="adjustCoverPos('TapHint', -4)">−</button>
-                    <span id="invCoverTapHintYLabel" style="width:36px; text-align:center; font-size:12px;">0</span>
-                    <button type="button" class="btn btn-outline btn-sm" onclick="adjustCoverPos('TapHint', 4)">+</button>
-                  </div>
                   <button type="button" class="btn btn-outline btn-sm" style="width:fit-content;margin-top:4px;" onclick="resetCoverPositions()">↺ Rudisha Default</button>
                 </div>
                 <div style="flex-shrink:0;">
-                  <div id="coverLivePreview" style="width:150px;aspect-ratio:3/4;border:1.5px solid #d8ae55;border-radius:4px;position:relative;overflow:hidden;background:linear-gradient(160deg,#3a1650,#170a20);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:10px;padding-bottom:18px;">
-                    <div style="position:absolute;top:6px;left:6px;width:12px;height:12px;border:1px solid #d8ae55;border-right:none;border-bottom:none;z-index:2;"></div>
-                    <div style="position:absolute;top:6px;right:6px;width:12px;height:12px;border:1px solid #d8ae55;border-left:none;border-bottom:none;z-index:2;"></div>
-                    <div style="position:absolute;bottom:6px;left:6px;width:12px;height:12px;border:1px solid #d8ae55;border-right:none;border-top:none;z-index:2;"></div>
-                    <div style="position:absolute;bottom:6px;right:6px;width:12px;height:12px;border:1px solid #d8ae55;border-left:none;border-top:none;z-index:2;"></div>
+                  <div id="coverLivePreview" style="width:150px;aspect-ratio:3/4;border:1.5px solid #d8ae55;border-radius:4px;position:relative;overflow:hidden;background:linear-gradient(160deg,#3a1650,#170a20);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:8.44px;padding-bottom:16.88px;">
+                    <div style="position:absolute;top:4.7px;left:4.7px;width:9.4px;height:9.4px;border:1px solid #d8ae55;border-right:none;border-bottom:none;z-index:2;"></div>
+                    <div style="position:absolute;top:4.7px;right:4.7px;width:9.4px;height:9.4px;border:1px solid #d8ae55;border-left:none;border-bottom:none;z-index:2;"></div>
+                    <div style="position:absolute;bottom:4.7px;left:4.7px;width:9.4px;height:9.4px;border:1px solid #d8ae55;border-right:none;border-top:none;z-index:2;"></div>
+                    <div style="position:absolute;bottom:4.7px;right:4.7px;width:9.4px;height:9.4px;border:1px solid #d8ae55;border-left:none;border-top:none;z-index:2;"></div>
                     <img id="cvpPhoto" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;display:none;">
                     <div id="cvpOverlay" style="position:absolute;inset:0;z-index:1;display:none;background:linear-gradient(180deg,rgba(23,10,32,0.28),rgba(23,10,32,0.55) 55%,rgba(23,10,32,0.8));"></div>
-                    <div id="cvpMonogram" style="font-family:'Sacramento';font-size:24px;color:#f2d889;position:relative;z-index:2;">J &amp; M</div>
-                    <div id="cvpNames" style="font-family:'Cinzel';font-size:8px;letter-spacing:0.25em;color:#fbf3e7;opacity:0.85;position:relative;z-index:2;">JOSEPHINE · MARK</div>
-                    <div id="cvpTapHint" style="display:flex;flex-direction:column;align-items:center;gap:4px;position:relative;z-index:2;">
-                      <div style="font-size:14px;">👆</div>
-                      <div style="font-family:'Jost',sans-serif;font-size:6px;letter-spacing:0.2em;text-transform:uppercase;color:#f2d889;">Gusa Kufungua</div>
-                    </div>
+                    <div id="cvpMonogram" style="font-family:'Sacramento';font-size:20.63px;color:#f2d889;position:relative;z-index:2;">J &amp; M</div>
+                    <div id="cvpNames" style="font-family:'Cinzel';font-size:7.03px;letter-spacing:0.3em;color:#fbf3e7;opacity:0.85;position:relative;z-index:2;text-align:center;">JOSEPHINE · MARK</div>
                   </div>
                   <p style="font-size:10px;color:var(--gray-400);text-align:center;margin-top:6px;">Preview ya Cover</p>
                 </div>
               </div>
               <input type="hidden" id="invCoverMonogramY" value="0">
               <input type="hidden" id="invCoverNamesY" value="0">
-              <input type="hidden" id="invCoverTapHintY" value="0">
             </div>
             <div class="form-group">
               <label>Kichwa cha Ujumbe wa Karibisho (Hero Title)</label>
@@ -7358,8 +7347,6 @@ async function loadInvitationDesign() {
   document.getElementById('invCoverMonogramYLabel').textContent = data?.cover_monogram_y || 0;
   document.getElementById('invCoverNamesY').value = data?.cover_names_y || 0;
   document.getElementById('invCoverNamesYLabel').textContent = data?.cover_names_y || 0;
-  document.getElementById('invCoverTapHintY').value = data?.cover_taphint_y || 0;
-  document.getElementById('invCoverTapHintYLabel').textContent = data?.cover_taphint_y || 0;
   renderCoverLivePreview();
   document.getElementById('invHeroTitle').value = data?.hero_title || '';
   document.getElementById('invHeroVerse').value = data?.hero_verse || '';
@@ -7408,7 +7395,6 @@ async function saveInvitationDesign() {
     cover_photo_url: document.getElementById('invCoverPhotoUrl').value.trim(),
     cover_monogram_y: parseInt(document.getElementById('invCoverMonogramY').value, 10) || 0,
     cover_names_y: parseInt(document.getElementById('invCoverNamesY').value, 10) || 0,
-    cover_taphint_y: parseInt(document.getElementById('invCoverTapHintY').value, 10) || 0,
     hero_title: document.getElementById('invHeroTitle').value.trim(),
     hero_verse: document.getElementById('invHeroVerse').value.trim(),
     welcome_message: document.getElementById('invWelcomeMessage').value.trim(),
@@ -7581,7 +7567,7 @@ function adjustCoverPos(field, delta) {
 }
 
 function resetCoverPositions() {
-  ['Monogram', 'Names', 'TapHint'].forEach(field => {
+  ['Monogram', 'Names'].forEach(field => {
     document.getElementById(`invCover${field}Y`).value = 0;
     document.getElementById(`invCover${field}YLabel`).textContent = '0';
   });
@@ -7593,12 +7579,11 @@ function renderCoverLivePreview() {
   const photoUrl = document.getElementById('invCoverPhotoUrl').value.trim();
   const monoY = parseInt(document.getElementById('invCoverMonogramY').value, 10) || 0;
   const namesY = parseInt(document.getElementById('invCoverNamesY').value, 10) || 0;
-  const tapY = parseInt(document.getElementById('invCoverTapHintY').value, 10) || 0;
 
-  // Preview inatumia scale ndogo (150px badala ya ~280px halisi) - Y inapunguzwa
-  // kwa uwiano huo huo ili isogee kwa kiasi kinachofanana na kitakachoonekana
-  // kwenye mualiko.html halisi.
-  const scale = 150 / 280;
+  // Cover halisi ina upana wa juu wa 320px; preview ni 150px.
+  // Vipimo vya preview (gap, padding na font) vimepunguzwa kwa uwiano huu
+  // ili mpangilio unaoonekana hapa ulingane na cover ya mualiko.
+  const scale = 150 / 320;
 
   if (namesRaw) {
     document.getElementById('cvpNames').textContent = namesRaw;
@@ -7624,7 +7609,6 @@ function renderCoverLivePreview() {
 
   document.getElementById('cvpMonogram').style.transform = `translateY(${monoY * scale}px)`;
   document.getElementById('cvpNames').style.transform = `translateY(${namesY * scale}px)`;
-  document.getElementById('cvpTapHint').style.transform = `translateY(${tapY * scale}px)`;
 }
 
 
