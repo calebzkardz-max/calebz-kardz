@@ -1282,7 +1282,7 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
 .topbar-refresh-btn{background:linear-gradient(110deg,#FF6B35 0%,#FF1840 100%)!important;color:#fff!important;border:1px solid rgba(255,255,255,.22)!important;justify-content:center;min-height:36px;font-weight:700;box-shadow:0 3px 10px rgba(255,24,64,.22)!important}
 .topbar-refresh-btn,.topbar-refresh-btn *{color:#fff!important}
 .topbar-refresh-btn svg{width:16px;height:16px;stroke:#fff!important}
-#page-dashboard.active~.topbar{display:none!important}
+#mainApp:has(#page-dashboard.active) .topbar{display:none!important}
 
 
 /* Dashboard final refinements */
@@ -1501,7 +1501,7 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
 
   <!-- Main Content -->
   <div class="main">
-    <div class="topbar">
+    <div class="topbar" style="display:none;">
       <div>
         <div class="topbar-title" id="topbarTitle">Dashboard</div>
       </div>
@@ -3452,10 +3452,10 @@ async function loadProfile() {
     const welcome = document.getElementById('dashboardWelcome');
     const welcomeRole = document.getElementById('dashboardRoleTitle');
     const welcomeSub = document.getElementById('dashboardWelcomeSub');
-    const branding=getBranding();
-    if (welcome) welcome.textContent = branding.name || 'Meshez Kadi';
-    if (welcomeRole) welcomeRole.textContent = branding.theme || roleTitle;
-    if (welcomeSub) welcomeSub.textContent = branding.slogan || 'Muhtasari wa shughuli zako, wageni na matukio yote sehemu moja.';
+    // Dashboard hero hubaki taarifa za akaunti/mhusika; System Branding ni ya utambulisho wa mfumo pekee.
+    if (welcome) welcome.textContent = 'Karibu, ' + name;
+    if (welcomeRole) welcomeRole.textContent = roleTitle;
+    if (welcomeSub) welcomeSub.textContent = 'Muhtasari wa shughuli zako, wageni na matukio yote sehemu moja.';
     document.getElementById('sidebarAvatar').textContent = initials;
     document.getElementById('sidebarName').textContent = name;
     document.getElementById('sidebarRole').textContent = data.role || 'Admin';
@@ -7872,6 +7872,11 @@ async function loadPublicSystemBranding(){
       logoScale:Math.max(50,Math.min(200,Number(row.logo_scale)||100))
     };
     applySystemBranding();
+    // Hakikisha logo ya auth inapata URL mpya bila cache ya browser.
+    const authLogo=document.querySelector('#authScreen .auth-logo-icon');
+    if(authLogo&&systemBrandingCache.logo){
+      authLogo.style.backgroundImage='url("'+systemBrandingCache.logo+(systemBrandingCache.logo.includes('?')?'&':'?')+'v='+encodeURIComponent(row.updated_at||Date.now())+'")';
+    }
   }catch(e){
     console.warn('Public system branding haijapatikana:',e);
   }
@@ -7935,17 +7940,14 @@ function applySystemBranding(){
   document.querySelectorAll('.sidebar-logo-slogan').forEach(el=>el.textContent=slogan);
   const mobile=document.querySelector('.mobile-header > div:last-child');
   if(mobile) mobile.textContent=name;
-  const dashboardName=document.getElementById('dashboardWelcome');
-  const dashboardTheme=document.getElementById('dashboardRoleTitle');
-  const dashboardSlogan=document.getElementById('dashboardWelcomeSub');
-  if(dashboardName) dashboardName.textContent=name;
-  if(dashboardTheme) dashboardTheme.textContent=theme;
-  if(dashboardSlogan) dashboardSlogan.textContent=slogan;
   const logoUrl=b.logo||'';
   const logoScale=Math.max(50,Math.min(200,Number(b.logoScale)||100));
   document.querySelectorAll('.auth-logo-icon,.sidebar-logo-icon').forEach(el=>{
-    el.style.backgroundImage=logoUrl?('url("'+logoUrl+'")'):'';
+    el.style.backgroundImage=logoUrl?('url("'+logoUrl+'")'):'none';
     el.style.backgroundSize=logoScale+'% auto';
+    el.style.backgroundPosition='center';
+    el.style.backgroundRepeat='no-repeat';
+    el.style.backgroundColor='#fff';
   });
   const preview=document.getElementById('brandLogoPreview');
   if(preview) preview.innerHTML=logoUrl?'<img alt="System logo" src="'+logoUrl+'">':'<span>Hakuna logo mpya iliyopakiwa</span>';
