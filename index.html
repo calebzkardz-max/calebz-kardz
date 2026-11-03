@@ -7863,9 +7863,9 @@ function readBrandingCache(){
     const cached=raw?JSON.parse(raw):null;
     if(cached&&typeof cached==='object'){
       return {
-        name:typeof cached.name==='string'?cached.name:'',
-        theme:typeof cached.theme==='string'?cached.theme:'',
-        slogan:typeof cached.slogan==='string'?cached.slogan:'',
+        name:typeof cached.name==='string'&&cached.name.trim()?cached.name:'Meshez Kadi',
+        theme:typeof cached.theme==='string'&&cached.theme.trim()?cached.theme:'Invitation System',
+        slogan:typeof cached.slogan==='string'&&cached.slogan.trim()?cached.slogan:'Invite Them Easy',
         logo:typeof cached.logo==='string'?cached.logo:'',
         logoPath:typeof cached.logoPath==='string'?cached.logoPath:'',
         logoScale:Math.max(50,Math.min(200,Number(cached.logoScale)||100)),
@@ -7873,7 +7873,7 @@ function readBrandingCache(){
       };
     }
   }catch(e){}
-  return {name:'',theme:'',slogan:'',logo:'',logoPath:'',logoScale:100,updatedAt:''};
+  return {name:'Meshez Kadi',theme:'Invitation System',slogan:'Invite Them Easy',logo:'',logoPath:'',logoScale:100,updatedAt:''};
 }
 let systemBrandingCache=readBrandingCache();
 function persistBrandingCache(){
@@ -7887,11 +7887,11 @@ async function loadPublicSystemBranding(){
     if(error)throw error;
     const row=Array.isArray(data)?data[0]:data;
     systemBrandingCache=row?{
-      name:row.main_name||'',theme:row.system_theme||'',slogan:row.slogan||'',
+      name:row.main_name||'Meshez Kadi',theme:row.system_theme||'Invitation System',slogan:row.slogan||'Invite Them Easy',
       logo:row.logo_url||'',logoPath:row.logo_path||'',
       logoScale:Math.max(50,Math.min(200,Number(row.logo_scale)||100)),
       updatedAt:Date.now()
-    }:{name:'',theme:'',slogan:'',logo:'',logoPath:'',logoScale:100,updatedAt:Date.now()};
+    }:{name:'Meshez Kadi',theme:'Invitation System',slogan:'Invite Them Easy',logo:'',logoPath:'',logoScale:100,updatedAt:Date.now()};
     persistBrandingCache();
     applySystemBranding();
     await revealAuthBrandingWhenReady();
@@ -7913,17 +7913,18 @@ async function loadSystemBrandingFromSupabase(){
     return;
   }
   systemBrandingCache=data?{
-    name:data.main_name||'',theme:data.system_theme||'',slogan:data.slogan||'',
+    name:data.main_name||'Meshez Kadi',theme:data.system_theme||'Invitation System',slogan:data.slogan||'Invite Them Easy',
     logo:data.logo_url||'',logoPath:data.logo_path||'',
     logoScale:Math.max(50,Math.min(200,Number(data.logo_scale)||100)),
     updatedAt:Date.now()
-  }:{name:'',theme:'',slogan:'',logo:'',logoPath:'',logoScale:100,updatedAt:Date.now()};
+  }:{name:'Meshez Kadi',theme:'Invitation System',slogan:'Invite Them Easy',logo:'',logoPath:'',logoScale:100,updatedAt:Date.now()};
   persistBrandingCache();
   applySystemBranding();
 }
 function applySystemBranding(){
   const b=getBranding();
-  const name=b.name||'', theme=b.theme||'', slogan=b.slogan||'';
+  const name=b.name||'Meshez Kadi', theme=b.theme||'Invitation System', slogan=b.slogan||'Invite Them Easy';
+  document.title=name+' - Invitation Management System';
   document.querySelectorAll('.auth-logo h1').forEach(el=>el.textContent=name);
   const authSub=document.querySelector('#authScreen .auth-logo p');
   if(authSub) authSub.textContent='Invitation Management System';
