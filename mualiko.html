@@ -2343,7 +2343,7 @@
       if(!frame || ev.source !== frame.contentWindow || !ev.data)return;
       if(ev.data.type === 'meshezOpenPortfolioImage'){
         var url = String(ev.data.url || '');
-        if(!/^https?:\\/\\//i.test(url))return;
+        if(!/^https?:\/\//i.test(url))return;
         image.src = url;
         modal.classList.add('open');
         modal.setAttribute('aria-hidden','false');
