@@ -3312,7 +3312,7 @@ async function sendPasswordResetEmail() {
   btn.disabled = true;
   btn.textContent = 'Sending...';
   try {
-    const redirectTo = window.location.origin + window.location.pathname;
+    const redirectTo = 'https://ezekielmeshack136-max.github.io/meshez-kadi-app/';
     const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo });
     if (error) throw error;
     showToast('If this email belongs to an account, a password reset link has been sent. Please check your inbox.', 'success');
