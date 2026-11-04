@@ -1396,6 +1396,9 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
       <div class="form-group">
         <label>Nenosiri</label>
         <input type="password" id="loginPassword" placeholder="••••••••">
+        <div style="display:flex;justify-content:flex-end;margin-top:7px;">
+          <button type="button" onclick="showForgotPassword()" style="border:0;background:none;padding:2px 0;color:var(--primary,#EA580C);font-size:12px;font-weight:600;cursor:pointer;">Forgot Password?</button>
+        </div>
       </div>
       <button class="btn btn-primary" onclick="login()" style="margin-top:8px;">
         <i data-lucide="log-in" style="width:16px;height:16px;"></i> Ingia
@@ -1430,6 +1433,37 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
       <button class="btn btn-primary" onclick="register()" style="margin-top:8px;">
         <i data-lucide="user-plus" style="width:16px;height:16px;"></i> Jisajili
       </button>
+    </div>
+
+    <!-- Forgot Password -->
+    <div id="forgotPasswordForm" style="display:none;">
+      <div style="margin:8px 0 16px;">
+        <h3 style="font-size:17px;margin:0 0 6px;">Reset Password</h3>
+        <p style="font-size:12px;color:var(--gray-500);line-height:1.5;margin:0;">Enter the email address registered to your account. We will send you a secure password reset link.</p>
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="forgotPasswordEmail" placeholder="name@example.com" autocomplete="email">
+      </div>
+      <button class="btn btn-primary" id="sendResetLinkBtn" onclick="sendPasswordResetEmail()" style="margin-top:8px;">Send Reset Link</button>
+      <button type="button" onclick="backToLogin()" style="width:100%;margin-top:12px;border:0;background:none;color:var(--primary,#EA580C);font-size:12px;font-weight:600;cursor:pointer;">Back to Sign In</button>
+    </div>
+
+    <!-- Set a new password after email recovery -->
+    <div id="recoveryPasswordForm" style="display:none;">
+      <div style="margin:8px 0 16px;">
+        <h3 style="font-size:17px;margin:0 0 6px;">Create a New Password</h3>
+        <p style="font-size:12px;color:var(--gray-500);line-height:1.5;margin:0;">Your email has been verified. Enter and confirm your new password below.</p>
+      </div>
+      <div class="form-group">
+        <label>New Password</label>
+        <input type="password" id="recoveryNewPassword" placeholder="At least 8 characters" autocomplete="new-password">
+      </div>
+      <div class="form-group">
+        <label>Confirm New Password</label>
+        <input type="password" id="recoveryConfirmPassword" placeholder="Enter the new password again" autocomplete="new-password">
+      </div>
+      <button class="btn btn-primary" id="saveRecoveryPasswordBtn" onclick="saveRecoveredPassword()" style="margin-top:8px;">Save New Password</button>
     </div>
   </div>
 </div>
@@ -2605,12 +2639,16 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
             <div class="card" style="margin-bottom:16px;">
               <div class="card-title" style="margin-bottom:16px;"><i data-lucide="key-round" class="icon-inline" style="color:#F59E0B;"></i> Badilisha Nenosiri</div>
               <div class="form-group">
-                <label>Nenosiri Jipya</label>
-                <input type="password" id="newPassword" placeholder="Herufi 6 au zaidi">
+                <label>Old Password</label>
+                <input type="password" id="oldPassword" placeholder="Enter your current password" autocomplete="current-password">
               </div>
               <div class="form-group">
-                <label>Thibitisha Nenosiri</label>
-                <input type="password" id="confirmPassword" placeholder="Rudia nenosiri">
+                <label>New Password</label>
+                <input type="password" id="newPassword" placeholder="At least 8 characters" autocomplete="new-password">
+              </div>
+              <div class="form-group">
+                <label>Confirm New Password</label>
+                <input type="password" id="confirmPassword" placeholder="Enter the new password again" autocomplete="new-password">
               </div>
               <button class="btn btn-outline" onclick="changePassword()"><i data-lucide="lock" class="icon-inline" style="color:#8B5CF6;"></i> Badilisha</button>
             </div>
@@ -3245,7 +3283,83 @@ const { createClient } = supabase;
 // app/tab atahitaji login upya). autoRefreshToken: true (default) = token inajirekebisha
 // yenyewe wakati app inaendelea kutumika, ili isiganda/isishindwe baada ya ~saa 1.
 const sb = createClient(SUPABASE_URL, SUPABASE_KEY, {
-  auth: { persistSession: false, autoRefreshToken: true }
+  auth: { persistSession: false, autoRefreshToken: true, detectSessionInUrl: true }
+});
+
+// Password recovery links return to this same single-page application.
+let passwordRecoverySessionReady = false;
+function showForgotPassword() {
+  document.getElementById('loginForm').style.display = 'none';
+  document.getElementById('registerForm').style.display = 'none';
+  document.getElementById('forgotPasswordForm').style.display = 'block';
+  document.getElementById('recoveryPasswordForm').style.display = 'none';
+  document.querySelector('.auth-tabs').style.display = 'none';
+  const loginEmail = document.getElementById('loginEmail')?.value?.trim();
+  if (loginEmail) document.getElementById('forgotPasswordEmail').value = loginEmail;
+}
+function backToLogin() {
+  document.getElementById('forgotPasswordForm').style.display = 'none';
+  document.getElementById('recoveryPasswordForm').style.display = 'none';
+  document.getElementById('loginForm').style.display = 'block';
+  document.getElementById('registerForm').style.display = 'none';
+  document.querySelector('.auth-tabs').style.display = 'flex';
+  document.querySelectorAll('.auth-tab').forEach((tab,i)=>tab.classList.toggle('active',i===0));
+}
+async function sendPasswordResetEmail() {
+  const email = document.getElementById('forgotPasswordEmail').value.trim();
+  if (!email) return showToast('Please enter your registered email address.', 'error');
+  const btn = document.getElementById('sendResetLinkBtn');
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+  try {
+    const redirectTo = window.location.origin + window.location.pathname;
+    const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo });
+    if (error) throw error;
+    showToast('If this email belongs to an account, a password reset link has been sent. Please check your inbox.', 'success');
+    document.getElementById('forgotPasswordForm').style.display = 'none';
+    backToLogin();
+  } catch (error) {
+    showToast('Unable to send reset email: ' + (error.message || error), 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Send Reset Link';
+  }
+}
+function showRecoveryPasswordForm() {
+  passwordRecoverySessionReady = true;
+  document.getElementById('loginForm').style.display = 'none';
+  document.getElementById('registerForm').style.display = 'none';
+  document.getElementById('forgotPasswordForm').style.display = 'none';
+  document.getElementById('recoveryPasswordForm').style.display = 'block';
+  document.querySelector('.auth-tabs').style.display = 'none';
+}
+async function saveRecoveredPassword() {
+  if (!passwordRecoverySessionReady) return showToast('Please open the reset link sent to your email first.', 'error');
+  const password = document.getElementById('recoveryNewPassword').value;
+  const confirm = document.getElementById('recoveryConfirmPassword').value;
+  if (password.length < 8) return showToast('Password must contain at least 8 characters.', 'error');
+  if (password !== confirm) return showToast('The passwords do not match.', 'error');
+  const btn = document.getElementById('saveRecoveryPasswordBtn');
+  btn.disabled = true;
+  try {
+    const { error } = await sb.auth.updateUser({ password });
+    if (error) throw error;
+    passwordRecoverySessionReady = false;
+    await sb.auth.signOut();
+    document.getElementById('recoveryNewPassword').value = '';
+    document.getElementById('recoveryConfirmPassword').value = '';
+    backToLogin();
+    showToast('Password successfully reset. You can now sign in with your new password.', 'success');
+  } catch (error) {
+    showToast('Password reset failed: ' + (error.message || error), 'error');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// Listen for the verified recovery session returned by Supabase.
+sb.auth.onAuthStateChange((event) => {
+  if (event === 'PASSWORD_RECOVERY') showRecoveryPasswordForm();
 });
 
 let currentUser = null;
@@ -7911,14 +8025,21 @@ async function updateProfile() {
 }
 
 async function changePassword() {
+  const op = document.getElementById('oldPassword').value;
   const np = document.getElementById('newPassword').value;
   const cp = document.getElementById('confirmPassword').value;
-  if (np !== cp) return showToast('Nenosiri hazilingani!', 'error');
-  if (np.length < 6) return showToast('Nenosiri iwe na herufi 6 au zaidi', 'error');
+  if (!op) return showToast('Enter your current password first.', 'error');
+  if (!np || !cp) return showToast('Fill in both new password fields.', 'error');
+  if (np.length < 8) return showToast('Password must contain at least 8 characters.', 'error');
+  if (np !== cp) return showToast('The new passwords do not match.', 'error');
+  if (np === op) return showToast('Your new password must be different from the old password.', 'error');
 
-  const { error } = await sb.auth.updateUser({ password: np });
-  if (error) return showToast('Kosa: ' + error.message, 'error');
-  showToast('Nenosiri imebadilishwa!', 'success');
+  const { error } = await sb.auth.updateUser({ password: np, current_password: op });
+  if (error) return showToast('Password change failed: ' + error.message, 'error');
+  document.getElementById('oldPassword').value = '';
+  document.getElementById('newPassword').value = '';
+  document.getElementById('confirmPassword').value = '';
+  showToast('Password successfully changed.', 'success');
 }
 
 // ===== SYSTEM LANGUAGE =====
@@ -8181,7 +8302,7 @@ const SYSTEM_TRANSLATION_PAIRS = [
 ['WhatsApp Monitor','Ufuatiliaji wa WhatsApp'],['System Reports','Ripoti za Mfumo'],
 ['User Management','Usimamizi wa Watumiaji'],['Profile & Settings','Wasifu na Mipangilio'],['Settings','Mipangilio'],
 ['Main','Msingi'],['Log Out','Toka'],['Sign In','Ingia'],['Sign Up','Jisajili'],['Email Address','Barua Pepe'],
-['Password','Nenosiri'],['First Name','Jina la Kwanza'],['Last Name','Jina la Familia'],['Save','Hifadhi'],
+['Password','Nenosiri'],['Forgot Password?','Umesahau Nenosiri?'],['Reset Password','Weka Upya Nenosiri'],['Enter the email address registered to your account. We will send you a secure password reset link.','Weka barua pepe iliyosajiliwa kwenye akaunti yako. Tutakutumia kiungo salama cha kuweka upya nenosiri.'],['Email Address','Barua Pepe'],['Send Reset Link','Tuma Kiungo cha Kuweka Upya'],['Back to Sign In','Rudi Kuingia'],['Create a New Password','Tengeneza Nenosiri Jipya'],['Your email has been verified. Enter and confirm your new password below.','Barua pepe yako imethibitishwa. Weka na uthibitishe nenosiri lako jipya hapa chini.'],['Confirm New Password','Thibitisha Nenosiri Jipya'],['Save New Password','Hifadhi Nenosiri Jipya'],['Old Password','Nenosiri la Zamani'],['Enter your current password','Weka nenosiri lako la sasa'],['At least 8 characters','Angalau herufi 8'],['Enter the new password again','Rudia nenosiri jipya'],['New Password','Nenosiri Jipya'],['First Name','Jina la Kwanza'],['Last Name','Jina la Familia'],['Save','Hifadhi'],
 ['Save Profile','Hifadhi Wasifu'],['Save Settings','Hifadhi Mipangilio'],
 ['Edit','Badilisha'],['Delete','Futa'],['Remove','Ondoa'],['Search','Tafuta'],['Filter','Chuja'],
 ['Refresh','Sasisha'],['Refreshing data...','Taarifa zinasasishwa...'],['Add','Ongeza'],['Close','Funga'],
