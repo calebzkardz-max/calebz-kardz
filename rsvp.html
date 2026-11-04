@@ -76,7 +76,7 @@ function brandHeaderHtml() {
   const logo = rsvpBranding.logo
     ? '<img src="' + rsvpBranding.logo.replace(/"/g, '&quot;') + '" alt="System logo">'
     : '';
-  return '<div class="brand-mark">' + logo + (logo ? '' : name.slice(0,2).toUpperCase()) + '</div><div class="brand-name">' + name + '</div>';
+  return '<div class="brand-mark" id="brandMark">' + logo + (logo ? '' : name.slice(0,2).toUpperCase()) + '</div><div class="brand-name" id="brandName">' + name + '</div>';
 }
 async function loadRsvpBranding() {
   try {
