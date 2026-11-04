@@ -6086,7 +6086,7 @@ async function loadReports() {
     return `
       <tr>
         <td><strong>${e.name}</strong></td>
-        <td><span class="badge ${e.type==='harusi'?'badge-blue':e.type==='birthday'?'badge-orange':'badge-gray'}">${e.type}</span></td>
+        <td><span class="badge ${e.type==='harusi'?'badge-blue':e.type==='birthday'?'badge-orange':'badge-gray'}">${eventTypeDisplay(e.type)}</span></td>
         <td>${total}</td>
         <td>${attended}/${invited}</td>
         <td>${sms}</td>
@@ -6731,7 +6731,7 @@ async function loadPaymentsHistory() {
     return `
       <tr>
         <td><strong>${e.name}</strong></td>
-        <td><span class="badge ${e.type==='harusi'?'badge-blue':e.type==='birthday'?'badge-orange':'badge-gray'}">${e.type}</span></td>
+        <td><span class="badge ${e.type==='harusi'?'badge-blue':e.type==='birthday'?'badge-orange':'badge-gray'}">${eventTypeDisplay(e.type)}</span></td>
         <td>${cardCount}</td>
         <td>${price.toLocaleString()}</td>
         <td><strong>${total.toLocaleString()}</strong></td>
@@ -6756,7 +6756,7 @@ async function exportPaymentsCSV() {
     const price = e.price_per_card || 0;
     const total = cardCount * price;
     const safe = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
-    return [safe(e.name), safe(e.type), cardCount, price, total, safe(e.payment_method), safe(e.payment_status), safe(e.cards_generated_date), safe(e.payment_date)].join(',');
+    return [safe(e.name), safe(eventTypeDisplay(e.type)), cardCount, price, total, safe(e.payment_method), safe(e.payment_status), safe(e.cards_generated_date), safe(e.payment_date)].join(',');
   }));
 
   const header = 'Event,Aina,Idadi ya Kadi,Bei kwa Kadi,Jumla,Njia ya Malipo,Status,Tarehe Kadi,Tarehe Malipo';
@@ -6977,7 +6977,7 @@ async function downloadEventInvoice(eventId) {
   doc.setFontSize(10);
   const details = [
     ['Jina la Event', e.name || '-'],
-    ['Aina', e.type || '-'],
+    ['Aina', eventTypeDisplay(e.type) || '-'],
     ['Tarehe ya Tukio', e.event_date || '-'],
     ['Mahali', e.venue || '-'],
   ];
