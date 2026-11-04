@@ -1383,9 +1383,11 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
     </div>
 
     <div class="auth-tabs">
-      <button class="auth-tab active" onclick="switchAuthTab('login')">Ingia</button>
-      <button class="auth-tab" onclick="switchAuthTab('register')">Jisajili</button>
+      <button class="auth-tab active" type="button">Ingia</button>
     </div>
+    <p style="font-size:12px;color:var(--gray-500);text-align:center;margin:-10px 0 18px;line-height:1.5;">
+      Akaunti za Meshez Kadi hutengenezwa na Owner kupitia User Management.
+    </p>
 
     <!-- Login Form -->
     <div id="loginForm">
@@ -3431,10 +3433,14 @@ let scanLocked = false; // Inazuia kadi ile ile "kudetect" mara nyingi mfululizo
 
 // ===== AUTH =====
 function switchAuthTab(tab) {
-  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
-  event.target.classList.add('active');
-  document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
-  document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
+  // Public self-registration is disabled. Only the Owner creates accounts
+  // through User Management; never reveal the legacy registration form.
+  if (tab !== 'login') {
+    showToast('Akaunti mpya hutengenezwa na Owner kupitia User Management.', 'info');
+    return;
+  }
+  document.getElementById('loginForm').style.display = 'block';
+  document.getElementById('registerForm').style.display = 'none';
 }
 
 async function login() {
@@ -3450,35 +3456,8 @@ async function login() {
 }
 
 async function register() {
-  const first = document.getElementById('regFirstName').value.trim();
-  const last  = document.getElementById('regLastName').value.trim();
-  const email = document.getElementById('regEmail').value.trim();
-  const pass  = document.getElementById('regPassword').value;
-
-  if (!first || !email || !pass) return showToast('Jaza taarifa zote', 'error');
-
-  const { data, error } = await sb.auth.signUp({ email, password: pass });
-  if (error) return showToast('Kosa: ' + error.message, 'error');
-
-  // Usalama: watu wanaojisajili wenyewe hupewa role ya chini kabisa ('scanner').
-  // Admin ndiye pekee mwenye ruhusa ya kumpandisha mtu kuwa 'manager' au 'admin',
-  // kupitia User Management. (Awali field hii ilikuwa dropdown inayomruhusu
-  // mtu yeyote kujichagulia 'admin' mwenyewe - hili lilikuwa tundu la usalama.)
-  //
-  // MUHIMU: database ina trigger inayounda profile row KIOTOMATIKI (role='admin'
-  // default) mara tu akaunti ya auth inapoundwa - kabla hata mstari huu haujafika.
-  // Tunatumia UPSERT (siyo INSERT) ili kuandika juu ya hiyo default kwa usahihi,
-  // badala ya kugongana nayo kimya kimya (bug iliyokuwepo awali).
-  const { error: profileError } = await sb.from('profiles').upsert({
-    id: data.user.id,
-    first_name: first,
-    last_name: last,
-    email: email,
-    role: 'scanner'
-  }, { onConflict: 'id' });
-  if (profileError) console.error('Profile upsert error:', profileError);
-
-  showToast('Umesajiliwa! Angalia barua pepe yako kuthibitisha akaunti.', 'success');
+  // Public self-registration is intentionally disabled.
+  showToast('Usajili wa kujitegemea umezimwa. Owner ndiye anayetengeneza akaunti kupitia User Management.', 'error');
 }
 
 async function logout() {
