@@ -1425,7 +1425,7 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
       </div>
       <div class="form-group">
         <label>Nenosiri</label>
-        <input type="password" id="regPassword" placeholder="Herufi 6 au zaidi">
+        <input type="password" id="regPassword" placeholder="Herufi 8 au zaidi">
       </div>
       <div class="form-group">
         <p style="font-size:12px;color:var(--gray-400);background:var(--gray-50,#F9FAFB);padding:10px;border-radius:8px;">
@@ -3208,7 +3208,6 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
         <select id="newUserRole">
           <option value="scanner">🔍 Scanner (Mlinda mlango)</option>
           <option value="manager">📊 Manager (Msimamizi)</option>
-          <option value="admin" id="newUserRoleAdminOption">⚙️ Admin (Mkuu)</option>
         </select>
       </div>
     </div>
@@ -6515,8 +6514,10 @@ async function loadUsers() {
 
     const actionButtons = [];
     if (myRole === 'admin') {
-      actionButtons.push(`<button class="btn btn-outline btn-sm" onclick="openEditUserModal('${u.id}')" title="Hariri"><i data-lucide="pencil" class="icon-inline" aria-hidden="true"></i></button>`);
-      actionButtons.push(`<button class="btn btn-outline btn-sm" onclick="openResetPasswordModal('${u.id}')" title="Weka Password Mpya"><i data-lucide="key-round" class="icon-inline" aria-hidden="true"></i></button>`);
+      if (!isOwnerRow && (u.role === 'manager' || u.role === 'scanner')) {
+        actionButtons.push(`<button class="btn btn-outline btn-sm" onclick="openEditUserModal('${u.id}')" title="Hariri"><i data-lucide="pencil" class="icon-inline" aria-hidden="true"></i></button>`);
+        actionButtons.push(`<button class="btn btn-outline btn-sm" onclick="openResetPasswordModal('${u.id}')" title="Weka Password Mpya"><i data-lucide="key-round" class="icon-inline" aria-hidden="true"></i></button>`);
+      }
       if (u.role === 'manager' || u.role === 'scanner') {
         actionButtons.push(`<button class="btn btn-outline btn-sm" onclick="openUserEventAccessModal('${u.id}')" title="Chagua Events atakazofanyia kazi"><i data-lucide="ticket" class="icon-inline" aria-hidden="true"></i> Events</button>`);
       }
@@ -6648,8 +6649,8 @@ async function confirmResetPassword() {
   const userId = document.getElementById('resetPwdUserId').value;
   const newPassword = document.getElementById('resetPwdNewPassword').value;
 
-  if (!newPassword || newPassword.length < 6) {
-    return showToast('Password iwe angalau herufi 6', 'error');
+  if (!newPassword || newPassword.length < 8) {
+    return showToast('Password iwe angalau herufi 8', 'error');
   }
 
   const { data: sessionData } = await sb.auth.getSession();
