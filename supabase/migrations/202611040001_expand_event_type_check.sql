@@ -1,12 +1,16 @@
--- Allow all supported event categories used by the Event Management form.
--- Preserve the existing values and add the extended event types.
+-- Allow all event categories offered by the Event Management and Template forms.
+-- Detect the constrained column from the existing check definition so this works
+-- with installations that named it either "type" or "event_type".
 begin;
 
 do $$
 declare
   target_table regclass;
-  constraint_record record;
+  constraint_oid oid;
+  constraint_name text;
+  constraint_definition text;
   type_column text;
+  has_event_type boolean;
   allowed_values text[] := array[
     'harusi','sendoff','birthday','other',
     'graduation','engagement','anniversary','bridal_shower','baby_shower',
@@ -20,36 +24,31 @@ begin
     target_table := to_regclass('public.event');
   end if;
   if target_table is null then
-    raise notice 'Neither public.events nor public.event exists; no event type constraint was changed.';
-    return;
+    raise exception 'Could not find public.events or public.event table. Event type migration was not applied.';
   end if;
 
-  select con.oid, con.conname, pg_get_constraintdef(con.oid) as definition
-    into constraint_record
+  select con.oid, con.conname, pg_get_constraintdef(con.oid)
+    into constraint_oid, constraint_name, constraint_definition
   from pg_constraint con
   where con.conrelid = target_table
     and con.contype = 'c'
     and con.conname = 'events_event_type_check'
   limit 1;
 
-  if constraint_record.oid is not null then
-    if position('event_type' in constraint_record.definition) > 0 then
-      type_column := 'event_type';
-    else
-      type_column := 'type';
-    end if;
-    execute format('alter table %s drop constraint %I', target_table, constraint_record.conname);
+  if constraint_oid is not null then
+    type_column := case
+      when position('event_type' in constraint_definition) > 0 then 'event_type'
+      else 'type'
+    end;
+    execute format('alter table %s drop constraint %I', target_table, constraint_name);
   else
-    if exists (
-      select 1 from information_schema.columns
-      where table_schema = split_part(target_table::text,'.',1)
-        and table_name = split_part(target_table::text,'.',2)
-        and column_name = 'event_type'
-    ) then
-      type_column := 'event_type';
-    else
-      type_column := 'type';
-    end if;
+    select exists (
+      select 1 from pg_attribute
+      where attrelid = target_table
+        and attname = 'event_type'
+        and not attisdropped
+    ) into has_event_type;
+    type_column := case when has_event_type then 'event_type' else 'type' end;
   end if;
 
   select string_agg(quote_literal(v), ',') into values_sql
