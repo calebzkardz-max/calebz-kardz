@@ -1354,6 +1354,11 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
     margin:4px 0 0!important;
   }
   #authScreen .auth-logo .auth-fixed-theme::after{content:none!important}
+  .password-field-wrap{position:relative;width:100%}
+  .password-field-wrap input{padding-right:48px!important}
+  .password-visibility-toggle{position:absolute;right:9px;top:50%;transform:translateY(-50%);width:34px;height:34px;border:1px solid rgba(234,88,12,.25);border-radius:9px;background:rgba(234,88,12,.09);color:#EA580C;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2}
+  .password-visibility-toggle:active{background:rgba(234,88,12,.2)}
+  .password-visibility-toggle svg{width:18px;height:18px}
 </style>
 </head>
 <body>
@@ -3280,11 +3285,10 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
 const SUPABASE_URL = 'https://fymjjqembyrlwgktbcgf.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_SMflxbKh4452586Q4ojrow_L4ZGq2uu';
 const { createClient } = supabase;
-// persistSession: true is required so Supabase can complete the email recovery
-// session returned in the URL. The recovery handler signs out after the password
-// is changed; regular sign-in behavior remains controlled by the app.
+// Keep sessions in memory only: reopening/reloading the app always requires Sign In.
+// Supabase still processes the one-time recovery link in the current page session.
 const sb = createClient(SUPABASE_URL, SUPABASE_KEY, {
-  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+  auth: { persistSession: false, autoRefreshToken: true, detectSessionInUrl: true }
 });
 
 // Password recovery links return to this same single-page application.
@@ -3368,18 +3372,31 @@ sb.auth.onAuthStateChange((event) => {
   if (event === 'PASSWORD_RECOVERY') showRecoveryPasswordForm();
 });
 
-// Fallback for browsers where the recovery event fires before the login UI is ready.
-// Only reveal the form when a valid Supabase session exists and the URL is a recovery URL.
+// Recovery links may arrive as PKCE code, token_hash, or access-token hash.
 (async function detectExistingRecoverySession() {
   const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
   const queryParams = new URLSearchParams(window.location.search);
   const isRecoveryUrl = hashParams.get('type') === 'recovery' || queryParams.get('type') === 'recovery';
-  if (!isRecoveryUrl) return;
   try {
-    const { data, error } = await sb.auth.getSession();
-    if (!error && data?.session) showRecoveryPasswordForm();
+    const code = queryParams.get('code');
+    if (code) {
+      const { error } = await sb.auth.exchangeCodeForSession(code);
+      if (error) throw error;
+    } else {
+      const tokenHash = queryParams.get('token_hash') || hashParams.get('token_hash');
+      if (tokenHash && isRecoveryUrl) {
+        const { error } = await sb.auth.verifyOtp({ token_hash: tokenHash, type: 'recovery' });
+        if (error) throw error;
+      }
+    }
+    if (isRecoveryUrl) {
+      const { data, error } = await sb.auth.getSession();
+      if (!error && data?.session) showRecoveryPasswordForm();
+      else showToast('Kiungo cha kurejesha nenosiri hakijathibitishwa. Omba kiungo kipya.', 'error');
+    }
   } catch (e) {
     console.warn('Could not restore password recovery session:', e);
+    if (isRecoveryUrl) showToast('Kiungo cha kurejesha nenosiri kimeisha au si sahihi. Omba kingine.', 'error');
   }
 })();
 
@@ -3606,19 +3623,23 @@ function showApp() {
   }
 }
 
-// Check auth on load
+// Always start at Sign In. Saved browser sessions must never open the app automatically.
 window.addEventListener('load', async () => {
   applySystemLanguage(localStorage.getItem('meshez_language')||'sw',false);
-  const { data } = await sb.auth.getSession();
-  if (data.session) {
-    currentUser = data.session.user;
-    await loadProfile();
-    showApp();
-  } else {
-    // Paint the last saved brand immediately, then refresh it from Supabase.
-    applySystemBranding();
-    loadPublicSystemBranding();
+  const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+  const queryParams = new URLSearchParams(window.location.search);
+  const recoveryUrl = hashParams.get('type') === 'recovery' || queryParams.get('type') === 'recovery'
+    || queryParams.has('code') || queryParams.has('token_hash');
+  if (!recoveryUrl) {
+    try { await sb.auth.signOut(); } catch (e) {}
+    currentUser = null;
+    currentProfile = null;
+    document.getElementById('mainApp').style.display = 'none';
+    document.getElementById('authScreen').style.display = 'flex';
   }
+  // Paint the last saved brand immediately, then refresh it from Supabase.
+  applySystemBranding();
+  loadPublicSystemBranding();
 });
 
 // ===== NAVIGATION =====
@@ -9219,6 +9240,41 @@ async function generateAllCards() {
 <script>
   // Zalisha professional icons (Lucide) badala ya <i data-lucide="...">
   try { lucide.createIcons(); } catch(e) {}
+</script>
+<script>
+(function initPasswordVisibility(){
+  function addToggles(root){
+    (root||document).querySelectorAll('input[type="password"]').forEach(function(input){
+      if(input.dataset.visibilityToggleAdded==='1') return;
+      input.dataset.visibilityToggleAdded='1';
+      const wrap=document.createElement('div');
+      wrap.className='password-field-wrap';
+      input.parentNode.insertBefore(wrap,input);
+      wrap.appendChild(input);
+      const button=document.createElement('button');
+      button.type='button';
+      button.className='password-visibility-toggle';
+      button.setAttribute('aria-label','Show password');
+      button.setAttribute('title','Show/Hide password');
+      button.innerHTML='<i data-lucide="eye"></i>';
+      button.addEventListener('click',function(){
+        const showing=input.type==='text';
+        input.type=showing?'password':'text';
+        button.setAttribute('aria-label',showing?'Show password':'Hide password');
+        button.innerHTML=showing?'<i data-lucide="eye"></i>':'<i data-lucide="eye-off"></i>';
+        try{lucide.createIcons({root:button});}catch(e){}
+      });
+      wrap.appendChild(button);
+      try{lucide.createIcons({root:button});}catch(e){}
+    });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',function(){addToggles(document);});
+  else addToggles(document);
+  const observer=new MutationObserver(function(records){
+    records.forEach(function(record){record.addedNodes.forEach(function(node){if(node.nodeType===1){if(node.matches&&node.matches('input[type="password"]'))addToggles(node.parentNode);addToggles(node);}});});
+  });
+  observer.observe(document.body,{childList:true,subtree:true});
+})();
 </script>
 </body>
 </html>
