@@ -1941,7 +1941,7 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
             <div class="form-group">
               <label>Lugha ya Ukurasa Mzima wa Mualiko (Page Language)</label>
                <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                <button type="button" id="uiLangBtnAuto" class="btn btn-outline btn-sm" onclick="setUiLanguageMode('')">🔁 Otomatiki (Default)</button>
+                <button type="button" id="uiLangBtnAuto" class="btn btn-outline btn-sm" onclick="setUiLanguageMode('')"><i data-lucide="refresh-cw" class="icon-inline" aria-hidden="true"></i> Otomatiki (Default)</button>
                 <button type="button" id="uiLangBtnSw" class="btn btn-outline btn-sm" onclick="setUiLanguageMode('sw')">🇹🇿 Force Kiswahili</button>
                 <button type="button" id="uiLangBtnEn" class="btn btn-outline btn-sm" onclick="setUiLanguageMode('en')">🇬🇧 Force English</button>
               </div>
@@ -3467,7 +3467,7 @@ async function loadProfile() {
     const welcomeRole = document.getElementById('dashboardRoleTitle');
     const welcomeSub = document.getElementById('dashboardWelcomeSub');
     // Dashboard hero displays only the signed-in account holder's information.
-    if (welcome) welcome.textContent = 'Karibu, ' + name;
+    if (welcome) welcome.textContent = (localStorage.getItem('meshez_language') === 'en' ? 'Welcome, ' : 'Karibu, ') + name;
     if (welcomeRole) welcomeRole.textContent = roleTitle;
     if (welcomeSub) welcomeSub.textContent = 'Muhtasari wa shughuli zako, wageni na matukio yote sehemu moja.';
     document.getElementById('sidebarAvatar').textContent = initials;
@@ -6348,19 +6348,19 @@ async function loadUsers() {
 
     const actionButtons = [];
     if (myRole === 'admin') {
-      actionButtons.push(`<button class="btn btn-outline btn-sm" onclick="openEditUserModal('${u.id}')" title="Hariri">✏️</button>`);
-      actionButtons.push(`<button class="btn btn-outline btn-sm" onclick="openResetPasswordModal('${u.id}')" title="Weka Password Mpya">🔑</button>`);
+      actionButtons.push(`<button class="btn btn-outline btn-sm" onclick="openEditUserModal('${u.id}')" title="Hariri"><i data-lucide="pencil" class="icon-inline" aria-hidden="true"></i></button>`);
+      actionButtons.push(`<button class="btn btn-outline btn-sm" onclick="openResetPasswordModal('${u.id}')" title="Weka Password Mpya"><i data-lucide="key-round" class="icon-inline" aria-hidden="true"></i></button>`);
       if (u.role === 'manager' || u.role === 'scanner') {
-        actionButtons.push(`<button class="btn btn-outline btn-sm" onclick="openUserEventAccessModal('${u.id}')" title="Chagua Events atakazofanyia kazi">🎫 Events</button>`);
+        actionButtons.push(`<button class="btn btn-outline btn-sm" onclick="openUserEventAccessModal('${u.id}')" title="Chagua Events atakazofanyia kazi"><i data-lucide="ticket" class="icon-inline" aria-hidden="true"></i> Events</button>`);
       }
     }
     if (canDelete) {
-      actionButtons.push(`<button class="btn btn-danger btn-sm" onclick="deleteUser('${u.id}')" title="Futa">🗑️</button>`);
+      actionButtons.push(`<button class="btn btn-danger btn-sm" onclick="deleteUser('${u.id}')" title="Futa"><i data-lucide="trash-2" class="icon-inline" aria-hidden="true"></i></button>`);
     }
 
     return `
     <tr>
-      <td><strong>${u.first_name || ''} ${u.last_name || ''}</strong>${isSelf ? ' <span style="font-size:11px;color:var(--gray-400);">(wewe)</span>' : ''}${u.phone ? `<div style="font-size:11px;color:var(--gray-400);">${u.phone}</div>` : ''}${(u.role === 'manager' || u.role === 'scanner') ? `<div style="font-size:11px;color:var(--gray-400);margin-top:2px;">🎫 ${(eventsByProfile.get(u.id) || []).length ? (eventsByProfile.get(u.id) || []).join(', ') : 'Hakuna event bado'}</div>` : ''}</td>
+      <td><strong>${u.first_name || ''} ${u.last_name || ''}</strong>${isSelf ? ' <span style="font-size:11px;color:var(--gray-400);">(wewe)</span>' : ''}${u.phone ? `<div style="font-size:11px;color:var(--gray-400);">${u.phone}</div>` : ''}${(u.role === 'manager' || u.role === 'scanner') ? `<div style="font-size:11px;color:var(--gray-400);margin-top:2px;"><i data-lucide="ticket" class="icon-inline" aria-hidden="true"></i> ${(eventsByProfile.get(u.id) || []).length ? (eventsByProfile.get(u.id) || []).join(', ') : 'Hakuna event bado'}</div>` : ''}</td>
       <td>${u.email || '-'}</td>
       <td>${roleCell}</td>
       <td style="font-size:12px;color:var(--gray-400);">${new Date(u.created_at).toLocaleDateString('sw')}</td>
@@ -8216,7 +8216,24 @@ const LANGUAGE_COMPLETION_PAIRS = [
   ["Search events...","Tafuta matukio..."],
   ["Select an event or folder to view the list","Chagua event au folder kuona orodha"]
 ];
-SYSTEM_TRANSLATION_PAIRS.push(...LANGUAGE_COMPLETION_PAIRS);const SYSTEM_TRANSLATIONS={sw:Object.create(null),en:Object.create(null)};
+SYSTEM_TRANSLATION_PAIRS.push(...LANGUAGE_COMPLETION_PAIRS);
+SYSTEM_TRANSLATION_PAIRS.push(
+  ["Welcome,","Karibu,"],
+  ["Hawajafika","Not arrived"],
+  ["Default: Juu ya QR","Default: above QR"],
+  ["Hifadhi Digital Invitation","Save Digital Invitation"],
+  ["Otomatiki (Default)","Automatic (Default)"],
+  ["Hakuna event bado","No event yet"],
+  ["Herufi 6 au zaidi","At least 6 characters"],
+  ["Rudia nenosiri","Repeat password"],
+  ["Utambulisho wa Mfumo (System Branding)","System Branding"],
+  ["Ongeza ili logo isogee karibu na ukingo wa duara; punguza ili ipate nafasi zaidi.","Increase to move the logo closer to the circle edge; decrease to give it more space."],
+  ["Picha itabadilishwa kuwa WebP ili kupunguza ukubwa wake.","The image will be converted to WebP to reduce its file size."],
+  ["Ufuatiliaji","Monitoring"],
+  ["Usimamizi","Administration"],
+  ["RSVP - Shukrani","RSVP - Thank You"],
+  ["Hakuna event bado","No event yet"]
+);const SYSTEM_TRANSLATIONS={sw:Object.create(null),en:Object.create(null)};
 SYSTEM_TRANSLATION_PAIRS.forEach(([en,sw])=>{
   if(typeof en!=='string'||typeof sw!=='string'||!en.trim()||!sw.trim())return;
   SYSTEM_TRANSLATIONS.sw[en]=sw;
