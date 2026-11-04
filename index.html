@@ -3955,7 +3955,7 @@ async function loadEvents() {
     staffByEvent = summary.staffByEvent;
   }
 
-  const typeIcon = { harusi: 'heart', birthday: 'cake-slice', sendoff: 'gift', graduation:'graduation-cap', engagement:'gem', anniversary:'calendar-heart', bridal_shower:'flower-2', baby_shower:'baby', kitchen_party:'chef-hat', conference:'presentation', corporate:'briefcase-business', religious:'church', fundraiser:'hand-heart', reunion:'users', memorial:'candle' };
+  const typeIcon = { harusi: 'heart', birthday: 'cake-slice', sendoff: 'gift', graduation:'graduation-cap', engagement:'gem', anniversary:'calendar-heart', bridal_shower:'flower-2', baby_shower:'baby', kitchen_party:'chef-hat', conference:'presentation', corporate:'briefcase-business', religious:'church', fundraiser:'hand-heart', reunion:'users', memorial:'flame', other:'circle-help' };
   // Soma wageni wote kwa kurasa ili rekodi zaidi ya 1,000 zisikatike.
   const eventGuests = [];
   const eventIds = events.map(e => e.id);
@@ -4002,14 +4002,14 @@ async function loadEvents() {
     }
   });
   const typeColor = { harusi: '#EC4899', birthday: '#F59E0B', sendoff: '#A855F7' };
-  const typeLabel = { harusi: 'Harusi', birthday: 'Siku ya Kuzaliwa', sendoff: 'Send-Off', graduation:'Mahafali', engagement:'Uchumba', anniversary:'Maadhimisho', bridal_shower:'Bridal Shower', baby_shower:'Baby Shower', kitchen_party:'Kitchen Party', conference:'Mkutano / Kongamano', corporate:'Tukio la Kampuni', religious:'Tukio la Kidini', fundraiser:'Changizo / Harambee', reunion:'Mkutano wa Familia', memorial:'Kumbukumbu / Maombolezo' };
+  const typeLabel = { harusi: 'Harusi', birthday: 'Siku ya Kuzaliwa', sendoff: 'Send-Off', graduation:'Mahafali', engagement:'Uchumba', anniversary:'Maadhimisho', bridal_shower:'Bridal Shower', baby_shower:'Baby Shower', kitchen_party:'Kitchen Party', conference:'Mkutano / Kongamano', corporate:'Tukio la Kampuni', religious:'Tukio la Kidini', fundraiser:'Changizo / Harambee', reunion:'Mkutano wa Familia', memorial:'Kumbukumbu / Maombolezo', other:'Nyingine' };
 
   grid.innerHTML = events.map((e, seqIdx) => {
     const t = e.type in typeIcon ? e.type : 'sendoff';
     return `
     <div class="event-card" onclick="openEvent('${e.id}')">
       <div class="event-card-header ${seqIdx % 2 === 0 ? 'seq-blue' : 'seq-orange'}">
-        <div class="event-type-badge"><i data-lucide="${typeIcon[t]}" style="color:${typeColor[t]};width:14px;height:14px;vertical-align:-2px;"></i> ${typeLabel[t]}</div>
+        <div class="event-type-badge"><i data-lucide="${typeIcon[t]}" style="color:${typeColor[t] || '#64748B'};width:14px;height:14px;vertical-align:-2px;"></i> ${typeLabel[t]}</div>
         <div class="event-card-title">${e.name}</div>
         <div class="event-card-date">
   <i data-lucide="calendar-days" style="width:12px;height:12px;vertical-align:-1px;"></i>
