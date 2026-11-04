@@ -7412,7 +7412,7 @@ async function loadInvitationDesign() {
   document.getElementById('venuePhoto1Preview').style.backgroundImage = data?.venue_photo_1 ? `url('${data.venue_photo_1}')` : 'none';
   document.getElementById('invVenuePhoto2Url').value = data?.venue_photo_2 || '';
   document.getElementById('venuePhoto2Preview').style.backgroundImage = data?.venue_photo_2 ? `url('${data.venue_photo_2}')` : 'none';
-  document.getElementById('invGiftInfo').value = data?.gift_info || '';
+  // Gifts card has been retired from the Digital Invitation editor.
 
   await loadSnapCardsPublicSettings();
 
@@ -7457,7 +7457,7 @@ async function saveInvitationDesign() {
     venue_map_url: document.getElementById('invVenueMapUrl').value.trim(),
     venue_photo_1: document.getElementById('invVenuePhoto1Url').value.trim(),
     venue_photo_2: document.getElementById('invVenuePhoto2Url').value.trim(),
-    gift_info: document.getElementById('invGiftInfo').value.trim(),
+    gift_info: '', // Clear legacy Gifts content now that its editor card has been removed.
     dress_colors: collectDressColors(),
     program: collectProgram(),
     hosts: collectHosts(),
