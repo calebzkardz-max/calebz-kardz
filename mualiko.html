@@ -765,35 +765,49 @@
   const SUPABASE_KEY = 'sb_publishable_SMflxbKh4452586Q4ojrow_L4ZGq2uu';
   const { createClient } = supabase;
   const sb = createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: false } });
-  // Tumia branding ileile ya Sign In: logo na jina vinatoka System Branding.
-  (function applyCachedLoadingBrand(){
+  // Loading screen itumie logo ya Sign In na jina sahihi la brand.
+  // Kwenye kifaa cha mmiliki tunapendelea picha ileile ya local cache;
+  // kwa wageni wengine tunachukua logo ya umma kutoka Supabase.
+  (function loadInvitationLoadingBrand(){
+    const nameEl=document.getElementById('loadBrandName');
+    const logoEl=document.getElementById('loadBrandLogo');
+    if(nameEl)nameEl.textContent='Snap Cards';
+    if(!logoEl)return;
+
+    let cachedLogo='';
     try{
-      const raw=localStorage.getItem('meshez_system_branding_v2');
-      if(!raw)return;
-      const b=JSON.parse(raw);
-      const name=String(b.name||'Snap Cards').trim();
-      const logo=b.logoOffline||b.logo||'';
-      const nameEl=document.getElementById('loadBrandName');
-      const logoEl=document.getElementById('loadBrandLogo');
-      if(nameEl)nameEl.textContent=name;
-      if(logoEl&&logo){logoEl.onload=()=>{logoEl.style.visibility='visible';};logoEl.src=logo;}
+      const raw=localStorage.getItem('meshez_system_branding_v2')||localStorage.getItem('meshez_system_branding');
+      const b=raw?JSON.parse(raw):{};
+      cachedLogo=String(b.logoOffline||b.logoDataUrl||b.logo||b.logoUrl||'').trim();
     }catch(e){console.warn('Loading brand cache:',e);}
+
+    const showLogo=(url)=>{
+      if(!url)return false;
+      logoEl.onload=()=>{logoEl.style.visibility='visible';};
+      logoEl.onerror=()=>{logoEl.style.visibility='hidden';};
+      logoEl.src=url;
+      return true;
+    };
+
+    if(cachedLogo)showLogo(cachedLogo);
+
+    async function loadPublicLoadingLogo(){
+      try{
+        const {data,error}=await sb.rpc('get_public_system_branding');
+        if(error)throw error;
+        const b=Array.isArray(data)?data[0]:data;
+        const publicLogo=String(b?.logo_url||'').trim();
+        // Usibadilishe logo ya Sign In iliyopakiwa vizuri na URL nyingine.
+        if(!cachedLogo&&publicLogo)showLogo(publicLogo);
+        else if(cachedLogo&&publicLogo){
+          const probe=new Image();
+          probe.onerror=()=>showLogo(publicLogo);
+          probe.src=cachedLogo;
+        }
+      }catch(e){console.warn('Public loading logo unavailable; using cached branding.',e);}
+    }
+    loadPublicLoadingLogo();
   })();
-  async function loadPublicLoadingBrand(){
-    try{
-      const {data,error}=await sb.rpc('get_public_system_branding');
-      if(error)throw error;
-      const b=Array.isArray(data)?data[0]:data;
-      if(!b)return;
-      const name=String(b.main_name||'Snap Cards').trim();
-      const logo=String(b.logo_url||'').trim();
-      const nameEl=document.getElementById('loadBrandName');
-      const logoEl=document.getElementById('loadBrandLogo');
-      if(nameEl)nameEl.textContent=name;
-      if(logoEl&&logo){logoEl.onload=()=>{logoEl.style.visibility='visible';};logoEl.onerror=()=>{logoEl.style.visibility='hidden';};logoEl.src=logo;}
-    }catch(e){console.warn('Public loading branding unavailable; using cached branding.',e);}
-  }
-  loadPublicLoadingBrand();
 
 
   const MIEZI_SW = ['Januari','Februari','Machi','Aprili','Mei','Juni','Julai','Agosti','Septemba','Oktoba','Novemba','Desemba'];
