@@ -134,9 +134,6 @@ function formatTimeAMPM(time24) {
 function buildDirectionsUrl(coords) {
   return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(coords)}`;
 }
-function buildPinUrl(coords) {
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(coords)}`;
-}
 
 function renderState(html) {
   document.getElementById('card').innerHTML = html;
@@ -177,7 +174,6 @@ async function loadLocation() {
   }
 
   const dirUrl = buildDirectionsUrl(coords);
-  const pinUrl = buildPinUrl(coords);
   const date = row.event_date || '';
   const time = formatTimeAMPM(row.event_time || '');
   const venue = row.venue || '';
@@ -186,15 +182,16 @@ async function loadLocation() {
   if (date) details += `<div>📅 ${date}${time ? ' · ' + time : ''}</div>`;
   if (venue) details += `<div>📍 ${venue}</div>`;
 
+  // Hakuna ukurasa wa kuchagua tena kati ya pin na directions.
+  // Mgeni alishabonyeza kitufe kwenye mualiko; hapa tunafungua njia moja kwa moja.
   renderState(`
-    <div class="pin">📍</div>
-    <h1>Maelekezo ya Kufika</h1>
+    <div class="icon-lg" style="color:var(--blue);">✓</div>
+    <h1>Google Maps inafunguka</h1>
     <p class="event-name">${row.event_name || 'Tukio'}</p>
-    ${details ? `<div class="details">${details}</div>` : ''}
-    <a class="btn btn-primary" href="${dirUrl}" target="_blank" rel="noopener noreferrer">🧭 Fungua Maelekezo (Njia)</a>
-    <a class="btn btn-outline" href="${pinUrl}" target="_blank" rel="noopener noreferrer">📌 Ona Pini Kwenye Ramani</a>
-    <p class="hint">Bonyeza "Fungua Maelekezo" - itafungua Google Maps na kukuonyesha njia kutoka ulipo hadi eneo la tukio.</p>
+    <p class="state-msg">Tunakupeleka kwenye maelekezo ya safari kutoka ulipo hadi eneo la tukio.</p>
+    <a class="btn btn-primary" href="${dirUrl}">Fungua Google Maps</a>
   `);
+  window.location.replace(dirUrl);
 }
 
 loadLocation();
