@@ -5377,9 +5377,8 @@ async function processWaQueueStep() {
       const phone = formatPhoneForWhatsApp(g.phone, g.country_code);
       const bodyParams = buildWhatsAppBodyParams(g, waQueueEventData);
       const rsvpButtonSuffix = buildRsvpButtonSuffix(g);
-      const locationButtonSuffix = buildLocationButtonSuffix(g);
       const invitationButtonSuffix = buildInvitationButtonSuffix(g);
-      const outcome = await callSendWhatsAppCardFunction(phone, imageUrl, bodyParams, rsvpButtonSuffix, locationButtonSuffix, invitationButtonSuffix);
+      const outcome = await callSendWhatsAppCardFunction(phone, imageUrl, bodyParams, rsvpButtonSuffix, invitationButtonSuffix);
 
       if (outcome.ok) {
         await sb.from('guests').update({ wa_sent: 'yes' }).eq('id', g.id);
@@ -5408,7 +5407,6 @@ async function sendWhatsAppInvite(guestId) {
   if (!hasEventCoordinates(eventData)) {
     return showToast('Weka "Coordinates" za event hii kwanza (bonyeza 📍) - template inahitaji link ya location', 'error');
   }
-  const locationButtonSuffix = buildLocationButtonSuffix(guest);
   const rsvpButtonSuffix = buildRsvpButtonSuffix(guest);
   const invitationButtonSuffix = buildInvitationButtonSuffix(guest);
 
@@ -5424,7 +5422,7 @@ async function sendWhatsAppInvite(guestId) {
   const phone = formatPhoneForWhatsApp(guest.phone, guest.country_code);
   const bodyParams = buildWhatsAppBodyParams(guest, eventData);
 
-  const outcome = await callSendWhatsAppCardFunction(phone, imageUrl, bodyParams, rsvpButtonSuffix, locationButtonSuffix, invitationButtonSuffix);
+  const outcome = await callSendWhatsAppCardFunction(phone, imageUrl, bodyParams, rsvpButtonSuffix, invitationButtonSuffix);
   if (!outcome.ok) {
     return showToast('Imeshindwa kutuma WhatsApp: ' + outcome.error, 'error');
   }
@@ -5562,31 +5560,22 @@ function buildWhatsAppBodyParams(guest, eventData) {
 //   https://<domain-yako>/<folda-ya-app>/location.html?id={{1}}
 // Mgeni akifungua ukurasa huo, anabonyeza kitufe cha "Fungua Maelekezo" HUKO
 // HUKO - hilo ndilo linalofanya simu ifungue app halisi ya Google Maps kwa uhakika.
-function buildLocationButtonSuffix(guest) {
-  return guest?.card_id || '';
-}
-
-// Inarudisha true tu ikiwa event ina coordinates zilizowekwa - hii ndiyo lazima
-// ithibitishwe kabla ya kutuma (bila coordinates, location.html haitaweza
-// kuonyesha maelekezo kwa mgeni).
+// Coordinates bado yanahitajika ili ramani ndani ya mualiko ifanye kazi.
 function hasEventCoordinates(eventData) {
   return !!(eventData?.coordinates || '').trim();
 }
 
-// Kitufe cha 1 (index 0) - "Thibitisha Uwepo" - hufungua rsvp.html?id=<card_id>
-// ambapo mgeni anachagua Nitahudhuria/Sitahudhuria HUKO HUKO kwenye ukurasa,
-// badala ya Quick Reply buttons za zamani (zilizoondolewa kwenye template).
-function buildRsvpButtonSuffix(guest) {
-  return guest?.card_id || '';
-}
-
-// Kitufe cha 3 (index 2) - "Fungua Mualiko" - hufungua mualiko.html?id=<card_id>
-// (kadi ya kidijitali binafsi ya mgeni: jina, QR, tarehe/ukumbi).
+// Kitufe cha 1 (index 0) - "FUNGUA MUALIKO" - hufungua mualiko.html?id=<card_id>.
 function buildInvitationButtonSuffix(guest) {
   return guest?.card_id || '';
 }
 
-async function callSendWhatsAppCardFunction(phone, imageUrl, bodyParams, rsvpButtonSuffix, locationButtonSuffix, invitationButtonSuffix) {
+// Kitufe cha 2 (index 1) - "THIBITISHA UWEPO" - hufungua rsvp.html?id=<card_id>.
+function buildRsvpButtonSuffix(guest) {
+  return guest?.card_id || '';
+}
+
+async function callSendWhatsAppCardFunction(phone, imageUrl, bodyParams, rsvpButtonSuffix, invitationButtonSuffix) {
   const { data: sessionData } = await sb.auth.getSession();
   const token = sessionData?.session?.access_token || SUPABASE_KEY;
 
@@ -5597,7 +5586,7 @@ async function callSendWhatsAppCardFunction(phone, imageUrl, bodyParams, rsvpBut
       'Authorization': `Bearer ${token}`,
       'apikey': SUPABASE_KEY
     },
-    body: JSON.stringify({ phone, imageUrl, bodyParams, rsvpButtonSuffix, locationButtonSuffix, invitationButtonSuffix })
+    body: JSON.stringify({ phone, imageUrl, bodyParams, rsvpButtonSuffix, invitationButtonSuffix })
   });
 
   let result = {};
