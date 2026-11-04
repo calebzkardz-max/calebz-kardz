@@ -3724,7 +3724,16 @@ function showToast(msg, type = 'info') {
   }
   if (lang === 'en') {
     message = message
+      .replace(/^(.+) imewashwa$/, '$1 enabled')
+      .replace(/^(.+) imezimwa$/, '$1 disabled')
       .replace(/^(.+) ameongezwa! Kadi: (.+)$/, '$1 added! Card: $2')
+      .replace(/^Folder "(.+)" imefutwa!$/, 'Folder "$1" deleted!')
+      .replace(/^Contacts (\\d+) zimepakuliwa!$/, '$1 contacts downloaded!')
+      .replace(/^Picha (\\d+) ya ukumbi imepakiwa kama WebP!$/, 'Venue photo $1 uploaded as WebP!')
+      .replace(/^Picha ya vazi imepakiwa kama WebP!$/, 'Outfit photo uploaded as WebP!')
+      .replace(/^Kadi (\\d+) zimebadilishwa kuwa WebP!$/, '$1 cards converted to WebP!')
+      .replace(/^Kadi (\\d+) zimefanikiwa, (\\d+) zimeshindwa\\.$/, '$1 cards succeeded, $2 failed.')
+      .replace(/^Inatengeneza kadi (\\d+)\\.\\.\\. subiri$/, 'Generating $1 cards... please wait')
       .replace(/^(.+) hana namba ya simu - anarukwa$/, '$1 has no phone number - skipped')
       .replace(/^(.+) amerukwa - hakuna template ya kadi kwa event hii$/, '$1 was skipped - no card template exists for this event')
       .replace(/^Folder "(.+)" imefutwa!$/, 'Folder "$1" deleted!')
@@ -8526,6 +8535,18 @@ SYSTEM_TRANSLATION_PAIRS.push(
   ["Generating cards... please wait","Inatengeneza kadi... subiri"],
   ["Loading ZIP...","Inapakia ZIP..."],
   ["All cards downloaded!","Kadi zote zimepakuliwa!"]
+,
+  ["Enter event name","Weka jina la event"],
+  ["An action failed. Event deletion could not be fully confirmed:","Kuna hatua imeshindwa. Event haijathibitishwa kufutwa kikamilifu:"],
+  ["Copy failed. Guest ID:","Imeshindwa kunakili. Guest ID:"],
+  ["This guest's details have already been changed by someone else! The form has been refreshed with the latest information - review it and click Save again if you want to continue.","Taarifa za mgeni huyu tayari zimeshabadilishwa na mtu mwingine! Tumesasisha fomu na taarifa mpya - angalia kisha ubofye \"Hifadhi\" tena ukitaka kuendelea na mabadiliko yako."],
+  ["Set the coordinates for this event first (click the location pin on the event) - the WhatsApp template requires a location link","Weka \"Coordinates\" za event hii kwanza (bonyeza kwenye event) - template ya WhatsApp inahitaji link ya location"],
+  ["Set the coordinates for this event first (click the location pin) - the template requires a location link","Weka \"Coordinates\" za event hii kwanza (bonyeza) - template inahitaji link ya location"],
+  ["Role change error:","Kosa kubadilisha role:"],
+  ["Network error:","Kosa la mtandao:"],
+  ["Upload error:","Kosa la upload:"],
+  ["Design saved, but Snap Cards number/images were not saved:","Design imehifadhiwa lakini namba/picha za Snap Cards hazijahifadhiwa:"],
+  ["Logo:","Logo:"]
 );const SYSTEM_TRANSLATIONS={sw:Object.create(null),en:Object.create(null)};
 SYSTEM_TRANSLATION_PAIRS.forEach(([en,sw])=>{
   if(typeof en!=='string'||typeof sw!=='string'||!en.trim()||!sw.trim())return;
