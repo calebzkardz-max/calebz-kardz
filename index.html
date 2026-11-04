@@ -2815,7 +2815,7 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
 <div class="modal-overlay" id="locationModal">
   <div class="modal" style="max-width:420px;">
     <div class="modal-header">
-      <div class="modal-title"><i data-lucide="map-pin" class="icon" style="color:#EF4444"></i> Location &amp; Maelezo ya Tukio</div>
+      <div class="modal-title"><i data-lucide="map-pin" class="icon" style="color:#EF4444"></i> Location &amp; Event Details</div>
       <button class="modal-close" onclick="closeModal('locationModal')"><i data-lucide="x" style="width:16px;height:16px;"></i></button>
     </div>
     <div class="modal-body">
@@ -2825,9 +2825,9 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
         <input type="text" id="locHostNameInput" placeholder="Josephine & Mark">
       </div>
       <div class="form-group">
-        <label><i data-lucide="map" class="icon" style="color:#10B981;width:14px;height:14px;"></i> Coordinates (Location ya Tukio)</label>
+        <label><i data-lucide="map" class="icon" style="color:#10B981;width:14px;height:14px;"></i> Location Coordinates</label>
         <input type="text" id="locCoordinatesInput" placeholder="-6.1907858,35.7305194" oninput="refreshDirectionsPreviewLink()">
-                        <a id="testDirectionsLink" href="#" target="_blank" rel="noopener" style="display:none;font-size:12px;font-weight:600;color:var(--primary,#EA580C);margin-top:8px;"><i data-lucide="compass" style="color:#EA580C;width:14px;height:14px;vertical-align:-2px;"></i> Jaribu kufungua maelekezo haya (kama guest atakavyoyaona)</a>
+                        <a id="testDirectionsLink" href="#" target="_blank" rel="noopener" style="display:none;font-size:12px;font-weight:600;color:var(--primary,#EA580C);margin-top:8px;"><i data-lucide="compass" style="color:#EA580C;width:14px;height:14px;vertical-align:-2px;"></i> Try opening these directions (as guests will see them)</a>
       </div>
     </div>
     <div class="modal-footer">
@@ -3731,7 +3731,7 @@ function showToast(msg, type = 'info') {
       if (message.startsWith(en)) { message = (lang === 'en' ? en : sw) + message.slice(en.length); break; }
     }
   }
-  message = message.replace(/[\\u{1F000}-\\u{1FAFF}\\u{2600}-\\u{27BF}]/gu, '').replace(/\\s{2,}/g, ' ').trim();
+  message = Array.from(message).filter(ch => { const cp = ch.codePointAt(0); return !((cp >= 0x1F000 && cp <= 0x1FAFF) || (cp >= 0x2600 && cp <= 0x27BF)); }).join('').replace(/\s{2,}/g, ' ').trim();
   t.innerHTML = `<i data-lucide="${icons[type] || icons.info}" class="icon-inline" aria-hidden="true"></i><span></span>`;
   t.querySelector('span').textContent = message;
   document.getElementById('toastContainer').appendChild(t);
