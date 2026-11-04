@@ -3701,6 +3701,7 @@ function showToast(msg, type = 'info') {
   const icons = { success: 'check-circle', error: 'circle-x', info: 'info' };
   const lang = (localStorage.getItem('meshez_language') || 'sw') === 'en' ? 'en' : 'sw';
   let message = String(msg == null ? '' : msg);
+  message = Array.from(message).filter(ch => { const cp = ch.codePointAt(0); return !((cp >= 0x1F000 && cp <= 0x1FAFF) || (cp >= 0x2600 && cp <= 0x27BF)); }).join('').trim();
   const dictionary = (typeof systemDictionary === 'function') ? systemDictionary(lang) : {};
   if (dictionary[message]) message = dictionary[message];
   else {
@@ -3721,7 +3722,20 @@ function showToast(msg, type = 'info') {
       if (message.startsWith(en)) { message = (lang === 'en' ? en : sw) + message.slice(en.length); break; }
     }
   }
-  message = Array.from(message).filter(ch => { const cp = ch.codePointAt(0); return !((cp >= 0x1F000 && cp <= 0x1FAFF) || (cp >= 0x2600 && cp <= 0x27BF)); }).join('').replace(/\s{2,}/g, ' ').trim();
+  if (lang === 'en') {
+    message = message
+      .replace(/^(.+) ameongezwa! Kadi: (.+)$/, '$1 added! Card: $2')
+      .replace(/^(.+) hana namba ya simu - anarukwa$/, '$1 has no phone number - skipped')
+      .replace(/^(.+) amerukwa - hakuna template ya kadi kwa event hii$/, '$1 was skipped - no card template exists for this event')
+      .replace(/^Folder "(.+)" imefutwa!$/, 'Folder "$1" deleted!')
+      .replace(/^Mpangilio wa "(.+)" umehifadhiwa!$/, 'Layout for "$1" saved!')
+      .replace(/^Ripoti ya "(.+)" imepakuliwa!$/, 'Report for "$1" downloaded!')
+      .replace(/^Kadi (\d+) zimebadilishwa kuwa WebP!$/, '$1 cards converted to WebP!')
+      .replace(/^Kadi (\d+) zimefanikiwa, (\d+) zimeshindwa\.$/, '$1 cards succeeded, $2 failed.')
+      .replace(/^Inatengeneza kadi (\d+)\.\.\. subiri$/, 'Generating $1 cards... please wait')
+      .replace(/^Hakuna template kwa event "(.+)"$/, 'No template for event "$1"');
+  }
+  message = message.replace(/\s{2,}/g, ' ').trim();
   t.innerHTML = `<i data-lucide="${icons[type] || icons.info}" class="icon-inline" aria-hidden="true"></i><span></span>`;
   t.querySelector('span').textContent = message;
   document.getElementById('toastContainer').appendChild(t);
@@ -8464,6 +8478,54 @@ SYSTEM_TRANSLATION_PAIRS.push(
   ["Failed to retrieve template","Imeshindwa kupata template"],
   ["Digital Invitation and Snap Cards settings saved!","Digital Invitation na mipangilio ya Snap Cards vimehifadhiwa!"],
   ["Design saved, but Snap Cards number/images were not saved: ","Design imehifadhiwa lakini namba/picha za Snap Cards hazijahifadhiwa: "]
+,
+  ["You are not authorized to open this page","Huna ruhusa ya kufungua ukurasa huu"],
+  ["You are now working with:","Sasa unafanya kazi na:"],
+  ["Failed to refresh Dashboard. Please try again.","Imeshindwa kusasisha Dashboard. Tafadhali jaribu tena."],
+  ["Error:","Kosa:"],
+  ["Copy failed. Link:","Imeshindwa kunakili. Link:"],
+  ["Guest added! Card:","ameongezwa! Kadi:"],
+  ["This guest's details have already been changed by someone else! The form has been refreshed with the latest information. Review it and click Save again if you want to continue.","Taarifa za mgeni huyu tayari zimeshabadilishwa na mtu mwingine! Tumesasisha fomu na taarifa mpya - angalia kisha ubofye \"Hifadhi\" tena ukitaka kuendelea na mabadiliko yako."],
+  ["Set the coordinates for this event first (click the location icon on the event) - the WhatsApp template requires a location link","Weka \"Coordinates\" za event hii kwanza (bonyeza 📍 kwenye event) - template ya WhatsApp inahitaji link ya location"],
+  ["Set the coordinates for this event first (click the location icon) - the template requires a location link","Weka \"Coordinates\" za event hii kwanza (bonyeza 📍) - template inahitaji link ya location"],
+  ["Sending SMS to","Inatuma SMS kwa"],
+  ["Sending SMS to Kenya for","Inatuma SMS Kenya kwa"],
+  ["Report for","Ripoti ya"],
+  ["Payment details saved!","Taarifa za malipo zimehifadhiwa!"],
+  ["Payment history downloaded!","Historia ya malipo imepakuliwa!"],
+  ["Choose a template from the list below before saving","Chagua template kwanza kutoka orodha ya chini kabla ya kuhifadhi"],
+  ["Layout for","Mpangilio wa"],
+  ["Snap Cards settings could not be loaded. Make sure the snap_cards_public_settings SQL has been run.","Mipangilio ya Snap Cards haijasomeka. Hakikisha SQL ya snap_cards_public_settings imeendeshwa."],
+  ["Preparing image slot","Inaandaa picha ya nafasi"],
+  ["Failed to remove image:","Imeshindikana kuondoa picha:"],
+  ["Error loading design:","Kosa kupakia design:"],
+  ["Converting cover to WebP...","Inabadilisha cover kuwa WebP..."],
+  ["Cover photo uploaded as WebP!","Cover photo imepakiwa kama WebP!"],
+  ["Converting venue photo to WebP...","Inabadilisha picha ya ukumbi kuwa WebP..."],
+  ["Venue photo uploaded as WebP!","Picha ya ukumbi imepakiwa kama WebP!"],
+  ["Converting outfit photo to WebP...","Inabadilisha picha ya vazi kuwa WebP..."],
+  ["Outfit photo uploaded as WebP!","Picha ya vazi imepakiwa kama WebP!"],
+  ["Enter a name and choose an image","Jaza jina na chagua picha"],
+  ["Converting template to WebP...","Inabadilisha template kuwa WebP..."],
+  ["Template uploaded for that event!","Template imepakiwa kwa event hiyo!"],
+  ["Template deleted","Template imefutwa"],
+  ["Profile updated!","Profile imesasishwa!"],
+  ["Passwords do not match!","Nenosiri hazilingani!"],
+  ["Password must be at least 6 characters","Nenosiri iwe na herufi 6 au zaidi"],
+  ["Password changed!","Nenosiri imebadilishwa!"],
+  ["Logo converted to WebP. Click Save Branding.","Logo imebadilishwa kuwa WebP. Bonyeza Hifadhi Utambulisho."],
+  ["Account details are incomplete. Please sign in again.","Taarifa za akaunti hazijakamilika. Ingia tena."],
+  ["Enter Main Name, Theme and Slogan.","Jaza Main Name, Theme na Slogan."],
+  ["Branding saved to Supabase and this device.","Utambulisho umehifadhiwa Supabase na kwenye kifaa hiki."],
+  ["Saved on this device; Supabase has not confirmed yet:","Imehifadhiwa kwenye kifaa hiki; Supabase bado haijathibitisha:"],
+  ["Settings saved!","Mipangilio imehifadhiwa!"],
+  ["Failed to retrieve guest","Imeshindwa kupata mgeni"],
+  ["Cards converted to WebP!","Kadi zimebadilishwa kuwa WebP!"],
+  ["Cards succeeded, failed:","Kadi zimefanikiwa, zimeshindwa:"],
+  ["No template for event","Hakuna template kwa event"],
+  ["Generating cards... please wait","Inatengeneza kadi... subiri"],
+  ["Loading ZIP...","Inapakia ZIP..."],
+  ["All cards downloaded!","Kadi zote zimepakuliwa!"]
 );const SYSTEM_TRANSLATIONS={sw:Object.create(null),en:Object.create(null)};
 SYSTEM_TRANSLATION_PAIRS.forEach(([en,sw])=>{
   if(typeof en!=='string'||typeof sw!=='string'||!en.trim()||!sw.trim())return;
