@@ -3314,9 +3314,14 @@ async function sendPasswordResetEmail() {
   btn.disabled = true;
   btn.textContent = 'Sending...';
   try {
-    const redirectTo = 'https://ezekielmeshack136-max.github.io/meshez-kadi-app/';
-    const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo });
-    if (error) throw error;
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/owner-password-reset`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` },
+      body: JSON.stringify({ email })
+    });
+    let result = {};
+    try { result = await res.json(); } catch (e) {}
+    if (!res.ok) throw new Error(result.error || 'Imeshindwa kuomba password reset.');
     showToast('If this email belongs to an account, a password reset link has been sent. Please check your inbox.', 'success');
     document.getElementById('forgotPasswordForm').style.display = 'none';
     backToLogin();
@@ -6686,7 +6691,7 @@ async function addUser() {
   const role  = document.getElementById('newUserRole').value;
 
   if (!first || !email || !pass) return showToast('Jaza jina, barua pepe na nenosiri', 'error');
-  if (pass.length < 6) return showToast('Nenosiri liwe angalau herufi 6', 'error');
+  if (pass.length < 8) return showToast('Nenosiri liwe angalau herufi 8', 'error');
 
   // Kuunda mtumiaji mpya (scanner/manager) KUNAHITAJI service_role key ambayo
   // haipo (na haipaswi kuwepo) humu kwenye browser kwa sababu za usalama.
