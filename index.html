@@ -8308,7 +8308,7 @@ function applySystemLanguage(lang,notify=false){
   lang=lang==='en'?'en':'sw';
   document.documentElement.lang=lang;
   const dashboardWelcomeEl=document.getElementById('dashboardWelcome');
-  if(dashboardWelcomeEl){const currentWelcome=dashboardWelcomeEl.textContent||'';const welcomeName=currentWelcome.replace(/^(?:Welcome|Karibu),\\s*/,'');if(welcomeName && welcomeName!==currentWelcome)dashboardWelcomeEl.textContent=(lang==='en'?'Welcome, ':'Karibu, ')+welcomeName;}
+  if(dashboardWelcomeEl){const currentWelcome=dashboardWelcomeEl.textContent||'';const welcomeName=currentWelcome.replace(/^(?:Welcome|Karibu),\s*/,'');if(welcomeName && welcomeName!==currentWelcome)dashboardWelcomeEl.textContent=(lang==='en'?'Welcome, ':'Karibu, ')+welcomeName;}
   document.getElementById('langSwBtn')?.classList.toggle('active',lang==='sw');
   document.getElementById('langEnBtn')?.classList.toggle('active',lang==='en');
   document.getElementById('langSwBtn')?.setAttribute('data-lang','sw');
