@@ -1907,7 +1907,7 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
                     <span id="invCoverNamesYLabel" style="width:36px; text-align:center; font-size:12px;">0</span>
                     <button type="button" class="btn btn-outline btn-sm" onclick="adjustCoverPos('Names', 4)">+</button>
                   </div>
-                  <button type="button" class="btn btn-outline btn-sm" style="width:fit-content;margin-top:4px;" onclick="resetCoverPositions()">↺ Rudisha Default</button>
+                  <button type="button" class="btn btn-outline btn-sm" style="width:fit-content;margin-top:4px;" onclick="resetCoverPositions()"><i data-lucide="rotate-ccw" class="icon-inline" aria-hidden="true"></i> Rudisha Default</button>
                 </div>
                 <div style="flex-shrink:0;">
                   <div id="coverLivePreview" style="width:150px;aspect-ratio:3/4;border:1.5px solid #d8ae55;border-radius:4px;position:relative;overflow:hidden;background:linear-gradient(160deg,#3a1650,#170a20);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:8.44px;padding-bottom:16.88px;">
@@ -2035,24 +2035,13 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
             <div id="providersList" style="display:flex; flex-direction:column; gap:10px;"></div>
           </div>
 
-          <!-- ZAWADI -->
-          <div class="card" style="margin-bottom:16px;">
-            <div class="card-header">
-              <div class="card-title"><i data-lucide="gift" class="icon" style="color:#D97706"></i> Zawadi</div>
-            </div>
-            <div class="form-group" style="margin-bottom:0;">
-              <label>Taarifa za Zawadi/Mchango</label>
-              <textarea id="invGiftInfo" rows="3" placeholder="M-Pesa/Selcom: 0713 079 348&#10;Jina: Josephine Mushi"></textarea>
-            </div>
-          </div>
-
           <!-- SNAP CARDS: NAMBA YA WHATSAPP + PICHA SITA ZA KAZI -->
           <div class="card" style="margin-bottom:16px;border:1px solid #D6B56D;">
             <div class="card-header">
               <div class="card-title"><i data-lucide="message-circle" class="icon" style="color:#16A34A"></i> Mawasiliano ya Snap Cards</div>
             </div>
             <div class="form-group" style="margin-bottom:8px;">
-              <label for="snapCardsWhatsappPhone">Namba ya WhatsApp ya Snap Cards (namba moja kwa mawasiliano yote)</label>
+              <label for="snapCardsWhatsappPhone">Namba ya WhatsApp ya Snap Cards</label>
               <input type="tel" id="snapCardsWhatsappPhone" inputmode="tel" placeholder="Mfano: 2557XXXXXXXX">
               <small style="display:block;color:var(--gray-400);margin-top:6px;">Weka namba yenye country code, mfano 255 kwa Tanzania. Namba hii itaunganishwa na “Ongea nasi WhatsApp” na “Tuma kupitia WhatsApp” kwenye ukurasa wa mualiko.</small>
             </div>
@@ -2269,10 +2258,7 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
 
       <!-- ===== SCANNER PAGE ===== -->
       <div class="page" id="page-scanner">
-        <div style="margin-bottom:20px;">
-          <h2 style="font-size:18px;font-weight:700;"><i data-lucide="scan-line" class="icon" style="color:#06B6D4;width:20px;height:20px;vertical-align:-3px;"></i> Scanner ya Mlangoni</h2>
-          <p style="font-size:13px;color:var(--gray-400);">Scan QR codes za wageni</p>
-        </div>
+        
 
         <div id="scannerNoAccessBanner" style="display:none;padding:40px;" class="empty-state">
           <div class="icon"><i data-lucide="shield-alert" style="color:#EF4444;"></i></div>
@@ -2345,9 +2331,7 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
 
       <!-- ===== WHATSAPP MONITOR PAGE ===== -->
       <div class="page" id="page-whatsapp">
-        <div style="margin-bottom:20px;">
-          <h2 style="font-size:18px;font-weight:700;"><i data-lucide="message-circle" class="icon" style="color:#22C55E;width:20px;height:20px;vertical-align:-3px;"></i> WhatsApp Monitor</h2>
-        </div>
+        
         <div class="card" style="margin-bottom:16px;">
           <div class="form-group" style="margin-bottom:0;">
             <label>Chagua Event</label>
@@ -2411,9 +2395,7 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
 
       <!-- ===== REPORTS PAGE ===== -->
       <div class="page" id="page-reports">
-        <div style="margin-bottom:20px;">
-          <h2 style="font-size:18px;font-weight:700;"><i data-lucide="bar-chart-3" class="icon" style="color:#F59E0B;width:20px;height:20px;vertical-align:-3px;"></i> Ripoti za Mfumo</h2>
-        </div>
+        
         <div class="stats-grid" style="margin-bottom:20px;">
           <div class="stat-card">
             <div class="stat-icon" style="background:linear-gradient(135deg,#EBF2FF,#DCE9FF);"><i data-lucide="calendar-days" style="color:#0047AB"></i></div>
@@ -2457,9 +2439,7 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
       <!-- ===== USERS PAGE ===== -->
       <div class="page" id="page-users">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-          <div>
-            <h2 style="font-size:18px;font-weight:700;"><i data-lucide="users" class="icon" style="color:#EC4899;width:20px;height:20px;vertical-align:-3px;"></i> User Management</h2>
-          </div>
+          
           <div style="display:flex;gap:8px;">
             <button class="btn btn-primary" onclick="openAddUserModal()">+ Mtumiaji Mpya</button>
             <button class="btn btn-outline" onclick="shareScannerLink()"><i data-lucide="share-2" class="icon-inline" style="color:#0EA5E9;"></i> Shiriki Link ya Scanner</button>
@@ -2481,9 +2461,7 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
 
       <!-- ===== PAYMENTS PAGE ===== -->
       <div class="page" id="page-payments">
-        <div style="margin-bottom:20px;">
-          <h2 style="font-size:18px;font-weight:700;"><i data-lucide="wallet" class="icon" style="color:#14B8A6;width:20px;height:20px;vertical-align:-3px;"></i> Mfumo wa Malipo</h2>
-        </div>
+        
 
         <div class="card" style="margin-bottom:16px;">
           <div class="card-header">
@@ -2583,9 +2561,7 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
 
       <!-- ===== PROFILE PAGE ===== -->
       <div class="page" id="page-profile">
-        <div style="margin-bottom:20px;">
-          <h2 style="font-size:18px;font-weight:700;"><i data-lucide="settings" class="icon" style="color:#64748B;width:20px;height:20px;vertical-align:-3px;"></i> Profile & Settings</h2>
-        </div>
+        
 
         <div class="grid-2">
           <div class="card">
@@ -3137,8 +3113,20 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
         <label>Type (for label only)</label>
         <select id="tplType">
           <option value="harusi">Harusi</option>
-          <option value="sendoff">Sendoff</option>
-          <option value="birthday">Birthday</option>
+          <option value="sendoff">Send-Off</option>
+          <option value="birthday">Siku ya Kuzaliwa</option>
+          <option value="graduation">Mahafali</option>
+          <option value="engagement">Uchumba</option>
+          <option value="anniversary">Maadhimisho</option>
+          <option value="bridal_shower">Bridal Shower</option>
+          <option value="baby_shower">Baby Shower</option>
+          <option value="kitchen_party">Kitchen Party</option>
+          <option value="conference">Mkutano / Kongamano</option>
+          <option value="corporate">Tukio la Kampuni</option>
+          <option value="religious">Tukio la Kidini</option>
+          <option value="fundraiser">Changizo / Harambee</option>
+          <option value="reunion">Mkutano wa Familia</option>
+          <option value="memorial">Kumbukumbu / Maombolezo</option>
         </select>
       </div>
     </div>
@@ -3716,6 +3704,8 @@ function showToast(msg, type = 'info') {
   const dictionary = (typeof systemDictionary === 'function') ? systemDictionary(lang) : {};
   if (dictionary[message]) message = dictionary[message];
   else {
+    const prefixKey = Object.keys(dictionary).filter(key => key && message.startsWith(key)).sort((a,b) => b.length-a.length)[0];
+    if (prefixKey) message = dictionary[prefixKey] + message.slice(prefixKey.length);
     const runtimePairs = [
       ['Chagua event kwanza','Select an event first'],
       ['Weka jina la event','Enter the event name'],
@@ -3935,7 +3925,7 @@ async function loadEvents() {
     staffByEvent = summary.staffByEvent;
   }
 
-  const typeIcon = { harusi: 'heart', birthday: 'cake-slice', sendoff: 'gift' };
+  const typeIcon = { harusi: 'heart', birthday: 'cake-slice', sendoff: 'gift', graduation:'graduation-cap', engagement:'gem', anniversary:'calendar-heart', bridal_shower:'flower-2', baby_shower:'baby', kitchen_party:'chef-hat', conference:'presentation', corporate:'briefcase-business', religious:'church', fundraiser:'hand-heart', reunion:'users', memorial:'candle' };
   // Soma wageni wote kwa kurasa ili rekodi zaidi ya 1,000 zisikatike.
   const eventGuests = [];
   const eventIds = events.map(e => e.id);
@@ -3982,7 +3972,7 @@ async function loadEvents() {
     }
   });
   const typeColor = { harusi: '#EC4899', birthday: '#F59E0B', sendoff: '#A855F7' };
-  const typeLabel = { harusi: 'Harusi', birthday: 'Birthday', sendoff: 'Sendoff' };
+  const typeLabel = { harusi: 'Harusi', birthday: 'Siku ya Kuzaliwa', sendoff: 'Send-Off', graduation:'Mahafali', engagement:'Uchumba', anniversary:'Maadhimisho', bridal_shower:'Bridal Shower', baby_shower:'Baby Shower', kitchen_party:'Kitchen Party', conference:'Mkutano / Kongamano', corporate:'Tukio la Kampuni', religious:'Tukio la Kidini', fundraiser:'Changizo / Harambee', reunion:'Mkutano wa Familia', memorial:'Kumbukumbu / Maombolezo' };
 
   grid.innerHTML = events.map((e, seqIdx) => {
     const t = e.type in typeIcon ? e.type : 'sendoff';
