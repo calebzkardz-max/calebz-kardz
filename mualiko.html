@@ -1315,13 +1315,27 @@
         document.getElementById('venueName').textContent = pickLang(eventData.venue, currentLang);
       }
       const mapBtn = document.getElementById('mapBtn');
-      // location.html hutumia card_id kupata coordinates kupitia RPC salama,
-      // kisha hufungua Google Maps Directions kutoka alipo mgeni hadi venue.
+      // Pata coordinates kwa RPC salama kabla mgeni hajabonyeza.
+      // Kitufe chenyewe kinaelekeza moja kwa moja Google Maps - hakuna location.html.
+      mapBtn.style.display = 'none';
+      mapBtn.removeAttribute('href');
+      mapBtn.setAttribute('aria-disabled', 'true');
       if(currentGuestCardId){
-        mapBtn.href = `location.html?id=${encodeURIComponent(currentGuestCardId)}`;
-        mapBtn.style.display = '';
-      } else {
-        mapBtn.style.display = 'none';
+        sb.rpc('get_location_for_card', { p_card_id: currentGuestCardId })
+          .then(({ data: locationData, error: locationError }) => {
+            const locationRow = Array.isArray(locationData) ? locationData[0] : locationData;
+            const destination = (locationRow?.coordinates || '').trim();
+            if(locationError || !destination){
+              console.warn('Coordinates za tukio hazikupatikana:', locationError);
+              return;
+            }
+            mapBtn.href = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destination)}`;
+            mapBtn.target = '_blank';
+            mapBtn.rel = 'noopener noreferrer';
+            mapBtn.removeAttribute('aria-disabled');
+            mapBtn.style.display = '';
+          })
+          .catch(error => console.warn('Imeshindwa kupata coordinates za ramani:', error));
       }
 
       renderContentSections(content);
