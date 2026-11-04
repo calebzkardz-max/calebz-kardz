@@ -6,96 +6,36 @@
 <title>Thibitisha Uwepo - RSVP</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
-  * { margin:0; padding:0; box-sizing:border-box; }
-
-  body {
-    font-family: 'Inter', sans-serif;
-    background: linear-gradient(135deg, #1340A8 0%, #1A56DB 50%, #2563EB 100%);
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-  }
-
-  .card {
-    background: white;
-    border-radius: 20px;
-    padding: 40px 32px;
-    width: 100%;
-    max-width: 420px;
-    text-align: center;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-  }
-
-  .icon { font-size: 56px; margin-bottom: 16px; }
-
-  h1 {
-    font-size: 20px;
-    color: #1E293B;
-    margin-bottom: 8px;
-  }
-
-  p {
-    font-size: 14px;
-    color: #475569;
-    line-height: 1.6;
-  }
-
-  .guest-name {
-    font-size: 17px;
-    font-weight: 700;
-    color: #1A56DB;
-    margin: 6px 0 20px;
-  }
-
-  .status-yes { color: #16A34A; }
-  .status-no  { color: #DC2626; }
-  .status-err { color: #CA8A04; }
-
-  .spinner {
-    width: 40px; height: 40px;
-    border: 4px solid #E2E8F0;
-    border-top-color: #1A56DB;
-    border-radius: 50%;
-    margin: 0 auto 16px;
-    animation: spin 0.8s linear infinite;
-  }
-
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  .btn-row {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-top: 24px;
-  }
-
-  .rsvp-btn {
-    padding: 14px 18px;
-    border-radius: 12px;
-    border: none;
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-    font-family: 'Inter', sans-serif;
-    transition: transform 0.15s, opacity 0.15s;
-  }
-  .rsvp-btn:active { transform: scale(0.97); }
-  .rsvp-btn:disabled { opacity: 0.6; cursor: default; }
-
-  .btn-yes { background: #DCFCE7; color: #16A34A; }
-  .btn-no  { background: #FEE2E2; color: #DC2626; }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+:root{--mk-blue:#0047AB;--mk-blue-dark:#1A1A2E;--mk-orange:#FF6B35;--mk-bg:#F4F7FB;--mk-text:#1E293B;--mk-muted:#64748B;--mk-border:#E2E8F0;--mk-green:#0F8A5F;--mk-red:#C2413B}
+*{margin:0;padding:0;box-sizing:border-box}
+body{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 16px;background:var(--mk-bg);color:var(--mk-text);font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif}
+.card{width:100%;max-width:440px;background:#fff;border:1px solid var(--mk-border);border-radius:20px;padding:36px 30px;text-align:center;box-shadow:0 18px 48px rgba(26,26,46,.09)}
+.brand-mark{width:54px;height:54px;margin:0 auto 20px;border-radius:16px;display:flex;align-items:center;justify-content:center;background:var(--mk-blue-dark);color:#fff;font-size:18px;font-weight:800;letter-spacing:-1px;box-shadow:0 7px 18px rgba(0,71,171,.18)}
+.status-mark{width:58px;height:58px;margin:0 auto 18px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#EEF4FC;color:var(--mk-blue);font-size:24px;font-weight:700}
+h1{font-size:21px;line-height:1.3;font-weight:800;letter-spacing:-.45px;color:var(--mk-blue-dark);margin-bottom:9px}
+p{font-size:14px;line-height:1.7;color:var(--mk-muted)}
+.guest-name{margin:12px 0 20px;padding:12px 14px;border:1px solid var(--mk-border);border-radius:12px;background:#F8FAFC;color:var(--mk-blue);font-size:16px;font-weight:700}
+.status-yes{color:var(--mk-green)}.status-no{color:var(--mk-blue-dark)}.status-err{color:var(--mk-red)}
+.spinner{width:38px;height:38px;border:3px solid #E5EAF1;border-top-color:var(--mk-orange);border-radius:50%;margin:0 auto 18px;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.btn-row{display:flex;flex-direction:column;gap:12px;margin-top:25px}
+.rsvp-btn{width:100%;min-height:52px;padding:14px 18px;border-radius:12px;border:1px solid transparent;font:700 14px Inter,sans-serif;cursor:pointer;transition:transform .15s,background .15s,box-shadow .15s}
+.rsvp-btn:active{transform:scale(.985)}.rsvp-btn:disabled{opacity:.6;cursor:default}
+.btn-yes{background:var(--mk-blue);color:#fff;box-shadow:0 7px 16px rgba(0,71,171,.16)}.btn-yes:hover{background:#003B91}
+.btn-no{background:#fff;color:var(--mk-blue-dark);border-color:#CBD5E1}.btn-no:hover{background:#F1F5F9}
+.footer-note{margin-top:24px;padding-top:16px;border-top:1px solid #EEF2F6;font-size:11px;color:#94A3B8}
+@media(max-width:420px){.card{padding:30px 22px;border-radius:18px}h1{font-size:19px}}
 </style>
 </head>
 <body>
 
 <div class="card" id="card">
+  <div class="brand-mark">MK</div>
   <div class="spinner"></div>
-  <h1>Inapakia...</h1>
-  <p>Tafadhali subiri kidogo</p>
+  <h1>Inapakia taarifa</h1>
+  <p>Tafadhali subiri kidogo.</p>
+  <div class="footer-note">Meshez Kadi · Mfumo wa Mialiko</div>
 </div>
 
 <script>
@@ -109,20 +49,20 @@ let currentCardId = null;
 
 function showInvalidLink() {
   card.innerHTML = `
-    <div class="icon">⚠️</div>
-    <h1 class="status-err">Link Batili</h1>
-    <p>Link hii haina taarifa sahihi. Tafadhali tumia link uliyotumiwa kwenye ujumbe wa WhatsApp.</p>`;
+    <div class="status-mark">!</div>
+    <h1 class="status-err">Kiungo si sahihi</h1>
+    <p>Tafadhali fungua kiungo cha uthibitisho ulichotumiwa kwenye ujumbe wa WhatsApp.</p>`;
 }
 
 function showChoiceScreen(guestName) {
   card.innerHTML = `
-    <div class="icon">📩</div>
+    <div class="brand-mark">MK</div>
     <h1>Thibitisha Uwepo Wako</h1>
     ${guestName ? `<div class="guest-name">${guestName}</div>` : ''}
-    <p>Tafadhali chagua moja kati ya chaguo hapa chini:</p>
+    <p>Tafadhali chagua hali yako ya mahudhurio kwa tukio hili.</p>
     <div class="btn-row">
-      <button class="rsvp-btn btn-yes" id="btnYes" onclick="submitChoice('yes')">✅ Nitahudhuria</button>
-      <button class="rsvp-btn btn-no" id="btnNo" onclick="submitChoice('no')">❌ Sitahudhuria</button>
+      <button class="rsvp-btn btn-yes" id="btnYes" onclick="submitChoice('yes')">Nitahudhuria</button>
+      <button class="rsvp-btn btn-no" id="btnNo" onclick="submitChoice('no')">Sitahudhuria</button>
     </div>
   `;
 }
@@ -141,7 +81,7 @@ async function submitChoice(status) {
 
   if (error || !data || data.success === false) {
     card.innerHTML = `
-      <div class="icon">⚠️</div>
+      <div class="status-mark">!</div>
       <h1 class="status-err">Imeshindwa</h1>
       <p>${(data && data.message) || 'Kadi hii haikupatikana kwenye mfumo. Tafadhali wasiliana na mwenyeji.'}</p>`;
     return;
@@ -149,14 +89,14 @@ async function submitChoice(status) {
 
   if (status === 'yes') {
     card.innerHTML = `
-      <div class="icon">🎉</div>
+      <div class="status-mark">✓</div>
       <h1 class="status-yes">Tunashukuru kwa uwepo wako</h1>
-      <p><strong>Karibu sana!</strong></p>`;
+      <p>Uthibitisho wako umepokelewa. Karibu sana.</p>`;
   } else {
     card.innerHTML = `
-      <div class="icon">🙏</div>
-      <h1 class="status-no">Pole kwa dharura</h1>
-      <p><strong>Karibu Tena</strong></p>`;
+      <div class="status-mark">✓</div>
+      <h1 class="status-no">Tumepokea jibu lako</h1>
+      <p>Asante kwa kutujulisha. Tutakukumbuka.</p>`;
   }
 }
 
