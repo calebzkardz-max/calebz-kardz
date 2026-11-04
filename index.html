@@ -2057,7 +2057,6 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
               <small style="display:block;color:var(--gray-400);margin-top:6px;">Weka namba yenye country code, mfano 255 kwa Tanzania. Namba hii itaunganishwa na “Ongea nasi WhatsApp” na “Tuma kupitia WhatsApp” kwenye ukurasa wa mualiko.</small>
             </div>
             <div style="font-size:13px;font-weight:700;margin:14px 0 8px;">Kazi zetu za hivi Karibuni — picha 6</div>
-            <p style="font-size:11px;color:var(--gray-400);margin:0 0 12px;">Pakia picha moja kwa kila nafasi. Picha zitajipanga ndani ya vijedwali vyake bila kuvuruga uwiano, na mgeni akigusa picha ataiona kwa ukubwa mkubwa.</p>
             <div id="snapPortfolioSlots" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;"></div>
           </div>
 
@@ -2763,7 +2762,7 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
           <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 12px;border:1.5px solid var(--gray-200);border-radius:8px;">
             <input type="checkbox" id="evtShowGroupLabel" checked style="width:16px;height:16px;">
             <div>
-              <div style="font-size:13px;font-weight:600;">👥 Onyesha Group Size Label</div>
+              <div style="font-size:13px;font-weight:600;"><i data-lucide="users" class="icon-inline" aria-hidden="true"></i> Onyesha Group Size Label</div>
               <div style="font-size:11px;color:var(--gray-400);">Zima kama event hii haihitaji lebo ya #SINGLE/#DOUBLE/#GROUP kwenye kadi</div>
             </div>
           </label>
@@ -8213,7 +8212,41 @@ const LANGUAGE_COMPLETION_PAIRS = [
   ["Search by name or phone number...","Tafuta kwa jina au namba ya simu..."],
   ["Search...","Tafuta..."],
   ["Search events...","Tafuta matukio..."],
-  ["Select an event or folder to view the list","Chagua event au folder kuona orodha"]
+  ["Select an event or folder to view the list","Chagua event au folder kuona orodha"],
+  ["-- Select Event or Folder --","-- Chagua Event au Folder --"],
+  ["Karibu kwenye Dashboard","Welcome to the Dashboard"],
+  ["Ufike wa Jumla","Total Attendance"],
+  ["Bonyeza \"+ Event Mpya\" kuanza","Click \"+ New Event\" to get started"],
+  ["+ Event Mpya","+ New Event"],
+  ["Waliothibitisha","Confirmed"],
+  ["Hawajathibitisha","Not confirmed"],
+  ["👑 Onyesha Badge ya VIP/VVIP","Show VIP/VVIP Badge"],
+  ["Default: juu ya Label","Default: above the label"],
+  ["Onyesha QR Code","Show QR Code"],
+  ["Onyesha Group Size Label","Show Group Size Label"],
+  ["Chagua template kutoka orodha ya chini ili kuhariri mpangilio wake","Select a template from the list below to edit its layout"],
+  ["Mpangilio umewekwa","Layout saved"],
+  ["Chagua Event","Select Event"],
+  ["Chagua event","Select an event"],
+  ["-- Chagua Event --","-- Select Event --"],
+  ["-- Chagua Event au Folder --","-- Select Event or Folder --"],
+  ["Cover & Hadithi","Cover & Story"],
+  ["Hadithi Yetu (Our Story)","Our Story"],
+  ["Herufi (Monogram)","Monogram"],
+  ["Picha 1","Photo 1"],["Picha 2","Photo 2"],["Picha 3","Photo 3"],
+  ["Picha 4","Photo 4"],["Picha 5","Photo 5"],["Picha 6","Photo 6"],
+  ["+ Ongeza","+ Add"],
+  ["Zilizotumwa","Sent"],
+  ["Sasa unafanya kazi na event:","You are now working with event:"],
+  ["Hakuna event bado","No event yet"],
+  ["(wewe)","(you)"],
+  ["Chagua event hapo juu kuona takwimu za WhatsApp/RSVP","Select an event above to view WhatsApp/RSVP statistics"],
+  ["Tafuta kwa jina, namba ya kadi, namba ya simu au aina (single/double/group)...","Search by name, card number, phone number or type (single/double/group)..."],
+  ["Tafuta kwa jina au namba ya simu...","Search by name or phone number..."],
+  ["Tafuta...","Search..."],
+  ["Tafuta matukio...","Search events..."],
+  ["Chagua event au folder kuona orodha","Select an event or folder to view the list"],
+  ["Pakia picha moja kwa kila nafasi. Picha zitajipanga ndani ya vijedwali vyake bila kuvuruga uwiano, na mgeni akigusa picha ataiona kwa ukubwa mkubwa.",""]
 ];
 SYSTEM_TRANSLATION_PAIRS.push(...LANGUAGE_COMPLETION_PAIRS);
 const SYSTEM_TRANSLATIONS={sw:Object.create(null),en:Object.create(null)};
