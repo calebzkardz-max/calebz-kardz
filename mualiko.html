@@ -1315,15 +1315,11 @@
         document.getElementById('venueName').textContent = pickLang(eventData.venue, currentLang);
       }
       const mapBtn = document.getElementById('mapBtn');
-      // Tumia mfumo uleule wa location.html (Fungua Maelekezo -> Google Maps
-      // Directions kutoka alipo mgeni hadi eneo la tukio) badala ya link
-      // tuli ya "location_url". "coordinates" ni field ileile inayotumiwa
-      // na get_location_for_card kwenye location.html.
-      const coords = (eventData.coordinates || '').trim();
-      if(coords){
-        mapBtn.href = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(coords)}`;
-      } else if(eventData.location_url){
-        mapBtn.href = eventData.location_url;
+      // location.html hutumia card_id kupata coordinates kupitia RPC salama,
+      // kisha hufungua Google Maps Directions kutoka alipo mgeni hadi venue.
+      if(currentGuestCardId){
+        mapBtn.href = `location.html?id=${encodeURIComponent(currentGuestCardId)}`;
+        mapBtn.style.display = '';
       } else {
         mapBtn.style.display = 'none';
       }
