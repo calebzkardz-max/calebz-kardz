@@ -3279,11 +3279,11 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
 const SUPABASE_URL = 'https://fymjjqembyrlwgktbcgf.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_SMflxbKh4452586Q4ojrow_L4ZGq2uu';
 const { createClient } = supabase;
-// persistSession: false = usalama - session HAIHIFADHIWI kwenye kifaa (mtu akifunga
-// app/tab atahitaji login upya). autoRefreshToken: true (default) = token inajirekebisha
-// yenyewe wakati app inaendelea kutumika, ili isiganda/isishindwe baada ya ~saa 1.
+// persistSession: true is required so Supabase can complete the email recovery
+// session returned in the URL. The recovery handler signs out after the password
+// is changed; regular sign-in behavior remains controlled by the app.
 const sb = createClient(SUPABASE_URL, SUPABASE_KEY, {
-  auth: { persistSession: false, autoRefreshToken: true, detectSessionInUrl: true }
+  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
 });
 
 // Password recovery links return to this same single-page application.
@@ -3361,6 +3361,21 @@ async function saveRecoveredPassword() {
 sb.auth.onAuthStateChange((event) => {
   if (event === 'PASSWORD_RECOVERY') showRecoveryPasswordForm();
 });
+
+// Fallback for browsers where the recovery event fires before the login UI is ready.
+// Only reveal the form when a valid Supabase session exists and the URL is a recovery URL.
+(async function detectExistingRecoverySession() {
+  const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+  const queryParams = new URLSearchParams(window.location.search);
+  const isRecoveryUrl = hashParams.get('type') === 'recovery' || queryParams.get('type') === 'recovery';
+  if (!isRecoveryUrl) return;
+  try {
+    const { data, error } = await sb.auth.getSession();
+    if (!error && data?.session) showRecoveryPasswordForm();
+  } catch (e) {
+    console.warn('Could not restore password recovery session:', e);
+  }
+})();
 
 let currentUser = null;
 let currentProfile = null;
