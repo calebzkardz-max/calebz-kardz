@@ -1765,7 +1765,7 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
             <div>
                             <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 12px;border:1.5px solid var(--gray-200);border-radius:8px;margin-bottom:12px;">
                 <input type="checkbox" id="posQrShow" checked style="width:16px;height:16px;" onchange="renderPositionPreview()">
-                <div style="font-size:13px;font-weight:600;">📷 Onyesha QR Code</div>
+                <div style="font-size:13px;font-weight:600;"><i data-lucide="qr-code" class="icon-inline" aria-hidden="true"></i> Onyesha QR Code</div>
               </label>
               <div class="form-group">
                 <label>QR Code - Position X</label>
@@ -1781,7 +1781,7 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
               </div>
                             <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 12px;border:1.5px solid var(--gray-200);border-radius:8px;margin-bottom:12px;">
                 <input type="checkbox" id="posLabelShow" checked style="width:16px;height:16px;" onchange="renderPositionPreview()">
-                <div style="font-size:13px;font-weight:600;">👥 Onyesha Group Size Label</div>
+                <div style="font-size:13px;font-weight:600;"><i data-lucide="users" class="icon-inline" aria-hidden="true"></i> Onyesha Group Size Label</div>
               </label>
               <div class="form-group">
                 <label><i data-lucide="palette" class="icon" style="color:#A855F7;width:14px;height:14px;vertical-align:-2px;"></i> Rangi ya Group Size (#SINGLE/#DOUBLE/#GROUP)</label>
@@ -1940,12 +1940,7 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
             </div>
             <div class="form-group">
               <label>Lugha ya Ukurasa Mzima wa Mualiko (Page Language)</label>
-              <p style="font-size:11px;color:var(--gray-400);margin:0 0 8px;">
-                Hii inadhibiti maandishi yote ya kudumu ya ukurasa (vichwa vya sehemu, vitufe, hata tarehe na muda - mfano "Ijumaa, 7 Agosti 2026" dhidi ya "Friday, August 7, 2026") - si maandishi uliyoandika mwenyewe (majina, hadithi n.k).<br>
-                <b>Otomatiki:</b> mgeni ataona Kiswahili kwa default na anaweza kubadili mwenyewe (kitufe SW/EN kitaonekana kwake).<br>
-                <b>Force:</b> ukurasa unabaki lugha hiyo TU - mgeni hawezi kubadili, kitufe cha kubadilisha kinafichwa.
-              </p>
-              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+               <div style="display:flex; gap:8px; flex-wrap:wrap;">
                 <button type="button" id="uiLangBtnAuto" class="btn btn-outline btn-sm" onclick="setUiLanguageMode('')">🔁 Otomatiki (Default)</button>
                 <button type="button" id="uiLangBtnSw" class="btn btn-outline btn-sm" onclick="setUiLanguageMode('sw')">🇹🇿 Force Kiswahili</button>
                 <button type="button" id="uiLangBtnEn" class="btn btn-outline btn-sm" onclick="setUiLanguageMode('en')">🇬🇧 Force English</button>
@@ -3977,7 +3972,7 @@ async function loadEvents() {
   ${e.event_date || 'Tarehe haijawekwa'}
 </div>
 <div class="event-countdown" style="font-size:12px;font-weight:600;margin-top:6px;color:#FFFFFF;">
-  ${!e.event_date ? 'Countdown haipatikani' : Math.ceil((new Date(e.event_date + 'T00:00:00') - new Date(new Date().toDateString())) / 86400000) > 0 ? `⏳ Zimebaki siku ${Math.ceil((new Date(e.event_date + 'T00:00:00') - new Date(new Date().toDateString())) / 86400000)}` : Math.ceil((new Date(e.event_date + 'T00:00:00') - new Date(new Date().toDateString())) / 86400000) === 0 ? '🎉 Event ni leo!' : '✓ Event imepita'}
+  ${(() => { const daysLeft=Math.ceil((new Date(e.event_date + 'T00:00:00') - new Date(new Date().toDateString())) / 86400000); const lang=localStorage.getItem('meshez_language')||'sw'; return !e.event_date ? (lang==='en'?'Countdown unavailable':'Countdown haipatikani') : daysLeft>0 ? (lang==='en'?'⏳ '+daysLeft+' days left':'⏳ Zimebaki siku '+daysLeft) : daysLeft===0 ? (lang==='en'?'🎉 Event is today!':'🎉 Event ni leo!') : (lang==='en'?'✓ Event has passed':'✓ Event imepita'); })()}
 </div>
       </div>
       <div class="event-card-body">
@@ -8183,6 +8178,44 @@ const REMAINING_PAGE_TRANSLATIONS=[["General Summary","Muhtasari wa jumla"],["Al
 SYSTEM_TRANSLATION_PAIRS.push(...REMAINING_PAGE_TRANSLATIONS);
 const MIXED_LANGUAGE_PAGE_TRANSLATIONS=[["New account starts with Scanner-only access. A system Admin can grant Manager/Admin permissions later in User Management.","Akaunti mpya inaanza na ruhusa za \"Scanner\" pekee. Admin wa mfumo anaweza kukuongezea ruhusa (Manager/Admin) baadaye kwenye \"User Management\"."],["General Summary","Muhtasari wa jumla"],["All Events","Events Zote"],["Cards Generated","Kadi Zilizotengenezwa"],["All Guests","Wageni Wote"],["Checked In","Waliofika"],["Event Monitoring","Ufuatiliaji wa matukio"],["Recent Events","Events za Hivi Karibuni"],["Your latest events","Events zako za mwisho"],["All →","Zote →"],["Start by creating your first event","Anza kwa kutengeneza event yako ya kwanza"],["Total Attendance","Mahudhurio ya Jumla"],["Guest Statistics","Takwimu za wageni"],["Name - Position X","Jina - Position X"],["Name - Position Y","Jina - Position Y"],["Name Font Size","Font Size ya Jina"],["Name Font Style","Font Style ya Jina"],["White","Nyeupe"],["Black","Nyeusi"],["Red","Nyekundu"],["Green","Kijani"],["Blue","Bluu"],["Dark Blue","Bluu iliyokolea"],["Yellow","Njano"],["Show VIP/VVIP Badge","Onyesha Badge ya VIP/VVIP"],["VIP/VVIP Badge - Position X","VIP/VVIP Badge - Position X"],["VIP/VVIP Badge - Position Y","VIP/VVIP Badge - Position Y"],["VIP/VVIP Badge Color","Rangi ya VIP/VVIP Badge"],["Auto (VVIP=Gold, VIP=Blue)","Auto (VVIP=Dhahabu, VIP=Bluu)"],["Show QR Code","Onyesha QR Code"],["QR Code - Position X","QR Code - Position X"],["QR Code - Position Y","QR Code - Position Y"],["QR Code Size","QR Code Ukubwa"],["Show Group Size Label","Onyesha Group Size Label"],["Group Size Label Color (#SINGLE/#DOUBLE/#GROUP)","Rangi ya Group Size (#SINGLE/#DOUBLE/#GROUP)"],["Group Size Label Format","Format ya Group Size Label"],["With # (e.g. #SINGLE)","Na # (mfano #SINGLE)"],["With icons (one person / multiple people)","Yenye Icons (mtu mmoja / watu wengi)"],["Live Preview","Preview ya Moja kwa Moja"],["Upload a template first to see the preview","Upload template kwanza ili uone preview"],["Uploaded Templates","Templates Zilizopakiwa"],["No templates yet","Hakuna templates bado"],["Upload your card template","Upload template ya kadi yako"],["Select an event to start","Chagua event kuanza"],["Digital Invitation settings are configured separately for each event","Mipangilio ya Digital Invitation inawekwa kwa kila event tofauti"],["Cover & Story","Cover &amp; Hadithi"],["Cover Photo","Picha ya Cover"],["Text Position on Cover (top/bottom)","Nafasi ya Maandishi kwenye Cover (juu/chini)"],["Reset Default","Rudisha Default"],["Cover Preview","Preview ya Cover"],["Welcome Message Heading (Hero Title)","Kichwa cha Ujumbe wa Karibisho (Hero Title)"],["Welcome Verse (Hero Verse)","Aya ya Karibisho (Hero Verse)"],["Full Invitation Page Language","Lugha ya Ukurasa Mzima wa Mualiko (Page Language)"],["The guest sees Swahili by default and can switch language themselves (SW/EN buttons will appear).","mgeni ataona Kiswahili kwa default na anaweza kubadili mwenyewe (kitufe SW/EN kitaonekana kwake)."],["The page stays in that language only - the guest cannot switch; the language button is hidden.","ukurasa unabaki lugha hiyo TU - mgeni hawezi kubadili, kitufe cha kubadilisha kinafichwa."],["Our Story","Hadithi Yetu (Our Story)"],["Reception Details","Reception Details"],["Google Maps Link","Link ya Ramani (Google Maps)"],["Venue Photos (Reception Details)","Picha za Ukumbi (\"Reception Details\")"],["Add Color","+ Ongeza Rangi"],["Add clothing colors / a photo of a person wearing that color","Ongeza rangi za mavazi/picha ya mtu aliyevaa rangi hiyo"],["Add Schedule","+ Ongeza Ratiba"],["Event Service Providers","Wahudumu wa Tukio"],["e.g. MC, DJ, Photographer, Videographer etc.","Mfano: MC, DJ, Mpiga Picha, Videographer n.k."],["Gift / Contribution Information","Taarifa za Zawadi/Mchango"],["Snap Cards Contacts","Mawasiliano ya Snap Cards"],["Snap Cards WhatsApp number (one number for all communication)","Namba ya WhatsApp ya Snap Cards (namba moja kwa mawasiliano yote)"],["Enter the number with country code, e.g. 255 for Tanzania. This number will be connected to “Chat with us on WhatsApp” and “Send via WhatsApp” on the invitation page.","Weka namba yenye country code, mfano 255 kwa Tanzania. Namba hii itaunganishwa na “Ongea nasi WhatsApp” na “Tuma kupitia WhatsApp” kwenye ukurasa wa mualiko."],["Our recent work — 6 photos","Kazi zetu za hivi Karibuni — picha 6"],["Upload one photo for each slot. Photos will fit their frames without distortion; guests can tap a photo to view it larger.","Pakia picha moja kwa kila nafasi. Picha zitajipanga ndani ya vijedwali vyake bila kuvuruga uwiano, na mgeni akigusa picha ataiona kwa ukubwa mkubwa."],["Remaining","Wanaobaki"],["Send type","Chagua Aina ya Kutuma"],["For everyone - sent to all phones","Kwa wote - inaenda simu zote"],["Everyone (with and without WhatsApp)","Wote (wenye WhatsApp na wasio na WhatsApp)"],["For smartphone users only","Kwa wenye smartphone tu"],["Upload all cards to bucket","Pakia Kadi Zote Bucket"],["Guest ID","Guest ID"],["WhatsApp","WhatsApp"],["SMS","SMS"],["WA Status","WA Status"],["Select event to view guests","Chagua event kuona wageni"],["Select Event or Folder","Chagua Event au Folder"],["Delete Folder","Futa Folder"],["+ New Folder","+ Folder Mpya"],["Event / Folder","Event / Folder"],["Guests / Contacts","Wageni/Contacts"],["+ Add One Guest / Contributor","+ Ongeza Mgeni/Mchangiaji Mmoja"],["Upload Contacts (Excel)","Pakia Contacts (Excel)"],["Download Contacts (Excel)","Pakua Contacts (Excel)"],["Guest / Contributor List (SMS)","Orodha ya Wageni/Wachangiaji (SMS)"],["Select an event or folder to view the list","Chagua event au folder kuona orodha"],["Entrance Scanner","Scanner ya Mlangoni"],["Scan guest QR codes","Scan QR codes za wageni"],["You have not been assigned any event yet","Bado hujapewa event yoyote"],["Ask Admin to grant event access in Event Management → User Permissions","Muulize Admin akuwekee ruhusa ya event kwenye \"Event Management → Ruhusu Watumiaji\""],["Point the camera at the QR code","Angazia kamera kwenye QR code"],["Or Enter ID Manually","Au Andika ID kwa Mkono"],["Wait for Scan","Subiri Scan"],["LIVE - Total for the Entire Event (all devices)","LIVE - Jumla ya Event Nzima (vifaa vyote)"],["Scans on this device only. Use LIVE COUNT above to see the actual total.","Hizi ni idadi ya scans zilizofanyika kwenye KIFAA HIKI pekee. Kila kifaa kina zake. Tumia LIVE COUNT hapo juu kuona jumla halisi."],["Previous","Zilizopita"],["Not yet responded","Bado Hawajajibu"],["Scanner Link","Link ya Scanner"],["No data","Hakuna data"],["Detailed Report for Event","Ripoti ya Kina kwa Event"],["Export CSV (Entire System)","Export CSV (Mfumo Mzima)"],["Loading...","Inapakia..."],["Cash (Cash)","Cash (Taslimu)"],["Unpaid","Hajalipwa"],["Partial Payment (Deposit)","Nusu Malipo (Deposit)"],["Fully Paid","Amelipwa Kikamilifu"],["Card Date","Tarehe Kadi"],["Payment Date","Tarehe Malipo"],["No payments yet","Hakuna malipo bado"],["Card Promotions (Attractive Images)","Matangazo ya Kadi (Picha za Mvuto)"],["Save Profile","Hifadhi Profile"],["Logo size inside circle","Ukubwa wa logo ndani ya duara"]];
 SYSTEM_TRANSLATION_PAIRS.push(...MIXED_LANGUAGE_PAGE_TRANSLATIONS);
+// Targeted fixes for UI strings and form hints that were previously left in Swahili.
+const LANGUAGE_COMPLETION_PAIRS = [
+  ["Welcome to the Dashboard","Karibu kwenye Dashboard"],
+  ["Total Attendance","Ufike wa Jumla"],
+  ["Click + New Event to get started","Bonyeza + Event mpya kuanza"],
+  ["+ New Event","+ Event mpya"],
+  ["Confirmed","Waliothibitisha"],
+  ["Not confirmed","Hawajathibitisha"],
+  ["Show VIP/VVIP Badge","👑 Onyesha Badge ya VIP/VVIP"],
+  ["Default: above the label","Default: juu ya Label"],
+  ["Show QR Code","Onyesha QR Code"],
+  ["Show Group Size Label","Onyesha Group Size Label"],
+  ["Select a template from the list below to edit its layout","Chagua template kutoka orodha ya chini ili kuhariri mpangilio wake"],
+  ["Layout saved","Mpangilio umewekwa"],
+  ["Default layout","Mpangilio bado (default)"],
+  ["Select Event","Chagua Event"],
+  ["Select an event","Chagua event"],
+  ["-- Select Event --","-- Chagua Event --"],
+  ["Select Event or Folder","Chagua Event au Folder"],
+  ["Cover & Story","Cover & Hadithi"],
+  ["Our Story","Hadithi Yetu (Our Story)"],
+  ["Story","Hadithi"],
+  ["Monogram","Herufi"],
+  ["Photo 1","Picha 1"],["Photo 2","Picha 2"],["Photo 3","Picha 3"],
+  ["Photo 4","Picha 4"],["Photo 5","Picha 5"],["Photo 6","Picha 6"],
+  ["+ Add","+ Ongeza"],
+  ["Sent","Zilizotumwa"],
+  ["You are now working with event:","Sasa unafanya kazi na event:"],
+  ["No event yet","Hakuna event bado"],
+  ["(you)","(wewe)"],
+  ["Select an event above to view WhatsApp/RSVP statistics","Chagua event hapo juu kuona takwimu za WhatsApp/RSVP"],
+  ["Search by name, card number, phone number or type (single/double/group)...","Tafuta kwa jina, namba ya kadi, namba ya simu au aina (single/double/group)..."],
+  ["Search by name or phone number...","Tafuta kwa jina au namba ya simu..."],
+  ["Search...","Tafuta..."],
+  ["Search events...","Tafuta matukio..."],
+  ["Select an event or folder to view the list","Chagua event au folder kuona orodha"]
+];
+SYSTEM_TRANSLATION_PAIRS.push(...LANGUAGE_COMPLETION_PAIRS);
 const SYSTEM_TRANSLATIONS={sw:Object.create(null),en:Object.create(null)};
 SYSTEM_TRANSLATION_PAIRS.forEach(([en,sw])=>{
   if(typeof en!=='string'||typeof sw!=='string'||!en.trim()||!sw.trim())return;
