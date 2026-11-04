@@ -2704,8 +2704,20 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
           <label>Aina ya Event</label>
           <select id="evtType">
             <option value="harusi">Harusi</option>
-            <option value="sendoff">Sendoff</option>
-            <option value="birthday">Birthday</option>
+            <option value="sendoff">Send-Off</option>
+            <option value="birthday">Siku ya Kuzaliwa</option>
+            <option value="graduation">Mahafali</option>
+            <option value="engagement">Uchumba</option>
+            <option value="anniversary">Maadhimisho</option>
+            <option value="bridal_shower">Bridal Shower</option>
+            <option value="baby_shower">Baby Shower</option>
+            <option value="kitchen_party">Kitchen Party</option>
+            <option value="conference">Mkutano / Kongamano</option>
+            <option value="corporate">Tukio la Kampuni</option>
+            <option value="religious">Tukio la Kidini</option>
+            <option value="fundraiser">Changizo / Harambee</option>
+            <option value="reunion">Mkutano wa Familia</option>
+            <option value="memorial">Kumbukumbu / Maombolezo</option>
             <option value="other">Nyingine</option>
           </select>
         </div>
@@ -2721,12 +2733,10 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
       <div class="form-group">
         <label><i data-lucide="heart" class="icon" style="color:#EC4899;width:14px;height:14px;"></i> Jina la Mwenye Tukio</label>
         <input type="text" id="evtHostName" placeholder="Josephine & Mark">
-        <p style="font-size:11px;color:var(--gray-400);margin-top:4px;">Itatumika kwenye ujumbe wa WhatsApp (mfano: "Harusi ya Josephine & Mark")</p>
       </div>
       <div class="form-group">
-        <label><i data-lucide="map" class="icon" style="color:#10B981;width:14px;height:14px;"></i> Coordinates (Location ya Tukio)</label>
+        <label><i data-lucide="map" class="icon" style="color:#10B981;width:14px;height:14px;"></i> Location Coordinates</label>
         <input type="text" id="evtCoordinates" placeholder="-6.1907858,35.7305194">
-        <p style="font-size:11px;color:var(--gray-400);margin-top:4px;">Kwenye Google Maps, bofya mahali husika kisha copy namba mbili zinazoonekana (latitude,longitude) - bila herufi nyingine. Kiungo cha maelekezo (directions) kwa SMS na WhatsApp kitatengenezwa kiotomatiki kutoka hapa.</p>
       </div>
       <div class="input-row">
         <div class="form-group">
@@ -2742,7 +2752,6 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
             </select>
             <input type="text" id="evtPhone" placeholder="0713079348" style="flex:1;">
           </div>
-          <p style="font-size:11px;color:var(--gray-400);margin-top:4px;">Hii ndiyo namba itakayopokea "Ujumbe wa Shukrani" kutoka kwa wageni kupitia WhatsApp (kitufe cha "Tuma Salamu" kwenye Mualiko wa Kidijitali - mualiko.html). Weka namba ya bwana/bibi harusi au msimamizi wa event. Chagua nchi sahihi (TZ/KE) ili namba isibadilishwe vibaya.</p>
         </div>
       </div>
       <div class="form-group">
@@ -2755,20 +2764,17 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
           <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 12px;border:1.5px solid var(--gray-200);border-radius:8px;">
             <input type="checkbox" id="evtShowVipBadge" checked style="width:16px;height:16px;">
             <div>
-              <div style="font-size:13px;font-weight:600;">👑 Onyesha Badge ya VIP/VVIP</div>
-              <div style="font-size:11px;color:var(--gray-400);">Zima kama event hii haihitaji badge ya VIP/VVIP kwenye kadi</div>
+              <div style="font-size:13px;font-weight:600;"><i data-lucide="crown" class="icon-inline" aria-hidden="true"></i> Onyesha Badge ya VIP/VVIP</div>
             </div>
           </label>
           <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 12px;border:1.5px solid var(--gray-200);border-radius:8px;">
             <input type="checkbox" id="evtShowGroupLabel" checked style="width:16px;height:16px;">
             <div>
               <div style="font-size:13px;font-weight:600;"><i data-lucide="users" class="icon-inline" aria-hidden="true"></i> Onyesha Group Size Label</div>
-              <div style="font-size:11px;color:var(--gray-400);">Zima kama event hii haihitaji lebo ya #SINGLE/#DOUBLE/#GROUP kwenye kadi</div>
-            </div>
+                          </div>
           </label>
         </div>
-        <p style="font-size:11px;color:var(--gray-400);margin-top:6px;">Mipangilio hii ni ya event hii tu, haiathiri events nyingine.</p>
-      </div>
+              </div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="closeModal('newEventModal')">Ghairi</button>
@@ -2821,11 +2827,7 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
       <div class="form-group">
         <label><i data-lucide="map" class="icon" style="color:#10B981;width:14px;height:14px;"></i> Coordinates (Location ya Tukio)</label>
         <input type="text" id="locCoordinatesInput" placeholder="-6.1907858,35.7305194" oninput="refreshDirectionsPreviewLink()">
-        <p style="font-size:11px;color:var(--gray-400);margin-top:4px;">Kwenye Google Maps, bofya mahali husika kisha copy namba mbili zinazoonekana (latitude,longitude) - bila herufi nyingine.</p>
-        <p style="font-size:11px;color:#92400E;background:#FEF3C7;padding:8px;border-radius:6px;margin-top:6px;">
-          <i data-lucide="triangle-alert" style="color:#D97706;width:13px;height:13px;vertical-align:-2px;"></i> Coordinates hizi ndizo pekee zinazotumika kujenga kiungo cha "maelekezo" (directions) kwenye SMS na WhatsApp - kinachomwonyesha mgeni njia kutoka alipo hadi hapa.
-        </p>
-        <a id="testDirectionsLink" href="#" target="_blank" rel="noopener" style="display:none;font-size:12px;font-weight:600;color:var(--primary,#EA580C);margin-top:8px;"><i data-lucide="compass" style="color:#EA580C;width:14px;height:14px;vertical-align:-2px;"></i> Jaribu kufungua maelekezo haya (kama guest atakavyoyaona)</a>
+                        <a id="testDirectionsLink" href="#" target="_blank" rel="noopener" style="display:none;font-size:12px;font-weight:600;color:var(--primary,#EA580C);margin-top:8px;"><i data-lucide="compass" style="color:#EA580C;width:14px;height:14px;vertical-align:-2px;"></i> Jaribu kufungua maelekezo haya (kama guest atakavyoyaona)</a>
       </div>
     </div>
     <div class="modal-footer">
@@ -3708,9 +3710,32 @@ function closeModal(id) { document.getElementById(id).classList.remove('open'); 
 function showToast(msg, type = 'info') {
   const t = document.createElement('div');
   t.className = `toast toast-${type}`;
-  const icons = { success: '✅', error: '❌', info: 'ℹ️' };
-  t.innerHTML = `<span>${icons[type]}</span> ${msg}`;
+  const icons = { success: 'check-circle', error: 'circle-x', info: 'info' };
+  const lang = (localStorage.getItem('meshez_language') || 'sw') === 'en' ? 'en' : 'sw';
+  let message = String(msg == null ? '' : msg);
+  const dictionary = (typeof systemDictionary === 'function') ? systemDictionary(lang) : {};
+  if (dictionary[message]) message = dictionary[message];
+  else {
+    const runtimePairs = [
+      ['Chagua event kwanza','Select an event first'],
+      ['Weka jina la event','Enter the event name'],
+      ['Event imetengenezwa!','Event created!'],
+      ['Mabadiliko yamehifadhiwa!','Changes saved!'],
+      ['Taarifa zimehifadhiwa!','Information saved!'],
+      ['Hakuna event bado','No event yet'],
+      ['Inafuta event na data zake zote...','Deleting the event and all its data...'],
+      ['Kosa: ','Error: ']
+    ];
+    for (const [sw, en] of runtimePairs) {
+      if (message.startsWith(sw)) { message = (lang === 'en' ? en : sw) + message.slice(sw.length); break; }
+      if (message.startsWith(en)) { message = (lang === 'en' ? en : sw) + message.slice(en.length); break; }
+    }
+  }
+  message = message.replace(/[\\u{1F000}-\\u{1FAFF}\\u{2600}-\\u{27BF}]/gu, '').replace(/\\s{2,}/g, ' ').trim();
+  t.innerHTML = `<i data-lucide="${icons[type] || icons.info}" class="icon-inline" aria-hidden="true"></i><span></span>`;
+  t.querySelector('span').textContent = message;
   document.getElementById('toastContainer').appendChild(t);
+  if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
   setTimeout(() => t.remove(), 3500);
 }
 
@@ -8231,7 +8256,43 @@ SYSTEM_TRANSLATION_PAIRS.push(
   ["The image will be converted to WebP to reduce its file size.","Picha itabadilishwa kuwa WebP ili kupunguza ukubwa wake."],
   ["Monitoring","Ufuatiliaji"],
   ["Administration","Usimamizi"],
-  ["RSVP - Thank You","RSVP - Shukrani"]
+  ["RSVP - Thank You","RSVP - Shukrani"],
+  ["Event name","Jina la Event"],
+  ["Event type","Aina ya Event"],
+  ["Wedding","Harusi"],
+  ["Send-Off","Send-Off"],
+  ["Birthday","Siku ya Kuzaliwa"],
+  ["Graduation","Mahafali"],
+  ["Engagement","Uchumba"],
+  ["Anniversary","Maadhimisho"],
+  ["Bridal Shower","Bridal Shower"],
+  ["Baby Shower","Baby Shower"],
+  ["Kitchen Party","Kitchen Party"],
+  ["Conference / Convention","Mkutano / Kongamano"],
+  ["Corporate Event","Tukio la Kampuni"],
+  ["Religious Event","Tukio la Kidini"],
+  ["Fundraiser","Changizo / Harambee"],
+  ["Family Reunion","Mkutano wa Familia"],
+  ["Memorial / Funeral","Kumbukumbu / Maombolezo"],
+  ["Venue","Mahali"],
+  ["Event host name","Jina la Mwenye Tukio"],
+  ["Location Coordinates","Coordinates za Mahali"],
+  ["Start Time","Saa ya Kuanza"],
+  ["Contact Number","Namba ya Mawasiliano"],
+  ["Event Prefix (for card IDs)","Event Prefix (kwa ID za Kadi)"],
+  ["Card Appearance","Muonekano wa Kadi"],
+  ["Show VIP/VVIP Badge","Onyesha Badge ya VIP/VVIP"],
+  ["Show Group Size Label","Onyesha Lebo ya Idadi ya Watu"],
+  ["Create Event","Tengeneza Event"],
+  ["Save Changes","Hifadhi Mabadiliko"],
+  ["Location & Event Details","Mahali na Maelezo ya Tukio"],
+  ["Try opening these directions (as guests will see them)","Jaribu kufungua maelekezo haya (kama mgeni atakavyoyaona)"],
+  ["Check","Kagua"],
+  ["Template name","Jina la Template"],
+  ["Wedding Template 2026","Template ya Harusi 2026"],
+  ["Choose Image (will be saved as WebP)","Chagua Picha (Itahifadhiwa WebP)"],
+  ["Related Event (this template will be used for this event ONLY)","Event Husika (template hii itatumika kwa event hii TU)"],
+  ["Type (for label only)","Aina (kwa lebo tu)"]
 );const SYSTEM_TRANSLATIONS={sw:Object.create(null),en:Object.create(null)};
 SYSTEM_TRANSLATION_PAIRS.forEach(([en,sw])=>{
   if(typeof en!=='string'||typeof sw!=='string'||!en.trim()||!sw.trim())return;
