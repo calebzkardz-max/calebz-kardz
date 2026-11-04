@@ -8219,20 +8219,18 @@ const LANGUAGE_COMPLETION_PAIRS = [
 SYSTEM_TRANSLATION_PAIRS.push(...LANGUAGE_COMPLETION_PAIRS);
 SYSTEM_TRANSLATION_PAIRS.push(
   ["Welcome,","Karibu,"],
-  ["Hawajafika","Not arrived"],
-  ["Default: Juu ya QR","Default: above QR"],
-  ["Hifadhi Digital Invitation","Save Digital Invitation"],
-  ["Otomatiki (Default)","Automatic (Default)"],
-  ["Hakuna event bado","No event yet"],
-  ["Herufi 6 au zaidi","At least 6 characters"],
-  ["Rudia nenosiri","Repeat password"],
-  ["Utambulisho wa Mfumo (System Branding)","System Branding"],
-  ["Ongeza ili logo isogee karibu na ukingo wa duara; punguza ili ipate nafasi zaidi.","Increase to move the logo closer to the circle edge; decrease to give it more space."],
-  ["Picha itabadilishwa kuwa WebP ili kupunguza ukubwa wake.","The image will be converted to WebP to reduce its file size."],
-  ["Ufuatiliaji","Monitoring"],
-  ["Usimamizi","Administration"],
-  ["RSVP - Shukrani","RSVP - Thank You"],
-  ["Hakuna event bado","No event yet"]
+  ["Not arrived","Hawajafika"],
+  ["Default: above QR","Default: Juu ya QR"],
+  ["Save Digital Invitation","Hifadhi Digital Invitation"],
+  ["Automatic (Default)","Otomatiki (Default)"],
+  ["At least 6 characters","Herufi 6 au zaidi"],
+  ["Repeat password","Rudia nenosiri"],
+  ["System Branding","Utambulisho wa Mfumo (System Branding)"],
+  ["Increase to move the logo closer to the circle edge; decrease to give it more space.","Ongeza ili logo isogee karibu na ukingo wa duara; punguza ili ipate nafasi zaidi."],
+  ["The image will be converted to WebP to reduce its file size.","Picha itabadilishwa kuwa WebP ili kupunguza ukubwa wake."],
+  ["Monitoring","Ufuatiliaji"],
+  ["Administration","Usimamizi"],
+  ["RSVP - Thank You","RSVP - Shukrani"]
 );const SYSTEM_TRANSLATIONS={sw:Object.create(null),en:Object.create(null)};
 SYSTEM_TRANSLATION_PAIRS.forEach(([en,sw])=>{
   if(typeof en!=='string'||typeof sw!=='string'||!en.trim()||!sw.trim())return;
