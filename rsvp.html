@@ -7,11 +7,11 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-:root{--mk-blue:#0047AB;--mk-blue-dark:#1A1A2E;--mk-orange:#FF6B35;--mk-bg:#F4F7FB;--mk-text:#1E293B;--mk-muted:#64748B;--mk-border:#E2E8F0;--mk-green:#0F8A5F;--mk-red:#C2413B}
+:root{--mk-blue:#0047AB;--mk-blue-dark:#1A1A2E;--mk-orange:#FF6B35;--mk-bg:#EEF1F7;--mk-text:#1E293B;--mk-muted:#64748B;--mk-border:#E2E8F0;--mk-green:#0F8A5F;--mk-red:#C2413B}
 *{margin:0;padding:0;box-sizing:border-box}
-body{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 16px;background:var(--mk-bg);color:var(--mk-text);font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif}
-.card{width:100%;max-width:440px;background:#fff;border:1px solid var(--mk-border);border-radius:20px;padding:36px 30px;text-align:center;box-shadow:0 18px 48px rgba(26,26,46,.09)}
-.brand-mark{width:54px;height:54px;margin:0 auto 20px;border-radius:16px;display:flex;align-items:center;justify-content:center;background:var(--mk-blue-dark);color:#fff;font-size:18px;font-weight:800;letter-spacing:-1px;box-shadow:0 7px 18px rgba(0,71,171,.18)}
+body{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 16px;background:linear-gradient(145deg,#1A1A2E 0%,#0047AB 100%);color:var(--mk-text);font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif}
+.card{width:100%;max-width:440px;background:#fff;border:1px solid rgba(255,255,255,.55);border-radius:22px;padding:34px 30px;text-align:center;box-shadow:0 22px 60px rgba(5,15,40,.24)}
+.brand-mark{width:76px;height:76px;margin:0 auto 10px;border-radius:50%;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#fff;border:3px solid #EAF0FA;box-shadow:0 8px 22px rgba(0,71,171,.18)}.brand-mark img{width:100%;height:100%;object-fit:contain}.brand-name{font-size:15px;font-weight:800;letter-spacing:.02em;color:var(--mk-blue-dark);margin:0 auto 20px;max-width:100%;overflow-wrap:anywhere}
 .status-mark{width:58px;height:58px;margin:0 auto 18px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#EEF4FC;color:var(--mk-blue);font-size:24px;font-weight:700}
 h1{font-size:21px;line-height:1.3;font-weight:800;letter-spacing:-.45px;color:var(--mk-blue-dark);margin-bottom:9px}
 p{font-size:14px;line-height:1.7;color:var(--mk-muted)}
@@ -31,7 +31,8 @@ p{font-size:14px;line-height:1.7;color:var(--mk-muted)}
 <body>
 
 <div class="card" id="card">
-  <div class="brand-mark">MK</div>
+  <div class="brand-mark" id="brandMark"></div>
+  <div class="brand-name" id="brandName">Meshez Kadi</div>
   <div class="spinner"></div>
   <h1>Inapakia taarifa</h1>
   <p>Tafadhali subiri kidogo.</p>
@@ -45,6 +46,61 @@ const { createClient } = supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const card = document.getElementById('card');
+
+// Utambulisho wa ukurasa huu unafuata Main Name na Logo zilizowekwa kwenye System Branding.
+let rsvpBranding = { name: 'Meshez Kadi', logo: '' };
+
+function paintRsvpBranding() {
+  const mark = document.getElementById('brandMark');
+  const nameEl = document.getElementById('brandName');
+  if (nameEl) nameEl.textContent = rsvpBranding.name || 'Meshez Kadi';
+  if (mark) {
+    mark.replaceChildren();
+    if (rsvpBranding.logo) {
+      const img = document.createElement('img');
+      img.src = rsvpBranding.logo;
+      img.alt = (rsvpBranding.name || 'System') + ' logo';
+      img.onerror = () => img.remove();
+      mark.appendChild(img);
+    } else {
+      mark.textContent = (rsvpBranding.name || 'Meshez Kadi').trim().slice(0, 2).toUpperCase();
+      mark.style.color = '#0047AB';
+      mark.style.fontWeight = '800';
+      mark.style.fontSize = '20px';
+    }
+  }
+}
+function brandHeaderHtml() {
+  const name = (rsvpBranding.name || 'Meshez Kadi')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const logo = rsvpBranding.logo
+    ? '<img src="' + rsvpBranding.logo.replace(/"/g, '&quot;') + '" alt="System logo">'
+    : '';
+  return '<div class="brand-mark">' + logo + (logo ? '' : name.slice(0,2).toUpperCase()) + '</div><div class="brand-name">' + name + '</div>';
+}
+async function loadRsvpBranding() {
+  try {
+    const cached = JSON.parse(localStorage.getItem('meshez_system_branding_v2') || localStorage.getItem('meshez_system_branding') || 'null');
+    if (cached) {
+      rsvpBranding.name = cached.name || cached.mainName || rsvpBranding.name;
+      rsvpBranding.logo = cached.logoOffline || cached.logo || cached.logoDataUrl || cached.logoUrl || '';
+      paintRsvpBranding();
+    }
+  } catch (e) {}
+  try {
+    const { data, error } = await sb.rpc('get_public_system_branding');
+    if (error) throw error;
+    const row = Array.isArray(data) ? data[0] : data;
+    if (row) {
+      rsvpBranding.name = row.main_name || rsvpBranding.name;
+      rsvpBranding.logo = row.logo_url || rsvpBranding.logo;
+      paintRsvpBranding();
+    }
+  } catch (e) {
+    console.warn('System branding haikupatikana; nimetumia utambulisho uliohifadhiwa.', e);
+  }
+}
+
 let currentCardId = null;
 
 function showInvalidLink() {
@@ -56,7 +112,7 @@ function showInvalidLink() {
 
 function showChoiceScreen(guestName) {
   card.innerHTML = `
-    <div class="brand-mark">MK</div>
+    ${brandHeaderHtml()}
     <h1>Thibitisha Uwepo Wako</h1>
     ${guestName ? `<div class="guest-name">${guestName}</div>` : ''}
     <p>Tafadhali chagua hali yako ya mahudhurio kwa tukio hili.</p>
@@ -116,6 +172,7 @@ function init() {
   showChoiceScreen(null);
 }
 
+loadRsvpBranding();
 init();
 </script>
 
