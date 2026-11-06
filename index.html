@@ -1454,6 +1454,44 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
     background:linear-gradient(110deg,#6D9773 0%,#0C3B2E 100%)!important;
   }
 
+
+  /* ===== CALEBZ KARDZ FINAL BRAND FIXES ===== */
+  #authScreen .password-visibility-toggle{
+    border:1px solid rgba(255,186,0,.65)!important;
+    background:linear-gradient(135deg,#FFBA00,#F2D36B)!important;
+    color:#0C3B2E!important;
+    box-shadow:0 2px 9px rgba(255,186,0,.22)!important;
+  }
+  #authScreen .password-visibility-toggle svg{stroke:#0C3B2E!important}
+  #authScreen #loginForm button[onclick="showForgotPassword()"]{
+    color:#FFBA00!important;
+    font-weight:800!important;
+    text-shadow:0 1px 2px rgba(0,0,0,.18);
+  }
+  #authScreen #loginForm button[onclick="showForgotPassword()"]:hover{color:#FFE08A!important}
+  #mainApp .sidebar-nav .nav-section{
+    color:#FFBA00!important;
+    font-weight:800!important;
+    letter-spacing:.1em!important;
+  }
+  #mainApp .sidebar-nav button[onclick="showPage('dashboard')"] svg{
+    color:#FFFFFF!important;stroke:#FFFFFF!important;
+  }
+  #mainApp .sidebar-footer button[onclick="logout()"]{
+    color:#FFFFFF!important;
+    background:linear-gradient(120deg,#0C3B2E,#6D9773)!important;
+    border:1px solid rgba(255,186,0,.45)!important;
+    font-weight:800!important;
+  }
+  #mainApp .sidebar-footer button[onclick="logout()"] svg{
+    color:#FFFFFF!important;stroke:#FFFFFF!important;
+  }
+  #mainApp .sidebar-footer button[onclick="logout()"]:hover{
+    background:linear-gradient(120deg,#174D3D,#0C3B2E)!important;
+    border-color:#FFBA00!important;
+  }
+  #invoicePreviewSettingsCard .card-title{color:#0C3B2E!important;font-weight:800!important}
+
 </style>
 </head>
 <body>
@@ -1982,7 +2020,7 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
             </div>
             <div class="form-group">
               <label>Event</label>
-              <select id="invEventSelect" onchange="loadEventGuests()">
+              <select id="invEventSelect" onchange="loadEventGuests();refreshInvoicePreview();refreshInvoiceEventPreview()">
                 <option value="">-- Chagua Event --</option>
               </select>
             </div>
@@ -2069,7 +2107,58 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
             </table>
           </div>
         </div>
-      </div>
+      
+        <section class="card" id="invoicePreviewSettingsCard" style="margin-top:18px;">
+          <div class="card-header">
+            <div class="card-title"><i data-lucide="file-text" class="icon-inline" style="color:#BB8A52;"></i> INVOICE PREVIEW</div>
+            <button class="btn btn-outline btn-sm" type="button" onclick="saveInvoicePreviewSettings()">Hifadhi Taarifa</button>
+          </div>
+          <p style="font-size:12px;color:var(--gray-500);margin:0 0 14px;">Jaza taarifa za kichwa (header) na mwisho (footer) zitakazoonekana kwenye invoice. Taarifa hizi zitatumika pia kwenye PDF ya invoice.</p>
+          <div class="grid-2">
+            <div>
+              <h4 style="color:#0C3B2E;margin:4px 0 10px;">HEADER / TAARIFA ZA JUU</h4>
+              <div class="form-group"><label>Jina la Biashara / Mfumo</label><input id="invoiceHeadName" placeholder="Calebz Kardz"></div>
+              <div class="form-group"><label>Kauli mbiu / Maelezo mafupi</label><input id="invoiceHeadTagline" placeholder="Invitation & Guest Management"></div>
+              <div class="form-group"><label>Anwani</label><input id="invoiceHeadAddress" placeholder="Mtaa, Jiji, Nchi"></div>
+              <div class="form-group"><label>Namba za Simu</label><input id="invoiceHeadPhones" placeholder="+255... , +255..."></div>
+              <div class="form-group"><label>Barua Pepe</label><input id="invoiceHeadEmail" type="email" placeholder="info@example.com"></div>
+              <div class="form-group"><label>TIN / Namba ya Usajili (hiari)</label><input id="invoiceHeadTin" placeholder="TIN / Registration No."></div>
+            </div>
+            <div>
+              <h4 style="color:#0C3B2E;margin:4px 0 10px;">FOOTER / TAARIFA ZA CHINI</h4>
+              <div class="form-group"><label>Ujumbe wa shukrani</label><input id="invoiceFootThanks" placeholder="Asante kwa kuchagua huduma zetu."></div>
+              <div class="form-group"><label>Taarifa za malipo</label><textarea id="invoiceFootPayment" rows="2" placeholder="Lipa kupitia..."></textarea></div>
+              <div class="form-group"><label>Masharti / Maelezo ya ziada</label><textarea id="invoiceFootTerms" rows="2" placeholder="Malipo hayarudishwi baada ya..."></textarea></div>
+              <div class="form-group"><label>Mawasiliano / Mitandao / Tovuti</label><input id="invoiceFootContact" placeholder="Website, Instagram, WhatsApp..."></div>
+              <div class="form-group"><label>Jina la aliyeandaa invoice</label><input id="invoiceFootPreparedBy" placeholder="Prepared by..."></div>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:flex-end;gap:8px;margin:8px 0 12px;">
+            <button class="btn btn-outline btn-sm" type="button" onclick="refreshInvoicePreview()">Hakiki Upya</button>
+          </div>
+          <div id="invoicePreviewCanvas" style="background:#fff;color:#1f2937;border:1px solid #d7ded5;border-radius:12px;padding:18px;max-width:820px;margin:auto;box-shadow:0 5px 18px rgba(12,59,46,.08);">
+            <div style="background:#0C3B2E;color:#fff;border-radius:8px;padding:16px;">
+              <div id="invoicePreviewName" style="font-size:20px;font-weight:800;">Calebz Kardz</div>
+              <div id="invoicePreviewTagline" style="font-size:12px;margin-top:4px;">Invitation &amp; Guest Management</div>
+              <div id="invoicePreviewHeaderDetails" style="font-size:11px;margin-top:7px;"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;gap:12px;margin:18px 0 12px;flex-wrap:wrap;">
+              <div><strong>INVOICE</strong><div style="font-size:12px;margin-top:5px;">Event: <span id="invoicePreviewEvent">Chagua event ili kuona mfano</span><div id="invoicePreviewEventMeta" style="font-size:11px;margin-top:4px;color:#526052;"></div></div></div>
+              <div style="font-size:11px;text-align:right;">Invoice No: PREVIEW<br>Tarehe: <span id="invoicePreviewDate"></span></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;background:#edf3ed;padding:10px;border-radius:6px;font-size:12px;font-weight:700;"><span>Maelezo</span><span>Idadi × Bei</span><span>Jumla</span></div>
+            <div style="display:flex;justify-content:space-between;padding:12px 10px;border-bottom:1px solid #e5e7eb;font-size:12px;"><span>Utengenezaji wa Kadi</span><span id="invoicePreviewCount">0 × 0</span><strong id="invoicePreviewTotal">TZS 0</strong></div>
+            <div style="text-align:right;font-weight:800;margin:12px 0;">JUMLA KUU: <span id="invoicePreviewGrandTotal">TZS 0</span></div>
+            <div style="border-top:1px solid #d7ded5;padding-top:12px;margin-top:18px;font-size:11px;line-height:1.6;">
+              <div id="invoicePreviewFooterThanks"></div>
+              <div id="invoicePreviewFooterPayment"></div>
+              <div id="invoicePreviewFooterTerms"></div>
+              <div id="invoicePreviewFooterContact"></div>
+              <div id="invoicePreviewFooterPrepared"></div>
+            </div>
+          </div>
+        </section>
+</div>
 
       <!-- ===== RSVP - UJUMBE WA SHUKRANI PAGE ===== -->
       <div class="page" id="page-rsvp">
@@ -3521,7 +3610,7 @@ window.addEventListener('load', async () => {
 function refreshCurrentPage(){
  const active=document.querySelector(".page.active");
  const id=active?.id?.replace("page-","");
- const loaders={dashboard:loadDashboard,events:loadEvents,templates:loadTemplates,invitations:loadEventGuests,rsvp:onRsvpEventChange,scanner:onScannerEventChange,whatsapp:loadWhatsappMonitor,reports:loadReports,users:loadUsers,payments:onPaymentEventChange,profile:loadProfile};
+ const loaders={dashboard:loadDashboard,events:loadEvents,templates:async()=>{await loadEventsDropdown();await loadTemplates();},invitations:async()=>{await loadEventsDropdown();await loadEventGuests();loadInvoicePreviewSettings();},rsvp:onRsvpEventChange,scanner:onScannerEventChange,whatsapp:loadWhatsappMonitor,reports:loadReports,users:loadUsers,payments:async()=>{await loadEventsDropdown();await onPaymentEventChange();},profile:loadProfile};
  if(loaders[id]) loaders[id](); else loadEventsDropdown();
  showToast("Taarifa zinasasishwa...","info");
 }
@@ -3696,7 +3785,22 @@ function closeSidebar() {
 }
 
 // ===== MODALS =====
-function showModal(id) { document.getElementById(id).classList.add('open'); }
+function showModal(id) {
+  const modal = document.getElementById(id);
+  if (!modal) return;
+  modal.classList.add('open');
+  if (id === 'uploadTemplateModal') {
+    loadEventsDropdown().then(() => {
+      const select = document.getElementById('tplEventSelect');
+      if (select && select.options.length <= 1) {
+        console.warn('No available events found for template upload.');
+      }
+    }).catch(err => {
+      console.error('Template event dropdown refresh failed:', err);
+      showToast('Imeshindwa kusasisha orodha ya Events. Jaribu tena.', 'error');
+    });
+  }
+}
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
 // ===== TOAST =====
@@ -4406,33 +4510,40 @@ async function deleteEvent(id, skipConfirm) {
 
 // ===== GUESTS / INVITATIONS =====
 async function loadEventsDropdown() {
-  if (!currentUser) return;
-  const { data: rawData } = await sb.from('events').select('*').eq('user_id', ORG_OWNER_ID);
-  // Folders (is_folder = true) ni "matukio membamba" ya RSVP/SMS pekee - hazionekani
-  // kwenye dropdown za Events halisi (Invitations, Templates, Bulk Import ya kawaida, Payments).
-  const data = (rawData || []).filter(e => !e.is_folder);
-  const sel = document.getElementById('invEventSelect');
-  sel.innerHTML = '<option value="">-- Chagua Event --</option>';
-
-  // Sasisha pia dropdown za Template Upload na Bulk Import ili kila moja iwe na orodha ya sasa ya events
-  const tplSel = document.getElementById('tplEventSelect');
-  const bulkSel = document.getElementById('bulkEventSelect');
-  const paySel = document.getElementById('paymentEventSelect');
-  if (tplSel) tplSel.innerHTML = '<option value="">-- Chagua Event --</option>';
-  if (bulkSel) bulkSel.innerHTML = '<option value="">-- Chagua Event --</option>';
-  if (paySel) paySel.innerHTML = '<option value="">-- Chagua Event --</option>';
-  data.forEach(e => {
-    if (tplSel) tplSel.innerHTML += `<option value="${e.id}">${e.name}</option>`;
-    if (bulkSel) bulkSel.innerHTML += `<option value="${e.id}">${e.name}</option>`;
-    if (paySel) paySel.innerHTML += `<option value="${e.id}">${e.name}</option>`;
+  if (!currentUser || !ORG_OWNER_ID) return;
+  const selectors = ['invEventSelect','tplEventSelect','bulkEventSelect','paymentEventSelect'];
+  const previousValues = {};
+  selectors.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) previousValues[id] = el.value;
   });
 
-  data.forEach(e => {
-    sel.innerHTML += `<option value="${e.id}">${e.name}</option>`;
+  const { data: rawData, error } = await sb.from('events')
+    .select('id,name,is_folder,created_at')
+    .eq('user_id', ORG_OWNER_ID)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('loadEventsDropdown error:', error);
+    showToast('Imeshindwa kupakia orodha ya Events: ' + error.message, 'error');
+    return;
+  }
+
+  const events = (rawData || []).filter(e => !e.is_folder);
+  const optionHTML = '<option value="">-- Chagua Event --</option>' +
+    events.map(e => `<option value="${String(e.id).replace(/"/g,'&quot;')}">${String(e.name || 'Event').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</option>`).join('');
+
+  selectors.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = optionHTML;
+    if (previousValues[id] && events.some(e => String(e.id) === String(previousValues[id]))) {
+      el.value = previousValues[id];
+    }
   });
 
-  // RSVP dropdown ni tofauti - ina Events NA Folders zote pamoja
-  loadRsvpEventsAndFolders();
+  // RSVP dropdown ni tofauti - ina Events NA Folders zote pamoja.
+  await loadRsvpEventsAndFolders();
 }
 
 // RSVP inahitaji kuonyesha Events halisi NA Folders (folders ni za SMS pekee,
@@ -4544,6 +4655,21 @@ async function confirmDeleteFolder() {
 async function selectEventForInvitations(eventId) {
   document.getElementById('invEventSelect').value = eventId;
   await loadEventGuests();
+}
+
+async function openEvent(eventId) {
+  if (!eventId) return;
+  showPage('invitations');
+  await loadEventsDropdown();
+  const select = document.getElementById('invEventSelect');
+  if (!select) return showToast('Sehemu ya kuchagua Event haijapatikana.', 'error');
+  select.value = String(eventId);
+  if (select.value !== String(eventId)) {
+    return showToast('Event haipo tena au huna ruhusa ya kuifungua.', 'error');
+  }
+  await loadEventGuests();
+  refreshInvoicePreview();
+  await refreshInvoiceEventPreview();
 }
 
 async function loadEventGuests(clearSearch = true) {
@@ -6106,7 +6232,7 @@ async function exportReport() {
   (events || []).forEach(e => eventNameById[e.id] = e.name);
 
   const csv = guestsToCSV(guests, eventNameById);
-  downloadCSVBlob(csv, `meshez_kadi_ripoti_kamili_${new Date().toISOString().slice(0,10)}.csv`);
+  downloadCSVBlob(csv, `calebz_kardz_ripoti_kamili_${new Date().toISOString().slice(0,10)}.csv`);
   showToast('Ripoti ya mfumo mzima imepakuliwa!', 'success');
 }
 
@@ -6135,6 +6261,7 @@ async function exportEventDetailedCSV(eventId, eventNameParam) {
   const doc = new jsPDF({ unit: 'mm', format: 'a4' });
   const pageWidth  = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
+  const reportBranding = getInvoicePreviewSettings();
   const marginX = 14;
   const navy = [30, 58, 138];
   const gold = [184, 134, 11];
@@ -6163,11 +6290,11 @@ async function exportEventDetailedCSV(eventId, eventNameParam) {
   doc.setTextColor(255, 255, 255);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(19);
-  doc.text(BUSINESS_NAME, textStartX, 18);
+  doc.text(reportBranding.name || 'Calebz Kardz', textStartX, 18);
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(8.5);
-  doc.text(BUSINESS_TAGLINE, textStartX, 25, { maxWidth: pageWidth - textStartX - marginX });
-  doc.text('Simu: ' + BUSINESS_PHONES.join('  |  '), textStartX, 33);
+  doc.text(reportBranding.tagline || 'Invitation & Guest Management', textStartX, 25, { maxWidth: pageWidth - textStartX - marginX });
+  if (reportBranding.phones) doc.text('Simu: ' + reportBranding.phones, textStartX, 33);
 
   // ---- Report title + meta ----
   let y = bandHeight + 14;
@@ -6263,7 +6390,7 @@ async function exportEventDetailedCSV(eventId, eventNameParam) {
     doc.setFont('helvetica', 'italic');
     doc.setFontSize(8);
     doc.setTextColor(110, 110, 110);
-    doc.text(BUSINESS_NAME + ' - ' + BUSINESS_TAGLINE, marginX, footerY + 5);
+    doc.text((reportBranding.name || 'Calebz Kardz') + ' - ' + (reportBranding.tagline || 'Invitation & Guest Management'), marginX, footerY + 5);
   }
 
   y = drawTableHeader(y);
@@ -6740,7 +6867,7 @@ async function exportPaymentsCSV() {
 }
 
 // ===== MATANGAZO YA KADI (PROMO IMAGES) =====
-const PROMO_BUCKET = 'promo-images';
+const PROMO_BUCKET = 'promo-images'; // Create this bucket once in Supabase Storage (SQL provided with this file).
 const CARDS_BUCKET = 'generated-cards';
 
 async function loadPromoImages() {
@@ -6865,6 +6992,10 @@ async function uploadPromoImage() {
       });
 
     if (upErr) {
+      console.error('promo image storage upload error:', upErr);
+      if (/bucket not found/i.test(upErr.message || '')) {
+        return showToast('Bucket ya promo-images haipo Supabase Storage. Tengeneza bucket kwa SQL uliyopewa kisha jaribu tena.', 'error');
+      }
       return showToast('Kosa la upload: ' + upErr.message, 'error');
     }
 
@@ -6899,11 +7030,100 @@ async function deletePromoImage(id, filePath) {
   loadPromoImages();
 }
 
-// ===== INVOICE (PDF) KWA KILA EVENT =====
-const BUSINESS_NAME    = 'INVITATION MANAGEMENT SYSTEM';
-const BUSINESS_TAGLINE = 'Huduma za Kadi za Mialiko, Usimamizi wa Wageni na Uchapishaji wa Kadi';
-const BUSINESS_PHONES  = ['+255 753 027 341', '+255 715 873 825', '+255 764 504 278'];
+// ===== INVOICE PREVIEW SETTINGS =====
+const INVOICE_SETTINGS_KEY = 'calebz_invoice_preview_settings_v1';
+const INVOICE_DEFAULTS = {
+  name:'Calebz Kardz', tagline:'Invitation & Guest Management', address:'',
+  phones:'', email:'', tin:'', thanks:'Asante kwa kuchagua huduma zetu.',
+  payment:'', terms:'', contact:'', preparedBy:''
+};
+function getInvoicePreviewSettings() {
+  try { return { ...INVOICE_DEFAULTS, ...JSON.parse(localStorage.getItem(INVOICE_SETTINGS_KEY) || '{}') }; }
+  catch (e) { return { ...INVOICE_DEFAULTS }; }
+}
+function saveInvoicePreviewSettings() {
+  const ids = {
+    name:'invoiceHeadName', tagline:'invoiceHeadTagline', address:'invoiceHeadAddress',
+    phones:'invoiceHeadPhones', email:'invoiceHeadEmail', tin:'invoiceHeadTin',
+    thanks:'invoiceFootThanks', payment:'invoiceFootPayment', terms:'invoiceFootTerms',
+    contact:'invoiceFootContact', preparedBy:'invoiceFootPreparedBy'
+  };
+  const values = {};
+  Object.entries(ids).forEach(([key,id]) => { values[key] = document.getElementById(id)?.value?.trim() || ''; });
+  localStorage.setItem(INVOICE_SETTINGS_KEY, JSON.stringify(values));
+  refreshInvoicePreview();
+  showToast('Taarifa za Invoice zimehifadhiwa kwenye kifaa hiki.', 'success');
+}
+function refreshInvoicePreview() {
+  const cfg = getInvoicePreviewSettings();
+  const ids = {
+    name:'invoiceHeadName', tagline:'invoiceHeadTagline', address:'invoiceHeadAddress',
+    phones:'invoiceHeadPhones', email:'invoiceHeadEmail', tin:'invoiceHeadTin',
+    thanks:'invoiceFootThanks', payment:'invoiceFootPayment', terms:'invoiceFootTerms',
+    contact:'invoiceFootContact', preparedBy:'invoiceFootPreparedBy'
+  };
+  Object.entries(ids).forEach(([key,id]) => {
+    const input = document.getElementById(id);
+    if (input) cfg[key] = input.value.trim();
+  });
+  const set = (id,value) => { const el=document.getElementById(id); if(el) el.textContent=value || ''; };
+  set('invoicePreviewName',cfg.name);
+  set('invoicePreviewTagline',cfg.tagline);
+  set('invoicePreviewHeaderDetails',[cfg.address,cfg.phones,cfg.email,cfg.tin ? 'TIN: '+cfg.tin : ''].filter(Boolean).join(' | '));
+  set('invoicePreviewFooterThanks',cfg.thanks);
+  set('invoicePreviewFooterPayment',cfg.payment);
+  set('invoicePreviewFooterTerms',cfg.terms);
+  set('invoicePreviewFooterContact',cfg.contact);
+  set('invoicePreviewFooterPrepared',cfg.preparedBy ? 'Imeandaliwa na: '+cfg.preparedBy : '');
+  set('invoicePreviewDate',new Date().toLocaleDateString('sw-TZ'));
+  const eventId = document.getElementById('invEventSelect')?.value;
+  const eventOption = document.getElementById('invEventSelect')?.selectedOptions?.[0];
+  set('invoicePreviewEvent',eventId ? (eventOption?.textContent || 'Event iliyochaguliwa') : 'Chagua event ili kuona mfano');
+}
+async function refreshInvoiceEventPreview() {
+  const eventId = document.getElementById('invEventSelect')?.value;
+  const set = (id,value) => { const el=document.getElementById(id); if(el) el.textContent=value || ''; };
+  if (!eventId) {
+    set('invoicePreviewEventMeta','');
+    set('invoicePreviewCount','0 × 0');
+    set('invoicePreviewTotal','TZS 0');
+    set('invoicePreviewGrandTotal','TZS 0');
+    return;
+  }
+  try {
+    const [{data:event,error:eventError},{count:guestCount,error:countError}] = await Promise.all([
+      sb.from('events').select('name,event_date,venue,price_per_card,payment_status,payment_method').eq('id',eventId).single(),
+      sb.from('guests').select('id',{count:'exact',head:true}).eq('event_id',eventId)
+    ]);
+    if (eventError) throw eventError;
+    if (countError) throw countError;
+    const count = guestCount || 0;
+    const price = Number(event?.price_per_card || 0);
+    const total = count * price;
+    set('invoicePreviewEvent',event?.name || 'Event');
+    set('invoicePreviewEventMeta',[event?.event_date,event?.venue,event?.payment_status ? 'Malipo: '+event.payment_status : ''].filter(Boolean).join(' | '));
+    set('invoicePreviewCount',`${count.toLocaleString()} × ${price.toLocaleString()}`);
+    set('invoicePreviewTotal','TZS '+total.toLocaleString());
+    set('invoicePreviewGrandTotal','TZS '+total.toLocaleString());
+  } catch (error) {
+    console.error('Invoice preview event load failed:',error);
+    showToast('Imeshindwa kuonyesha taarifa za Event kwenye invoice preview: '+(error.message||error),'error');
+  }
+}
 
+function loadInvoicePreviewSettings() {
+  const cfg = getInvoicePreviewSettings();
+  const ids = {
+    name:'invoiceHeadName', tagline:'invoiceHeadTagline', address:'invoiceHeadAddress',
+    phones:'invoiceHeadPhones', email:'invoiceHeadEmail', tin:'invoiceHeadTin',
+    thanks:'invoiceFootThanks', payment:'invoiceFootPayment', terms:'invoiceFootTerms',
+    contact:'invoiceFootContact', preparedBy:'invoiceFootPreparedBy'
+  };
+  Object.entries(ids).forEach(([key,id]) => { const el=document.getElementById(id); if(el) el.value=cfg[key] || ''; });
+  refreshInvoicePreview();
+}
+
+// ===== INVOICE (PDF) KWA KILA EVENT =====
 async function downloadEventInvoice(eventId) {
   const { data: e } = await sb.from('events').select('*').eq('id', eventId).single();
   if (!e) return showToast('Imeshindwa kupata taarifa za event', 'error');
@@ -6916,18 +7136,20 @@ async function downloadEventInvoice(eventId) {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ unit: 'mm', format: 'a4' });
   const pageWidth = doc.internal.pageSize.getWidth();
+  const invoiceCfg = getInvoicePreviewSettings();
+  const headerLines = [invoiceCfg.address, invoiceCfg.phones, invoiceCfg.email, invoiceCfg.tin ? 'TIN: ' + invoiceCfg.tin : ''].filter(Boolean);
 
   // ---- Header band ----
-  doc.setFillColor(30, 58, 138); // dark blue
-  doc.rect(0, 0, pageWidth, 38, 'F');
+  doc.setFillColor(12, 59, 46);
+  doc.rect(0, 0, pageWidth, 42, 'F');
   doc.setTextColor(255, 255, 255);
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(24);
-  doc.text(BUSINESS_NAME, 14, 18);
+  doc.setFontSize(21);
+  doc.text(invoiceCfg.name || 'Calebz Kardz', 14, 16);
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(9);
-  doc.text(BUSINESS_TAGLINE, 14, 26);
-  doc.text('Simu: ' + BUSINESS_PHONES.join('  |  '), 14, 32);
+  doc.text(doc.splitTextToSize(invoiceCfg.tagline || '', pageWidth - 28), 14, 23);
+  if (headerLines.length) doc.text(doc.splitTextToSize(headerLines.join(' | '), pageWidth - 28), 14, 31);
 
   // ---- Invoice title + meta ----
   doc.setTextColor(30, 30, 30);
@@ -7017,16 +7239,20 @@ async function downloadEventInvoice(eventId) {
 
   // ---- Footer ----
   const pageHeight = doc.internal.pageSize.getHeight();
-  doc.setDrawColor(30, 58, 138);
+  doc.setDrawColor(109, 151, 115);
   doc.setLineWidth(0.8);
-  doc.line(14, pageHeight - 32, pageWidth - 14, pageHeight - 32);
-  doc.setFont('helvetica', 'italic');
-  doc.setFontSize(9);
-  doc.setTextColor(90, 90, 90);
-  doc.text('Asante kwa kutuchagua kwa kazi yako! Tunatoa pia: Usimamizi wa Wageni, QR Code Scanning ya Mlangoni,', 14, pageHeight - 25);
-  doc.text('Ujumbe wa SMS na WhatsApp kwa Wageni, na Ripoti Kamili za Tukio.', 14, pageHeight - 20);
-  doc.setFont('helvetica', 'bold');
-  doc.text('Wasiliana nasi: ' + BUSINESS_PHONES.join('  |  '), 14, pageHeight - 13);
+  doc.line(14, pageHeight - 40, pageWidth - 14, pageHeight - 40);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8);
+  doc.setTextColor(75, 85, 75);
+  const footerLines = [invoiceCfg.thanks, invoiceCfg.payment, invoiceCfg.terms, invoiceCfg.contact,
+    invoiceCfg.preparedBy ? 'Imeandaliwa na: ' + invoiceCfg.preparedBy : ''].filter(Boolean);
+  let footerY = pageHeight - 33;
+  footerLines.forEach(line => {
+    const wrapped = doc.splitTextToSize(String(line), pageWidth - 28);
+    doc.text(wrapped, 14, footerY);
+    footerY += wrapped.length * 4;
+  });
 
   const safeName = (e.name || 'event').replace(/[^a-zA-Z0-9]/g, '_');
   doc.save(`Invoice_${safeName}.pdf`);
@@ -7226,64 +7452,81 @@ async function uploadTemplate() {
   const name = document.getElementById('tplName').value.trim();
   const file = document.getElementById('tplFile').files[0];
   const type = document.getElementById('tplType').value;
-  const eventId = document.getElementById('tplEventSelect').value;
+  const eventSelect = document.getElementById('tplEventSelect');
+  const eventId = eventSelect ? eventSelect.value : '';
 
+  if (!currentUser || !ORG_OWNER_ID) return showToast('Ingia tena kabla ya kupakia template.', 'error');
   if (!name || !file) return showToast('Jaza jina na chagua picha', 'error');
   if (!eventId) return showToast('Chagua Event husika kwa template hii', 'error');
 
-  // Hakikisha event bado ipo (dropdown huenda ilikuwa "stale" - mfano event
-  // ilifutwa kwenye tab/kifaa kingine) - hii inazuia kosa la database
-  // (foreign key constraint) na kutoa ujumbe rahisi kueleweka badala yake.
-  const { data: eventCheck } = await sb.from('events').select('id,show_vip_badge,show_group_label').eq('id', eventId).eq('user_id', ORG_OWNER_ID).single();
-  if (!eventCheck) {
-    loadEventsDropdown();
-    return showToast('Event uliyochagua haipo tena (huenda ilifutwa). Orodha imesasishwa - chagua tena.', 'error');
+  try {
+    const { data: eventCheck, error: eventError } = await sb.from('events')
+      .select('id,name,show_vip_badge,show_group_label')
+      .eq('id', eventId).eq('user_id', ORG_OWNER_ID).single();
+
+    if (eventError || !eventCheck) {
+      await loadEventsDropdown();
+      return showToast('Event uliyochagua haipo au haipatikani. Orodha imesasishwa; chagua tena.', 'error');
+    }
+
+    showToast('Inabadilisha template kuwa WebP...', 'info');
+    const blob = await convertImageToWebP(file);
+    const path = `${ORG_OWNER_ID}/${Date.now()}_template.webp`;
+
+    const { error: upErr } = await sb.storage.from('templates').upload(path, blob, {
+      contentType: 'image/webp', upsert: false
+    });
+    if (upErr) throw upErr;
+
+    const { data: publicData } = sb.storage.from('templates').getPublicUrl(path);
+    const publicUrl = publicData?.publicUrl;
+    if (!publicUrl) {
+      await sb.storage.from('templates').remove([path]);
+      throw new Error('Imeshindwa kupata public URL ya template.');
+    }
+
+    const initialPositions = {
+      ...DEFAULT_POSITIONS,
+      vipShow: eventCheck.show_vip_badge !== false,
+      labelShow: eventCheck.show_group_label !== false
+    };
+
+    const { data: inserted, error: insErr } = await sb.from('templates').insert({
+      user_id: ORG_OWNER_ID, name, type, file_path: path,
+      url: publicUrl, event_id: eventId, positions: initialPositions
+    }).select().single();
+
+    if (insErr) {
+      await sb.storage.from('templates').remove([path]);
+      throw insErr;
+    }
+
+    // Delete older event templates only after the new template is safely saved.
+    const { data: oldTemplates, error: oldReadError } = await sb.from('templates')
+      .select('id,file_path').eq('user_id', ORG_OWNER_ID).eq('event_id', eventId)
+      .neq('id', inserted.id);
+    if (oldReadError) console.warn('Old template lookup failed:', oldReadError);
+    if (oldTemplates?.length) {
+      const oldPaths = oldTemplates.map(t => t.file_path).filter(Boolean);
+      if (oldPaths.length) {
+        const { error: removeError } = await sb.storage.from('templates').remove(oldPaths);
+        if (removeError) console.warn('Old template storage cleanup failed:', removeError);
+      }
+      const { error: deleteError } = await sb.from('templates').delete()
+        .eq('user_id', ORG_OWNER_ID).eq('event_id', eventId).neq('id', inserted.id);
+      if (deleteError) console.warn('Old template database cleanup failed:', deleteError);
+    }
+
+    showToast('Template imepakiwa kwa event hiyo!', 'success');
+    closeModal('uploadTemplateModal');
+    document.getElementById('tplName').value = '';
+    document.getElementById('tplFile').value = '';
+    await loadTemplates();
+    if (inserted) selectTemplateForEditing(inserted.id);
+  } catch (e) {
+    console.error('uploadTemplate error:', e);
+    showToast('Imeshindikana kupakia template: ' + (e.message || e), 'error');
   }
-
-  // Futa templates za zamani zilizounganishwa na event hii KABLA ya kuongeza mpya,
-  // ili "kuhariri" kubadilishe kabisa badala ya kuacha nakala za zamani zikichanganya
-  // (hii ndiyo iliyokuwa ikisababisha kadi kuendelea kutumia template ya mwanzo).
-  const { data: oldTemplates } = await sb.from('templates').select('id,file_path').eq('user_id', ORG_OWNER_ID).eq('event_id', eventId);
-  if (oldTemplates && oldTemplates.length > 0) {
-    const oldPaths = oldTemplates.map(t => t.file_path).filter(Boolean);
-    if (oldPaths.length > 0) await sb.storage.from('templates').remove(oldPaths);
-    await sb.from('templates').delete().eq('user_id', ORG_OWNER_ID).eq('event_id', eventId);
-  }
-
-  let blob;
-
-try {
-  showToast('Inabadilisha template kuwa WebP...', 'info');
-  blob = await convertImageToWebP(file);
-} catch (e) {
-  return showToast('Kosa: ' + e.message, 'error');
-}
-
-const path = `${ORG_OWNER_ID}/${Date.now()}_template.webp`;
-
-const { error: upErr } = await sb.storage
-  .from('templates')
-  .upload(path, blob, {
-    contentType: 'image/webp',
-    upsert: false
-  });
-
-if (upErr) return showToast('Kosa la upload: ' + upErr.message, 'error');
-
-  const { data: { publicUrl } } = sb.storage.from('templates').getPublicUrl(path);
-
-  const initialPositions = { ...DEFAULT_POSITIONS, vipShow: eventCheck.show_vip_badge !== false, labelShow: eventCheck.show_group_label !== false };
-  const { data: inserted, error: insErr } = await sb.from('templates').insert({
-    user_id: ORG_OWNER_ID, name, type, file_path: path, url: publicUrl, event_id: eventId, positions: initialPositions
-  }).select().single();
-  if (insErr) return showToast('Kosa: ' + insErr.message + ' (Huenda column ya event_id/positions haipo kwenye jedwali la templates - angalia maelezo)', 'error');
-
-  showToast('Template imepakiwa kwa event hiyo!', 'success');
-  closeModal('uploadTemplateModal');
-  await loadTemplates();
-
-  // Fungua template hii moja kwa moja kwenye preview/editor ili aweze kurekebisha mpangilio
-  if (inserted) selectTemplateForEditing(inserted.id);
 }
 
 async function loadTemplates() {
@@ -8565,6 +8808,20 @@ async function generateAllCards() {
   });
   observer.observe(document.body,{childList:true,subtree:true});
 })();
+
+// Initialize invoice preview fields and keep the visual preview in sync.
+(function initCalebzInvoicePreview(){
+  const init = () => {
+    if (!document.getElementById('invoicePreviewSettingsCard')) return;
+    loadInvoicePreviewSettings();
+    refreshInvoiceEventPreview();
+    document.querySelectorAll('#invoicePreviewSettingsCard input, #invoicePreviewSettingsCard textarea')
+      .forEach(el => el.addEventListener('input', refreshInvoicePreview));
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+
 </script>
 </body>
 </html>
