@@ -1376,6 +1376,84 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
   .system-language-switch button.active[data-lang="en"], .system-language-switch button#langEnBtn.active { background:linear-gradient(120deg,#BB8A52,#FFBA00); }
   input:focus, select:focus, textarea:focus { border-color:#6D9773 !important; box-shadow:0 0 0 3px rgba(109,151,115,.16) !important; }
   input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color:#0C3B2E; }
+
+  /* ===== CALEBZ KARDZ: SIGN-IN + NAVIGATION POLISH ===== */
+  #authScreen .auth-logo .auth-fixed-theme{
+    color:#6D9773!important;
+    font-size:13px!important;
+    font-weight:700!important;
+    letter-spacing:.15px!important;
+    margin-top:7px!important;
+  }
+  #authScreen .password-field-wrap input::-ms-reveal,
+  #authScreen .password-field-wrap input::-ms-clear{display:none!important}
+  #authScreen .password-visibility-toggle{
+    border:1px solid rgba(109,151,115,.38)!important;
+    background:linear-gradient(135deg,rgba(12,59,46,.10),rgba(109,151,115,.18))!important;
+    color:#0C3B2E!important;
+    box-shadow:0 2px 7px rgba(12,59,46,.08)!important;
+  }
+  #authScreen .password-visibility-toggle:hover{
+    background:linear-gradient(135deg,rgba(12,59,46,.18),rgba(109,151,115,.28))!important;
+  }
+  #authScreen #loginForm button[onclick="showForgotPassword()"]{
+    color:#0C3B2E!important;
+    font-weight:700!important;
+  }
+  #authScreen #loginForm button[onclick="showForgotPassword()"]:hover{
+    color:#6D9773!important;
+    text-decoration:underline;
+  }
+
+  /* One continuous green family in the sidebar; no blue lower edge. */
+  #mainApp .sidebar{
+    background:linear-gradient(180deg,#0C3B2E 0%,#174D3D 52%,#6D9773 100%)!important;
+    border-right:1px solid rgba(255,255,255,.12)!important;
+  }
+  #mainApp .sidebar-logo{background:linear-gradient(90deg,rgba(109,151,115,.22),rgba(12,59,46,0))!important}
+  #mainApp .nav-item.active,
+  body.dark-mode #mainApp .nav-item.active{
+    background:linear-gradient(100deg,rgba(109,151,115,.42),rgba(12,59,46,.48))!important;
+    border-left:4px solid #FFBA00!important;
+    color:#FFFFFF!important;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.12),0 3px 10px rgba(0,0,0,.12)!important;
+  }
+  #mainApp .nav-item.active i,
+  #mainApp .nav-item.active svg{
+    color:#FFFFFF!important;
+    stroke:#FFFFFF!important;
+    opacity:1!important;
+    visibility:visible!important;
+  }
+  #mainApp .nav-item:hover{background:rgba(109,151,115,.22)!important;color:#FFFFFF!important}
+  #mainApp .sidebar-footer .user-info{
+    background:linear-gradient(115deg,#0C3B2E 0%,#6D9773 100%)!important;
+    border:1px solid rgba(255,255,255,.24)!important;
+    border-radius:12px!important;
+    box-shadow:0 4px 13px rgba(0,0,0,.16)!important;
+    color:#FFFFFF!important;
+  }
+  #mainApp .sidebar-footer .user-info .name,
+  #mainApp .sidebar-footer .user-info .role,
+  #mainApp .sidebar-footer .user-info .user-avatar{color:#FFFFFF!important}
+  #mainApp .sidebar-footer .user-info .user-avatar{
+    background:linear-gradient(135deg,#6D9773,#0C3B2E)!important;
+    border:1px solid rgba(255,255,255,.28)!important;
+  }
+  #mainApp .sidebar-footer button[onclick="logout()"]{
+    background:linear-gradient(110deg,#0C3B2E 0%,#6D9773 100%)!important;
+    color:#FFFFFF!important;
+    border:1px solid rgba(255,255,255,.25)!important;
+    box-shadow:0 3px 10px rgba(0,0,0,.14)!important;
+  }
+  #mainApp .sidebar-footer button[onclick="logout()"] i,
+  #mainApp .sidebar-footer button[onclick="logout()"] svg{
+    color:#FFFFFF!important;stroke:#FFFFFF!important;
+  }
+  #mainApp .sidebar-footer button[onclick="logout()"]:hover{
+    background:linear-gradient(110deg,#6D9773 0%,#0C3B2E 100%)!important;
+  }
+
 </style>
 </head>
 <body>
@@ -1401,7 +1479,7 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
     <div class="auth-logo">
       <div class="auth-logo-icon" role="img" aria-label="Meshez Brands Logo"></div>
       <h1 class="auth-brand-name"></h1>
-      <p class="auth-fixed-theme">Calebz Kardz</p>
+      <p class="auth-fixed-theme">Invitation System Management</p>
     </div>
 
     <!-- Login Form -->
@@ -7408,7 +7486,7 @@ function applySystemBranding(){
   document.title=(name?name+' - ':'')+'Calebz Kardz';
   document.querySelectorAll('.auth-brand-name,.sidebar-brand-name,.mobile-brand-name').forEach(el=>el.textContent=name);
   const authSub=document.querySelector('#authScreen .auth-logo p');
-  if(authSub)authSub.textContent='Calebz Kardz';
+  if(authSub)authSub.textContent='Invitation System Management';
   document.querySelectorAll('.sidebar-logo-theme').forEach(el=>el.textContent=theme);
   document.querySelectorAll('.sidebar-logo-slogan').forEach(el=>el.textContent=slogan);
   // Prefer the embedded local image. Render it as a real IMG element (not CSS background)
