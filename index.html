@@ -1660,6 +1660,9 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
       <button class="nav-item" data-roles="admin" onclick="showPage('users')">
         <i data-lucide="users" class="icon" style="color:#EC4899"></i> User Management
       </button>
+      <button class="nav-item" data-roles="admin" onclick="showPage('invoice-preview')">
+        <i data-lucide="file-text" class="icon" style="color:#FFBA00"></i> INVOICE PREVIEW
+      </button>
       <button class="nav-item" data-roles="admin" onclick="showPage('payments')">
         <i data-lucide="credit-card" class="icon" style="color:#14B8A6"></i> Malipo
       </button>
@@ -2108,56 +2111,7 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
           </div>
         </div>
       
-        <section class="card" id="invoicePreviewSettingsCard" style="margin-top:18px;">
-          <div class="card-header">
-            <div class="card-title"><i data-lucide="file-text" class="icon-inline" style="color:#BB8A52;"></i> INVOICE PREVIEW</div>
-            <button class="btn btn-outline btn-sm" type="button" onclick="saveInvoicePreviewSettings()">Hifadhi Taarifa</button>
-          </div>
-          <p style="font-size:12px;color:var(--gray-500);margin:0 0 14px;">Jaza taarifa za kichwa (header) na mwisho (footer) zitakazoonekana kwenye invoice. Taarifa hizi zitatumika pia kwenye PDF ya invoice.</p>
-          <div class="grid-2">
-            <div>
-              <h4 style="color:#0C3B2E;margin:4px 0 10px;">HEADER / TAARIFA ZA JUU</h4>
-              <div class="form-group"><label>Jina la Biashara / Mfumo</label><input id="invoiceHeadName" placeholder="Calebz Kardz"></div>
-              <div class="form-group"><label>Kauli mbiu / Maelezo mafupi</label><input id="invoiceHeadTagline" placeholder="Invitation & Guest Management"></div>
-              <div class="form-group"><label>Anwani</label><input id="invoiceHeadAddress" placeholder="Mtaa, Jiji, Nchi"></div>
-              <div class="form-group"><label>Namba za Simu</label><input id="invoiceHeadPhones" placeholder="+255... , +255..."></div>
-              <div class="form-group"><label>Barua Pepe</label><input id="invoiceHeadEmail" type="email" placeholder="info@example.com"></div>
-              <div class="form-group"><label>TIN / Namba ya Usajili (hiari)</label><input id="invoiceHeadTin" placeholder="TIN / Registration No."></div>
-            </div>
-            <div>
-              <h4 style="color:#0C3B2E;margin:4px 0 10px;">FOOTER / TAARIFA ZA CHINI</h4>
-              <div class="form-group"><label>Ujumbe wa shukrani</label><input id="invoiceFootThanks" placeholder="Asante kwa kuchagua huduma zetu."></div>
-              <div class="form-group"><label>Taarifa za malipo</label><textarea id="invoiceFootPayment" rows="2" placeholder="Lipa kupitia..."></textarea></div>
-              <div class="form-group"><label>Masharti / Maelezo ya ziada</label><textarea id="invoiceFootTerms" rows="2" placeholder="Malipo hayarudishwi baada ya..."></textarea></div>
-              <div class="form-group"><label>Mawasiliano / Mitandao / Tovuti</label><input id="invoiceFootContact" placeholder="Website, Instagram, WhatsApp..."></div>
-              <div class="form-group"><label>Jina la aliyeandaa invoice</label><input id="invoiceFootPreparedBy" placeholder="Prepared by..."></div>
-            </div>
-          </div>
-          <div style="display:flex;justify-content:flex-end;gap:8px;margin:8px 0 12px;">
-            <button class="btn btn-outline btn-sm" type="button" onclick="refreshInvoicePreview()">Hakiki Upya</button>
-          </div>
-          <div id="invoicePreviewCanvas" style="background:#fff;color:#1f2937;border:1px solid #d7ded5;border-radius:12px;padding:18px;max-width:820px;margin:auto;box-shadow:0 5px 18px rgba(12,59,46,.08);">
-            <div style="background:#0C3B2E;color:#fff;border-radius:8px;padding:16px;">
-              <div id="invoicePreviewName" style="font-size:20px;font-weight:800;">Calebz Kardz</div>
-              <div id="invoicePreviewTagline" style="font-size:12px;margin-top:4px;">Invitation &amp; Guest Management</div>
-              <div id="invoicePreviewHeaderDetails" style="font-size:11px;margin-top:7px;"></div>
-            </div>
-            <div style="display:flex;justify-content:space-between;gap:12px;margin:18px 0 12px;flex-wrap:wrap;">
-              <div><strong>INVOICE</strong><div style="font-size:12px;margin-top:5px;">Event: <span id="invoicePreviewEvent">Chagua event ili kuona mfano</span><div id="invoicePreviewEventMeta" style="font-size:11px;margin-top:4px;color:#526052;"></div></div></div>
-              <div style="font-size:11px;text-align:right;">Invoice No: PREVIEW<br>Tarehe: <span id="invoicePreviewDate"></span></div>
-            </div>
-            <div style="display:flex;justify-content:space-between;background:#edf3ed;padding:10px;border-radius:6px;font-size:12px;font-weight:700;"><span>Maelezo</span><span>Idadi × Bei</span><span>Jumla</span></div>
-            <div style="display:flex;justify-content:space-between;padding:12px 10px;border-bottom:1px solid #e5e7eb;font-size:12px;"><span>Utengenezaji wa Kadi</span><span id="invoicePreviewCount">0 × 0</span><strong id="invoicePreviewTotal">TZS 0</strong></div>
-            <div style="text-align:right;font-weight:800;margin:12px 0;">JUMLA KUU: <span id="invoicePreviewGrandTotal">TZS 0</span></div>
-            <div style="border-top:1px solid #d7ded5;padding-top:12px;margin-top:18px;font-size:11px;line-height:1.6;">
-              <div id="invoicePreviewFooterThanks"></div>
-              <div id="invoicePreviewFooterPayment"></div>
-              <div id="invoicePreviewFooterTerms"></div>
-              <div id="invoicePreviewFooterContact"></div>
-              <div id="invoicePreviewFooterPrepared"></div>
-            </div>
-          </div>
-        </section>
+
 </div>
 
       <!-- ===== RSVP - UJUMBE WA SHUKRANI PAGE ===== -->
@@ -2462,6 +2416,62 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
             </table>
           </div>
         </div>
+      </div>
+
+      <!-- ===== INVOICE PREVIEW PAGE ===== -->
+      <div class="page" id="page-invoice-preview">
+        <section class="card" id="invoicePreviewSettingsCard" style="margin-top:18px;">
+          <div class="card-header">
+            <div class="card-title"><i data-lucide="file-text" class="icon-inline" style="color:#BB8A52;"></i> INVOICE PREVIEW</div>
+            <button class="btn btn-outline btn-sm" type="button" onclick="saveInvoicePreviewSettings()">Hifadhi Taarifa</button>
+          </div>
+          <p style="font-size:12px;color:var(--gray-500);margin:0 0 14px;">Jaza taarifa za kichwa (header) na mwisho (footer) zitakazoonekana kwenye invoice. Taarifa hizi zitatumika pia kwenye PDF ya invoice.</p>
+          <div class="grid-2">
+            <div>
+              <h4 style="color:#0C3B2E;margin:4px 0 10px;">HEADER / TAARIFA ZA JUU</h4>
+              <div class="form-group"><label>Jina la Biashara / Mfumo</label><input id="invoiceHeadName" placeholder="Calebz Kardz"></div>
+              <div class="form-group"><label>Kauli mbiu / Maelezo mafupi</label><input id="invoiceHeadTagline" placeholder="Invitation & Guest Management"></div>
+              <div class="form-group"><label>Anwani</label><input id="invoiceHeadAddress" placeholder="Mtaa, Jiji, Nchi"></div>
+              <div class="form-group"><label>Namba za Simu</label><input id="invoiceHeadPhones" placeholder="+255... , +255..."></div>
+              <div class="form-group"><label>Barua Pepe</label><input id="invoiceHeadEmail" type="email" placeholder="info@example.com"></div>
+              <div class="form-group"><label>TIN / Namba ya Usajili (hiari)</label><input id="invoiceHeadTin" placeholder="TIN / Registration No."></div>
+              <div class="form-group"><label>Rangi ya Heading ya Juu ya Invoice</label><div style="display:flex;align-items:center;gap:10px;"><input id="invoiceHeaderColor" type="color" value="#0C3B2E" style="width:64px;height:42px;padding:3px;cursor:pointer;"><span style="font-size:12px;color:var(--gray-500);">Chagua rangi ya sehemu ya jina na taarifa za biashara</span></div></div>
+            </div>
+            <div>
+              <h4 style="color:#0C3B2E;margin:4px 0 10px;">FOOTER / TAARIFA ZA CHINI</h4>
+              <div class="form-group"><label>Ujumbe wa shukrani</label><input id="invoiceFootThanks" placeholder="Asante kwa kuchagua huduma zetu."></div>
+              <div class="form-group"><label>Taarifa za malipo</label><textarea id="invoiceFootPayment" rows="2" placeholder="Lipa kupitia..."></textarea></div>
+              <div class="form-group"><label>Masharti / Maelezo ya ziada</label><textarea id="invoiceFootTerms" rows="2" placeholder="Malipo hayarudishwi baada ya..."></textarea></div>
+              <div class="form-group"><label>Mawasiliano / Mitandao / Tovuti</label><input id="invoiceFootContact" placeholder="Website, Instagram, WhatsApp..."></div>
+              <div class="form-group"><label>Jina la aliyeandaa invoice</label><input id="invoiceFootPreparedBy" placeholder="Prepared by..."></div>
+              <div class="form-group"><label>Rangi ya Bei na Jumla</label><div style="display:flex;align-items:center;gap:10px;"><input id="invoicePriceColor" type="color" value="#BB8A52" style="width:64px;height:42px;padding:3px;cursor:pointer;"><span style="font-size:12px;color:var(--gray-500);">Rangi ya bei ya kadi, jumla na jumla kuu</span></div></div>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:flex-end;gap:8px;margin:8px 0 12px;">
+            <button class="btn btn-outline btn-sm" type="button" onclick="refreshInvoicePreview()">Hakiki Upya</button>
+          </div>
+          <div id="invoicePreviewCanvas" style="background:#fff;color:#1f2937;border:1px solid #d7ded5;border-radius:12px;padding:18px;max-width:820px;margin:auto;box-shadow:0 5px 18px rgba(12,59,46,.08);">
+            <div id="invoicePreviewHeaderBand" style="background:#0C3B2E;color:#fff;border-radius:8px;padding:20px 22px;display:flex;flex-direction:column;gap:8px;">
+              <div id="invoicePreviewName" style="font-size:21px;font-weight:800;line-height:1.35;letter-spacing:.2px;overflow-wrap:anywhere;">Calebz Kardz</div>
+              <div id="invoicePreviewTagline" style="font-size:12px;line-height:1.55;">Invitation &amp; Guest Management</div>
+              <div id="invoicePreviewHeaderDetails" style="font-size:11px;line-height:1.7;overflow-wrap:anywhere;"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin:22px 0 16px;flex-wrap:wrap;line-height:1.65;">
+              <div style="min-width:220px;flex:1;"><strong style="display:block;letter-spacing:1px;margin-bottom:7px;">INVOICE</strong><div style="font-size:12px;line-height:1.7;">Event: <span id="invoicePreviewEvent">Chagua event ili kuona mfano</span><div id="invoicePreviewEventMeta" style="font-size:11px;margin-top:6px;color:#526052;line-height:1.7;"></div></div></div>
+              <div style="font-size:11px;text-align:right;line-height:1.8;min-width:130px;">Invoice No: PREVIEW<br>Tarehe: <span id="invoicePreviewDate"></span></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:12px;background:#edf3ed;padding:12px;border-radius:6px;font-size:12px;font-weight:700;line-height:1.5;"><span>Maelezo</span><span style="text-align:center;">Idadi × Bei</span><span style="text-align:right;">Jumla</span></div>
+            <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:12px;padding:14px 12px;border-bottom:1px solid #e5e7eb;font-size:12px;line-height:1.6;align-items:center;"><span>Utengenezaji wa Kadi</span><span id="invoicePreviewCount" style="text-align:center;">0 × 0</span><strong id="invoicePreviewTotal" style="text-align:right;color:#BB8A52;">TZS 0</strong></div>
+            <div style="text-align:right;font-weight:800;margin:16px 0;padding:10px 0;line-height:1.6;">JUMLA KUU: <span id="invoicePreviewGrandTotal" style="color:#BB8A52;">TZS 0</span></div>
+            <div style="border-top:1px solid #d7ded5;padding-top:12px;margin-top:18px;font-size:11px;line-height:1.6;">
+              <div id="invoicePreviewFooterThanks"></div>
+              <div id="invoicePreviewFooterPayment"></div>
+              <div id="invoicePreviewFooterTerms"></div>
+              <div id="invoicePreviewFooterContact"></div>
+              <div id="invoicePreviewFooterPrepared"></div>
+            </div>
+          </div>
+        </section>
       </div>
 
       <!-- ===== PAYMENTS PAGE ===== -->
@@ -3471,6 +3481,7 @@ const PAGE_ROLES = {
   whatsapp:    ['admin','manager'],
   reports:     ['admin','manager'],
   users:       ['admin'],
+  'invoice-preview': ['admin'],
   payments:    ['admin'],
   profile:     ['admin','manager','scanner']
 };
@@ -3644,11 +3655,12 @@ function showPage(page) {
     whatsapp: 'WhatsApp Monitor',
     reports: 'Ripoti za Mfumo',
     users: 'User Management',
+    'invoice-preview': 'INVOICE PREVIEW',
     payments: 'Malipo',
     profile: 'Profile & Settings'
   };
 
-  const pageIcons = { dashboard:'layout-dashboard', events:'calendar-days', templates:'layers', invitations:'send', rsvp:'message-circle', scanner:'scan-qr-code', whatsapp:'message-square', reports:'chart-no-axes-combined', users:'users', payments:'wallet', profile:'user-round-cog' };
+  const pageIcons = { dashboard:'layout-dashboard', events:'calendar-days', templates:'layers', invitations:'send', rsvp:'message-circle', scanner:'scan-qr-code', whatsapp:'message-square', reports:'chart-no-axes-combined', users:'users', 'invoice-preview':'file-text', payments:'wallet', profile:'user-round-cog' };
   const topbar = document.querySelector('.topbar');
   if (topbar) topbar.style.display = page === 'dashboard' ? 'none' : 'flex';
   const titleEl = document.getElementById('topbarTitle');
@@ -3663,6 +3675,7 @@ function showPage(page) {
   if (page === 'reports') loadReports();
   if (page === 'payments') { loadPaymentsHistory(); loadPromoImages(); }
   if (page === 'users') loadUsers();
+  if (page === 'invoice-preview') { loadInvoicePreviewSettings(); refreshInvoiceEventPreview(); try { lucide.createIcons(); } catch(e) {} }
   if (page === 'whatsapp') loadWhatsappMonitor();
   if (page === 'scanner') openScannerPage();
   if (page === 'templates') { loadTemplates(); renderPositionPreview(); }
@@ -7035,7 +7048,7 @@ const INVOICE_SETTINGS_KEY = 'calebz_invoice_preview_settings_v1';
 const INVOICE_DEFAULTS = {
   name:'Calebz Kardz', tagline:'Invitation & Guest Management', address:'',
   phones:'', email:'', tin:'', thanks:'Asante kwa kuchagua huduma zetu.',
-  payment:'', terms:'', contact:'', preparedBy:''
+  payment:'', terms:'', contact:'', preparedBy:'', headerColor:'#0C3B2E', priceColor:'#BB8A52'
 };
 function getInvoicePreviewSettings() {
   try { return { ...INVOICE_DEFAULTS, ...JSON.parse(localStorage.getItem(INVOICE_SETTINGS_KEY) || '{}') }; }
@@ -7046,7 +7059,8 @@ function saveInvoicePreviewSettings() {
     name:'invoiceHeadName', tagline:'invoiceHeadTagline', address:'invoiceHeadAddress',
     phones:'invoiceHeadPhones', email:'invoiceHeadEmail', tin:'invoiceHeadTin',
     thanks:'invoiceFootThanks', payment:'invoiceFootPayment', terms:'invoiceFootTerms',
-    contact:'invoiceFootContact', preparedBy:'invoiceFootPreparedBy'
+    contact:'invoiceFootContact', preparedBy:'invoiceFootPreparedBy',
+    headerColor:'invoiceHeaderColor', priceColor:'invoicePriceColor'
   };
   const values = {};
   Object.entries(ids).forEach(([key,id]) => { values[key] = document.getElementById(id)?.value?.trim() || ''; });
@@ -7060,7 +7074,8 @@ function refreshInvoicePreview() {
     name:'invoiceHeadName', tagline:'invoiceHeadTagline', address:'invoiceHeadAddress',
     phones:'invoiceHeadPhones', email:'invoiceHeadEmail', tin:'invoiceHeadTin',
     thanks:'invoiceFootThanks', payment:'invoiceFootPayment', terms:'invoiceFootTerms',
-    contact:'invoiceFootContact', preparedBy:'invoiceFootPreparedBy'
+    contact:'invoiceFootContact', preparedBy:'invoiceFootPreparedBy',
+    headerColor:'invoiceHeaderColor', priceColor:'invoicePriceColor'
   };
   Object.entries(ids).forEach(([key,id]) => {
     const input = document.getElementById(id);
@@ -7070,6 +7085,9 @@ function refreshInvoicePreview() {
   set('invoicePreviewName',cfg.name);
   set('invoicePreviewTagline',cfg.tagline);
   set('invoicePreviewHeaderDetails',[cfg.address,cfg.phones,cfg.email,cfg.tin ? 'TIN: '+cfg.tin : ''].filter(Boolean).join(' | '));
+  const headerBand=document.getElementById('invoicePreviewHeaderBand');
+  if(headerBand) headerBand.style.background=cfg.headerColor || '#0C3B2E';
+  ['invoicePreviewTotal','invoicePreviewGrandTotal'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.color=cfg.priceColor || '#BB8A52';});
   set('invoicePreviewFooterThanks',cfg.thanks);
   set('invoicePreviewFooterPayment',cfg.payment);
   set('invoicePreviewFooterTerms',cfg.terms);
@@ -7117,13 +7135,19 @@ function loadInvoicePreviewSettings() {
     name:'invoiceHeadName', tagline:'invoiceHeadTagline', address:'invoiceHeadAddress',
     phones:'invoiceHeadPhones', email:'invoiceHeadEmail', tin:'invoiceHeadTin',
     thanks:'invoiceFootThanks', payment:'invoiceFootPayment', terms:'invoiceFootTerms',
-    contact:'invoiceFootContact', preparedBy:'invoiceFootPreparedBy'
+    contact:'invoiceFootContact', preparedBy:'invoiceFootPreparedBy',
+    headerColor:'invoiceHeaderColor', priceColor:'invoicePriceColor'
   };
-  Object.entries(ids).forEach(([key,id]) => { const el=document.getElementById(id); if(el) el.value=cfg[key] || ''; });
+  Object.entries(ids).forEach(([key,id]) => { const el=document.getElementById(id); if(el) el.value=cfg[key] || (key==='headerColor'?'#0C3B2E':key==='priceColor'?'#BB8A52':''); });
   refreshInvoicePreview();
 }
 
 // ===== INVOICE (PDF) KWA KILA EVENT =====
+function invoiceHexToRgb(hex, fallback) {
+  const clean=String(hex||'').replace('#','').trim();
+  if(!/^[0-9a-fA-F]{6}$/.test(clean)) return fallback;
+  return [parseInt(clean.slice(0,2),16),parseInt(clean.slice(2,4),16),parseInt(clean.slice(4,6),16)];
+}
 async function downloadEventInvoice(eventId) {
   const { data: e } = await sb.from('events').select('*').eq('id', eventId).single();
   if (!e) return showToast('Imeshindwa kupata taarifa za event', 'error');
@@ -7140,7 +7164,9 @@ async function downloadEventInvoice(eventId) {
   const headerLines = [invoiceCfg.address, invoiceCfg.phones, invoiceCfg.email, invoiceCfg.tin ? 'TIN: ' + invoiceCfg.tin : ''].filter(Boolean);
 
   // ---- Header band ----
-  doc.setFillColor(12, 59, 46);
+  const invoiceHeaderRgb=invoiceHexToRgb(invoiceCfg.headerColor,[12,59,46]);
+  const invoicePriceRgb=invoiceHexToRgb(invoiceCfg.priceColor,[187,138,82]);
+  doc.setFillColor(...invoiceHeaderRgb);
   doc.rect(0, 0, pageWidth, 42, 'F');
   doc.setTextColor(255, 255, 255);
   doc.setFont('helvetica', 'bold');
@@ -7187,7 +7213,7 @@ async function downloadEventInvoice(eventId) {
 
   // ---- Items table ----
   y += 6;
-  doc.setFillColor(30, 58, 138);
+  doc.setFillColor(...invoiceHeaderRgb);
   doc.setTextColor(255, 255, 255);
   doc.rect(14, y, pageWidth - 28, 8, 'F');
   doc.setFont('helvetica', 'bold');
@@ -7204,8 +7230,10 @@ async function downloadEventInvoice(eventId) {
   doc.rect(14, y, pageWidth - 28, 10, 'F');
   doc.text('Utengenezaji wa Kadi za Mialiko', 17, y + 6.5);
   doc.text(String(cardCount), 110, y + 6.5);
+  doc.setTextColor(...invoicePriceRgb);
   doc.text(price.toLocaleString(), 140, y + 6.5);
   doc.text(total.toLocaleString(), 180, y + 6.5, { align: 'right' });
+  doc.setTextColor(30, 30, 30);
   y += 14;
 
   doc.setDrawColor(200, 200, 200);
@@ -7213,7 +7241,9 @@ async function downloadEventInvoice(eventId) {
   y += 8;
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(13);
+  doc.setTextColor(...invoicePriceRgb);
   doc.text('JUMLA KUU: TZS ' + total.toLocaleString(), pageWidth - 14, y, { align: 'right' });
+  doc.setTextColor(30, 30, 30);
 
   // ---- Payment info ----
   y += 14;
@@ -7854,7 +7884,7 @@ const SYSTEM_TRANSLATION_PAIRS = [
 ['Dashboard','Dashibodi'],['Event Management','Usimamizi wa Matukio'],['Template Management','Usimamizi wa Violezo'],
 ['Digital Invitation','Mwaliko wa Kidijitali'],['Send Invitations','Tuma Mialiko'],['RSVP - Shukrani','RSVP - Shukrani'],
 ['WhatsApp Monitor','Ufuatiliaji wa WhatsApp'],['System Reports','Ripoti za Mfumo'],
-['User Management','Usimamizi wa Watumiaji'],['Profile & Settings','Wasifu na Mipangilio'],['Settings','Mipangilio'],
+['User Management','Usimamizi wa Watumiaji'],['INVOICE PREVIEW','HAKIKI YA INVOICE'],['Profile & Settings','Wasifu na Mipangilio'],['Settings','Mipangilio'],
 ['Main','Msingi'],['Log Out','Toka'],['Sign In','Ingia'],['Sign Up','Jisajili'],['Email Address','Barua Pepe'],
 ['Password','Nenosiri'],['Forgot Password?','Umesahau Nenosiri?'],['Reset Password','Weka Upya Nenosiri'],['Enter the email address registered to your account. We will send you a secure password reset link.','Weka barua pepe iliyosajiliwa kwenye akaunti yako. Tutakutumia kiungo salama cha kuweka upya nenosiri.'],['Email Address','Barua Pepe'],['Send Reset Link','Tuma Kiungo cha Kuweka Upya'],['Back to Sign In','Rudi Kuingia'],['Create a New Password','Tengeneza Nenosiri Jipya'],['Your email has been verified. Enter and confirm your new password below.','Barua pepe yako imethibitishwa. Weka na uthibitishe nenosiri lako jipya hapa chini.'],['Confirm New Password','Thibitisha Nenosiri Jipya'],['Save New Password','Hifadhi Nenosiri Jipya'],['Old Password','Nenosiri la Zamani'],['Enter your current password','Weka nenosiri lako la sasa'],['At least 8 characters','Angalau herufi 8'],['Enter the new password again','Rudia nenosiri jipya'],['New Password','Nenosiri Jipya'],['First Name','Jina la Kwanza'],['Last Name','Jina la Familia'],['Save','Hifadhi'],
 ['Save Profile','Hifadhi Wasifu'],['Save Settings','Hifadhi Mipangilio'],
