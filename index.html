@@ -1492,6 +1492,52 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
   }
   #invoicePreviewSettingsCard .card-title{color:#0C3B2E!important;font-weight:800!important}
 
+
+
+  /* CALEBZ KARDZ — unified botanical + warm brown card treatment */
+  .card,
+  .stat-card,
+  .event-card,
+  .modal,
+  .template-card,
+  .position-card,
+  .invoice-card,
+  .settings-card,
+  .upload-card,
+  .preview-card {
+    background: linear-gradient(145deg, #E8F0E6 0%, #E1EBDD 54%, #F0E4D4 100%) !important;
+    border: 1px solid rgba(109, 151, 115, 0.20) !important;
+    box-shadow: 0 5px 16px rgba(12, 59, 46, 0.09), 0 2px 5px rgba(126, 91, 55, 0.05) !important;
+  }
+
+  /* Alternate soft botanical and brown-tinted surfaces for dashboard cards */
+  .stats-grid .stat-card:nth-child(4n+1) { background: linear-gradient(145deg, #E5EEE2, #DCE8D8) !important; }
+  .stats-grid .stat-card:nth-child(4n+2) { background: linear-gradient(145deg, #F1E6D8, #E9D9C5) !important; }
+  .stats-grid .stat-card:nth-child(4n+3) { background: linear-gradient(145deg, #E7EEE3, #D5E3D3) !important; }
+  .stats-grid .stat-card:nth-child(4n+4) { background: linear-gradient(145deg, #EFE5D8, #E5D5C1) !important; }
+
+  /* Remove decorative colored edge-stripes; keep the cards themselves clean */
+  .stat-card::before,
+  .card::before,
+  .event-card::before,
+  .template-card::before,
+  .position-card::before,
+  .invoice-card::before,
+  .settings-card::before,
+  .upload-card::before,
+  .preview-card::before { display: none !important; content: none !important; }
+
+  .card-title, .stat-card .stat-label, .stat-card .stat-value,
+  .event-card-body, .modal-title { color: #173F32; }
+  .card-sub { color: #657A68; }
+  .event-card { overflow: hidden; }
+  .event-card-body { background: linear-gradient(145deg, #E8F0E6, #F0E4D4); }
+  .event-card-footer { border-top-color: rgba(109, 151, 115, 0.18) !important; }
+  .modal-header { background: linear-gradient(90deg, #DDE9D9, #EFE2D1) !important; border-bottom-color: rgba(109, 151, 115, 0.20) !important; }
+  .card:hover, .stat-card:hover, .event-card:hover {
+    box-shadow: 0 8px 22px rgba(12, 59, 46, 0.13), 0 3px 8px rgba(126, 91, 55, 0.07) !important;
+  }
+
 </style>
 </head>
 <body>
@@ -1661,7 +1707,7 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
         <i data-lucide="users" class="icon" style="color:#EC4899"></i> User Management
       </button>
       <button class="nav-item" data-roles="admin" onclick="showPage('invoice-preview')">
-        <i data-lucide="file-text" class="icon" style="color:#FFBA00"></i> INVOICE PREVIEW
+        <i data-lucide="file-text" class="icon" style="color:#FFBA00"></i> Preview Invoice
       </button>
       <button class="nav-item" data-roles="admin" onclick="showPage('payments')">
         <i data-lucide="credit-card" class="icon" style="color:#14B8A6"></i> Malipo
@@ -2422,7 +2468,7 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
       <div class="page" id="page-invoice-preview">
         <section class="card" id="invoicePreviewSettingsCard" style="margin-top:18px;">
           <div class="card-header">
-            <div class="card-title"><i data-lucide="file-text" class="icon-inline" style="color:#BB8A52;"></i> INVOICE PREVIEW</div>
+            <div class="card-title"><i data-lucide="file-text" class="icon-inline" style="color:#BB8A52;"></i> Preview Invoice</div>
             <button class="btn btn-outline btn-sm" type="button" onclick="saveInvoicePreviewSettings()">Hifadhi Taarifa</button>
           </div>
           <p style="font-size:12px;color:var(--gray-500);margin:0 0 14px;">Jaza taarifa za kichwa (header) na mwisho (footer) zitakazoonekana kwenye invoice. Taarifa hizi zitatumika pia kwenye PDF ya invoice.</p>
@@ -2458,7 +2504,7 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
             </div>
             <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin:22px 0 16px;flex-wrap:wrap;line-height:1.65;">
               <div style="min-width:220px;flex:1;"><strong style="display:block;letter-spacing:1px;margin-bottom:7px;">INVOICE</strong><div style="font-size:12px;line-height:1.7;">Event: <span id="invoicePreviewEvent">Chagua event ili kuona mfano</span><div id="invoicePreviewEventMeta" style="font-size:11px;margin-top:6px;color:#526052;line-height:1.7;"></div></div></div>
-              <div style="font-size:11px;text-align:right;line-height:1.8;min-width:130px;">Invoice No: PREVIEW<br>Tarehe: <span id="invoicePreviewDate"></span></div>
+              <div style="font-size:11px;text-align:right;line-height:1.8;min-width:130px;">Invoice No: <span id="invoicePreviewNumber">—</span><br>Tarehe: <span id="invoicePreviewDate"></span></div>
             </div>
             <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:12px;background:#edf3ed;padding:12px;border-radius:6px;font-size:12px;font-weight:700;line-height:1.5;"><span>Maelezo</span><span style="text-align:center;">Idadi × Bei</span><span style="text-align:right;">Jumla</span></div>
             <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:12px;padding:14px 12px;border-bottom:1px solid #e5e7eb;font-size:12px;line-height:1.6;align-items:center;"><span>Utengenezaji wa Kadi</span><span id="invoicePreviewCount" style="text-align:center;">0 × 0</span><strong id="invoicePreviewTotal" style="text-align:right;color:#BB8A52;">TZS 0</strong></div>
@@ -3655,7 +3701,7 @@ function showPage(page) {
     whatsapp: 'WhatsApp Monitor',
     reports: 'Ripoti za Mfumo',
     users: 'User Management',
-    'invoice-preview': 'INVOICE PREVIEW',
+    'invoice-preview': 'Preview Invoice',
     payments: 'Malipo',
     profile: 'Profile & Settings'
   };
@@ -7043,18 +7089,19 @@ async function deletePromoImage(id, filePath) {
   loadPromoImages();
 }
 
-// ===== INVOICE PREVIEW SETTINGS =====
+// ===== INVOICE PREVIEW SETTINGS (SUPABASE SYNC) =====
 const INVOICE_SETTINGS_KEY = 'calebz_invoice_preview_settings_v1';
+const INVOICE_SETTINGS_TABLE = 'calebz_invoice_settings';
 const INVOICE_DEFAULTS = {
   name:'Calebz Kardz', tagline:'Invitation & Guest Management', address:'',
   phones:'', email:'', tin:'', thanks:'Asante kwa kuchagua huduma zetu.',
   payment:'', terms:'', contact:'', preparedBy:'', headerColor:'#0C3B2E', priceColor:'#BB8A52'
 };
+let invoiceSettingsCache = { ...INVOICE_DEFAULTS };
 function getInvoicePreviewSettings() {
-  try { return { ...INVOICE_DEFAULTS, ...JSON.parse(localStorage.getItem(INVOICE_SETTINGS_KEY) || '{}') }; }
-  catch (e) { return { ...INVOICE_DEFAULTS }; }
+  return { ...INVOICE_DEFAULTS, ...(invoiceSettingsCache || {}) };
 }
-function saveInvoicePreviewSettings() {
+function getInvoiceSettingsFromForm() {
   const ids = {
     name:'invoiceHeadName', tagline:'invoiceHeadTagline', address:'invoiceHeadAddress',
     phones:'invoiceHeadPhones', email:'invoiceHeadEmail', tin:'invoiceHeadTin',
@@ -7063,24 +7110,30 @@ function saveInvoicePreviewSettings() {
     headerColor:'invoiceHeaderColor', priceColor:'invoicePriceColor'
   };
   const values = {};
-  Object.entries(ids).forEach(([key,id]) => { values[key] = document.getElementById(id)?.value?.trim() || ''; });
-  localStorage.setItem(INVOICE_SETTINGS_KEY, JSON.stringify(values));
-  refreshInvoicePreview();
-  showToast('Taarifa za Invoice zimehifadhiwa kwenye kifaa hiki.', 'success');
+  Object.entries(ids).forEach(([key,id]) => {
+    const el = document.getElementById(id);
+    values[key] = el ? (el.value || '').trim() : (invoiceSettingsCache[key] || '');
+  });
+  return values;
+}
+async function saveInvoicePreviewSettings() {
+  const values = getInvoiceSettingsFromForm();
+  try {
+    const { error } = await sb.from(INVOICE_SETTINGS_TABLE).upsert({
+      id: 1, settings: values, updated_at: new Date().toISOString()
+    }, { onConflict: 'id' });
+    if (error) throw error;
+    invoiceSettingsCache = { ...INVOICE_DEFAULTS, ...values };
+    try { localStorage.setItem(INVOICE_SETTINGS_KEY, JSON.stringify(invoiceSettingsCache)); } catch (_) {}
+    refreshInvoicePreview();
+    showToast('Taarifa za Invoice zimehifadhiwa Supabase na zitaonekana kwenye vifaa vingine.', 'success');
+  } catch (error) {
+    console.error('Invoice settings save failed:', error);
+    showToast('Imeshindwa kuhifadhi Invoice Supabase: ' + (error.message || error), 'error');
+  }
 }
 function refreshInvoicePreview() {
-  const cfg = getInvoicePreviewSettings();
-  const ids = {
-    name:'invoiceHeadName', tagline:'invoiceHeadTagline', address:'invoiceHeadAddress',
-    phones:'invoiceHeadPhones', email:'invoiceHeadEmail', tin:'invoiceHeadTin',
-    thanks:'invoiceFootThanks', payment:'invoiceFootPayment', terms:'invoiceFootTerms',
-    contact:'invoiceFootContact', preparedBy:'invoiceFootPreparedBy',
-    headerColor:'invoiceHeaderColor', priceColor:'invoicePriceColor'
-  };
-  Object.entries(ids).forEach(([key,id]) => {
-    const input = document.getElementById(id);
-    if (input) cfg[key] = input.value.trim();
-  });
+  const cfg = getInvoiceSettingsFromForm();
   const set = (id,value) => { const el=document.getElementById(id); if(el) el.textContent=value || ''; };
   set('invoicePreviewName',cfg.name);
   set('invoicePreviewTagline',cfg.tagline);
@@ -7098,6 +7151,12 @@ function refreshInvoicePreview() {
   const eventOption = document.getElementById('invEventSelect')?.selectedOptions?.[0];
   set('invoicePreviewEvent',eventId ? (eventOption?.textContent || 'Event iliyochaguliwa') : 'Chagua event ili kuona mfano');
 }
+async function getEventInvoiceNumber(event) {
+  if (!event?.id) throw new Error('Event ID haijapatikana.');
+  const { data, error } = await sb.rpc('get_or_create_calebz_invoice_number', { p_event_id: event.id });
+  if (error) throw error;
+  return data;
+}
 async function refreshInvoiceEventPreview() {
   const eventId = document.getElementById('invEventSelect')?.value;
   const set = (id,value) => { const el=document.getElementById(id); if(el) el.textContent=value || ''; };
@@ -7106,11 +7165,12 @@ async function refreshInvoiceEventPreview() {
     set('invoicePreviewCount','0 × 0');
     set('invoicePreviewTotal','TZS 0');
     set('invoicePreviewGrandTotal','TZS 0');
+    set('invoicePreviewNumber','—');
     return;
   }
   try {
     const [{data:event,error:eventError},{count:guestCount,error:countError}] = await Promise.all([
-      sb.from('events').select('name,event_date,venue,price_per_card,payment_status,payment_method').eq('id',eventId).single(),
+      sb.from('events').select('id,name,event_date,created_at,prefix,venue,price_per_card,payment_status,payment_method').eq('id',eventId).single(),
       sb.from('guests').select('id',{count:'exact',head:true}).eq('event_id',eventId)
     ]);
     if (eventError) throw eventError;
@@ -7123,14 +7183,13 @@ async function refreshInvoiceEventPreview() {
     set('invoicePreviewCount',`${count.toLocaleString()} × ${price.toLocaleString()}`);
     set('invoicePreviewTotal','TZS '+total.toLocaleString());
     set('invoicePreviewGrandTotal','TZS '+total.toLocaleString());
+    set('invoicePreviewNumber',await getEventInvoiceNumber(event));
   } catch (error) {
     console.error('Invoice preview event load failed:',error);
     showToast('Imeshindwa kuonyesha taarifa za Event kwenye invoice preview: '+(error.message||error),'error');
   }
 }
-
-function loadInvoicePreviewSettings() {
-  const cfg = getInvoicePreviewSettings();
+async function loadInvoicePreviewSettings() {
   const ids = {
     name:'invoiceHeadName', tagline:'invoiceHeadTagline', address:'invoiceHeadAddress',
     phones:'invoiceHeadPhones', email:'invoiceHeadEmail', tin:'invoiceHeadTin',
@@ -7138,7 +7197,29 @@ function loadInvoicePreviewSettings() {
     contact:'invoiceFootContact', preparedBy:'invoiceFootPreparedBy',
     headerColor:'invoiceHeaderColor', priceColor:'invoicePriceColor'
   };
-  Object.entries(ids).forEach(([key,id]) => { const el=document.getElementById(id); if(el) el.value=cfg[key] || (key==='headerColor'?'#0C3B2E':key==='priceColor'?'#BB8A52':''); });
+  try {
+    const { data, error } = await sb.from(INVOICE_SETTINGS_TABLE).select('settings').eq('id',1).maybeSingle();
+    if (error) throw error;
+    if (data?.settings) {
+      invoiceSettingsCache = { ...INVOICE_DEFAULTS, ...data.settings };
+      try { localStorage.setItem(INVOICE_SETTINGS_KEY, JSON.stringify(invoiceSettingsCache)); } catch (_) {}
+    } else {
+      // Keep any existing local values as a one-time migration source until first Supabase save.
+      let local = {};
+      try { local = JSON.parse(localStorage.getItem(INVOICE_SETTINGS_KEY) || '{}'); } catch (_) {}
+      invoiceSettingsCache = { ...INVOICE_DEFAULTS, ...local };
+    }
+  } catch (error) {
+    console.error('Invoice settings load failed:', error);
+    let local = {};
+    try { local = JSON.parse(localStorage.getItem(INVOICE_SETTINGS_KEY) || '{}'); } catch (_) {}
+    invoiceSettingsCache = { ...INVOICE_DEFAULTS, ...local };
+    showToast('Imeshindwa kusoma mipangilio ya Invoice Supabase: '+(error.message || error), 'error');
+  }
+  Object.entries(ids).forEach(([key,id]) => {
+    const el=document.getElementById(id);
+    if(el) el.value=invoiceSettingsCache[key] || (key==='headerColor'?'#0C3B2E':key==='priceColor'?'#BB8A52':'');
+  });
   refreshInvoicePreview();
 }
 
@@ -7149,6 +7230,7 @@ function invoiceHexToRgb(hex, fallback) {
   return [parseInt(clean.slice(0,2),16),parseInt(clean.slice(2,4),16),parseInt(clean.slice(4,6),16)];
 }
 async function downloadEventInvoice(eventId) {
+  await loadInvoicePreviewSettings();
   const { data: e } = await sb.from('events').select('*').eq('id', eventId).single();
   if (!e) return showToast('Imeshindwa kupata taarifa za event', 'error');
 
@@ -7183,7 +7265,7 @@ async function downloadEventInvoice(eventId) {
   doc.setFontSize(16);
   doc.text('INVOICE', pageWidth - 14, 50, { align: 'right' });
 
-  const invoiceNo = (e.prefix || 'INV') + '-' + new Date(e.created_at || Date.now()).getTime().toString().slice(-6);
+  const invoiceNo = await getEventInvoiceNumber(e);
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(10);
   doc.text('Namba: ' + invoiceNo, pageWidth - 14, 57, { align: 'right' });
@@ -7220,8 +7302,8 @@ async function downloadEventInvoice(eventId) {
   doc.setFontSize(10);
   doc.text('Maelezo', 17, y + 5.5);
   doc.text('Idadi', 110, y + 5.5);
-  doc.text('Bei/Kadi (TZS)', 140, y + 5.5);
-  doc.text('Jumla (TZS)', 180, y + 5.5, { align: 'right' });
+  doc.text('Bei@', 140, y + 5.5);
+  doc.text('Jumla', 180, y + 5.5, { align: 'right' });
   y += 8;
 
   doc.setTextColor(30, 30, 30);
