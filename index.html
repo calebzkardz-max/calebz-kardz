@@ -1538,6 +1538,42 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
     box-shadow: 0 8px 22px rgba(12, 59, 46, 0.13), 0 3px 8px rgba(126, 91, 55, 0.07) !important;
   }
 
+
+
+/* CALEBZ KARDZ — distinct dashboard welcome panel */
+#page-dashboard .dashboard-hero{
+  display:grid!important;grid-template-columns:minmax(0,1fr) 245px;gap:28px;align-items:stretch;
+  min-height:220px!important;padding:25px 27px 25px 32px!important;border-radius:22px!important;
+  background:linear-gradient(118deg,#0C3B2E 0%,#174C3C 64%,#28634B 100%)!important;
+  border:1px solid rgba(109,151,115,.34)!important;box-shadow:0 12px 28px rgba(12,59,46,.16)!important;
+}
+#page-dashboard .dashboard-hero:before{content:"";position:absolute;left:0;top:22px;bottom:22px;width:5px;border-radius:0 8px 8px 0;background:#FFBA00}
+#page-dashboard .dashboard-hero:after{width:300px;height:300px;right:205px;top:-215px;background:rgba(109,151,115,.12)}
+#page-dashboard .dashboard-hero-copy{max-width:none;align-self:center}
+#page-dashboard .calebz-hero-kicker{display:flex;align-items:center;gap:8px;margin:0 0 15px;color:#C6DCC7;font-size:10px;font-weight:800;letter-spacing:1.55px}
+#page-dashboard .calebz-kicker-dot{width:8px;height:8px;border-radius:50%;background:#FFBA00;box-shadow:0 0 0 4px rgba(255,186,0,.13)}
+#page-dashboard .calebz-kicker-divider{color:#BB8A52}
+#page-dashboard .dashboard-hero h1{font-size:clamp(27px,3vw,36px)!important;letter-spacing:-.9px!important;margin-bottom:7px!important}
+#page-dashboard .dashboard-role-title{color:#E5C49A!important;font-size:16px!important;margin-bottom:7px!important}
+#page-dashboard .dashboard-hero p{color:#D7E7DA!important;max-width:560px;font-size:13px!important}
+#page-dashboard .dashboard-hero-actions{margin-top:17px!important}
+#page-dashboard .dashboard-manage-btn{background:linear-gradient(110deg,#BB8A52,#D6A66F)!important;color:#fff!important;border:0!important;box-shadow:0 5px 13px rgba(0,0,0,.12)!important}
+#page-dashboard .dashboard-report-btn{background:rgba(234,241,233,.10)!important;border:1px solid rgba(234,241,233,.32)!important;color:#F4F7F1!important}
+#page-dashboard .dashboard-hero-art{width:auto!important;height:auto!important;min-height:165px;margin:0!important;padding:17px 18px!important;display:flex;flex-direction:column;justify-content:space-between;box-sizing:border-box;border-radius:17px;background:linear-gradient(145deg,#EAF1E9,#D7E5D6)!important;border:1px solid rgba(255,255,255,.38);box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 8px 20px rgba(0,0,0,.10)}
+#page-dashboard .calebz-hero-panel-top,#page-dashboard .calebz-hero-panel-bottom{display:flex;align-items:center;justify-content:space-between;gap:8px}
+#page-dashboard .calebz-hero-panel-label{font-size:9px;font-weight:850;letter-spacing:1.5px;color:#52765A}
+#page-dashboard .calebz-hero-panel-mark{width:27px;height:27px;display:grid;place-items:center;border-radius:9px;background:#0C3B2E;color:#EAF1E9}
+#page-dashboard .calebz-hero-panel-mark svg{width:15px;height:15px}
+#page-dashboard .calebz-hero-panel-icon{width:62px;height:62px;display:grid;place-items:center;border-radius:18px;background:#0C3B2E;color:#EAF1E9;box-shadow:0 7px 16px rgba(12,59,46,.18)}
+#page-dashboard .calebz-hero-panel-icon svg{width:29px;height:29px;stroke-width:1.7}
+#page-dashboard .calebz-hero-panel-bottom{align-items:flex-start;flex-direction:column;gap:3px}
+#page-dashboard .calebz-hero-panel-bottom strong{font-size:12px;color:#173F30;letter-spacing:-.2px}
+#page-dashboard .calebz-hero-panel-bottom span{font-size:10px;color:#6D8770}
+#page-dashboard .calebz-hero-index{position:absolute;right:13px;bottom:10px;font-size:8px;font-weight:800;letter-spacing:1px;color:rgba(12,59,46,.22)}
+body.dark-mode #page-dashboard .dashboard-hero{background:linear-gradient(118deg,#092D24,#104333 68%,#1B563E)!important;border-color:#315F49!important}
+body.dark-mode #page-dashboard .dashboard-hero-art{background:linear-gradient(145deg,#DCE8DB,#C7D9C7)!important}
+@media(max-width:760px){#page-dashboard .dashboard-hero{grid-template-columns:minmax(0,1fr) 105px;gap:12px;padding:22px 17px 22px 22px!important;min-height:195px!important}#page-dashboard .dashboard-hero-art{min-height:145px;padding:12px!important}#page-dashboard .calebz-hero-panel-icon{width:48px;height:48px;border-radius:14px}#page-dashboard .calebz-hero-panel-icon svg{width:23px;height:23px}#page-dashboard .calebz-hero-panel-bottom strong{font-size:9px}#page-dashboard .calebz-hero-panel-bottom span{font-size:8px}#page-dashboard .calebz-hero-panel-label{font-size:7px;letter-spacing:1px}#page-dashboard .calebz-hero-panel-mark{width:23px;height:23px}#page-dashboard .dashboard-hero h1{font-size:24px!important}#page-dashboard .dashboard-role-title{font-size:14px!important}#page-dashboard .dashboard-hero p{font-size:11px!important;line-height:1.5!important}#page-dashboard .dashboard-hero-actions{gap:7px;margin-top:13px!important}#page-dashboard .dashboard-hero-actions .btn{font-size:10px!important;min-height:34px!important;padding:0 9px!important}}
+
 </style>
 </head>
 <body>
@@ -1748,6 +1784,7 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
       <div class="page active" id="page-dashboard">
         <section class="dashboard-hero">
           <div class="dashboard-hero-copy">
+            <div class="calebz-hero-kicker"><span class="calebz-kicker-dot"></span> CALEBZ KARDZ <span class="calebz-kicker-divider">/</span> DASHBOARD</div>
             <h1 id="dashboardWelcome">Karibu kwenye Dashboard</h1>
             <div id="dashboardRoleTitle" class="dashboard-role-title">Managing Director</div>
             <p id="dashboardWelcomeSub">Muhtasari wa shughuli zako, wageni na matukio yote sehemu moja.</p>
@@ -1757,9 +1794,10 @@ body.dark-mode .dashboard-section-heading h2{color:#EEF3FC}
             </div>
           </div>
           <div class="dashboard-hero-art" aria-hidden="true">
-            <div class="hero-orbit hero-orbit-one"></div><div class="hero-orbit hero-orbit-two"></div>
-            <div class="hero-art-icon"><i data-lucide="calendar-heart"></i></div>
-            <span class="hero-spark hero-spark-one">✦</span><span class="hero-spark hero-spark-two">✧</span>
+            <div class="calebz-hero-panel-top"><span class="calebz-hero-panel-label">YOUR EVENTS</span><span class="calebz-hero-panel-mark"><i data-lucide="leaf"></i></span></div>
+            <div class="calebz-hero-panel-icon"><i data-lucide="calendar-days"></i></div>
+            <div class="calebz-hero-panel-bottom"><strong>Plan. Create. Celebrate.</strong><span>Everything in one place</span></div>
+            <span class="calebz-hero-index">CK<span> / 01</span></span>
           </div>
         </section>
         <div class="dashboard-section-heading"><div><h2>Muhtasari wa jumla</h2></div></div>
